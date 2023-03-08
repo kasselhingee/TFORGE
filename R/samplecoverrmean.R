@@ -24,6 +24,5 @@ mcovar <- function(merr){
     x <- vech(m)
     x %*% t(x)
   })
-  msum <- purrr::reduce(mcovarls, `+`)
-  return(msum/length(merr))
+  mmean(mcovarls)
 }

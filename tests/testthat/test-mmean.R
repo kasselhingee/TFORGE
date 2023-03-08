@@ -13,6 +13,7 @@ estthat("merr returns input when input centred", {
 
 estthat("mcovar runs", {
   Ysample <- rsymm(10, 5)
-  expect_silent(mcovar(merr(Ysample)))
+  expect_silent(c0 <- mcovar(merr(Ysample)))
+  expect_equal(dim(c0), c(5*(5+1)/2, 5*(5+1)/2))
 })
 
