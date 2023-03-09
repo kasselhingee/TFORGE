@@ -4,11 +4,28 @@
 #' @param ms Sample of matrices
 #' @details Corresponds to eqn 13 in the draft `tensors_4`.
 
+standardise_commoneigenvals <- function(evals, ms){
+  evals <- sort(evals, decreasing = TRUE)
+  av <- mmean(ms)
+  errs <- merr(ms, mean = av)
+  av_eigenspace <- eigen(av, symmetric = TRUE)
+  av_evecs <- av_eigenspace$vectors
+  cen <- av_evecs %*% diag(evals) %*% t(av_evecs)
+  newms <- lapply(errs, function(m) cen + m)
+  return(newms)
+}
+
 stat_commoneigenvals <- function(evals, ms){
+  evals <- sort(evals, decreasing = TRUE)
   n <- length(ms)
   av <- mmean(ms)
-  av_eigenspaces <- eigen(av, symmetric = TRUE)
-  av_evecs <- av_eigenspaces$vectors
+  av_eigenspace <- eigen(av, symmetric = TRUE)
+  av_evecs <- av_eigenspace$vectors
+  d1 <- av_eigenspace$values
+  d0 <- evals
+  V <- cov_eval1_eval0(av_evecs, mcovar(merr(ms, mean = av)))
+  out <- n * t(d1 - d0) %*% solve(V) %*% (d1 - d0)
+  return(drop(out))
 }
 
 # the V1 / V2 matrix
@@ -18,7 +35,7 @@ cov_eval1_eval0 <- function(evecs, mcov){
   vals <- mapply(cov_eval1_eval0_inside, indx[,1], indx[,2],
     MoreArgs = list(evecs = evecs, dupmat = dupmat, mcov = mcov))
   out <- matrix(NA, nrow = nrow(evecs), ncol = ncol(evecs))
-  out[indx] <- vals
+  out[as.matrix(indx)] <- vals
   return(out)
 }
 
