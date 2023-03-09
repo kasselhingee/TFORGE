@@ -28,6 +28,16 @@ stat_commoneigenvals <- function(evals, ms){
   return(drop(out))
 }
 
+#' @title The test statistic for a set of samples
+stat_commonevals_ksample <- function(mss){
+  esteval <- est_commoneigenvals(mss)
+  stat <- sum(vapply(mss, function(Y){stat_commoneigenvals(esteval, Y)}, FUN.VALUE = 0.1))
+  return(list(
+    stat = stat,
+    esteval = esteval
+  ))
+}
+
 #' @title Estimate common eigenvalues from multiple samples
 #' @details Eqn 24 in `tensors_4.pdf`, used for estimating eigenvalues for a multisample hypothesis test.
 #' My implementation is surprisingly involved - there could be more elegant methods (or maybe my implementation is wrong).
