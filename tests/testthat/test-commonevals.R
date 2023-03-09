@@ -18,3 +18,10 @@ test_that("stat_commoneigenvals() is zero for standarised sample", {
 })
 
 
+test_that("commoneigenvals doesn't reject for simulation of multi sample from null", {
+  set.seed(13)
+  Ysamples <- replicate(5, lapply(rsymm(50, 3), `+`, diag(c(3,2,1))), simplify = FALSE) 
+  expect_equal(est_commoneigenvals(Ysamples), c(3, 2, 1), tolerance = 1E-1) 
+  #est_via_av <- eigen(mmean(do.call(c, Ysamples)))$values
+
+})

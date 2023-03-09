@@ -28,7 +28,30 @@ stat_commoneigenvals <- function(evals, ms){
   return(drop(out))
 }
 
-# the V1 / V2 matrix
+#' @title Estimate common eigenvalues from multiple samples
+#' @details Eqn 24 in `tensors_4.pdf`, used for estimating eigenvalues for a multisample hypothesis test.
+#' My implementation is surprisingly involved - there could be more elegant methods (or maybe my implementation is wrong).
+#' @param mss A list of samples
+est_commoneigenvals <- function(mss){
+  avs <- lapply(mss, mmean)
+  ess <- lapply(avs, eigen)
+  mcovars <- .mapply(function(a, b){
+    mcovar(merr(a, mean = b))
+  }, dots = list(a = mss, b = avs), MoreArgs = list())
+
+  Vs <- .mapply(cov_eval1_eval0, 
+          dots = list(evecs = lapply(ess, "[[", "vectors"),
+                      mcov = mcovars),
+          MoreArgs = list())
+  invVs <- lapply(Vs, solve)
+  sum_invVs <- purrr::reduce(invVs, `+`)
+  invVevals <- mapply(`%*%`, invVs, lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
+  sum_invVevals <- purrr::reduce(invVevals, `+`)
+  return(drop(solve(sum_invVs) %*% sum_invVevals))
+}
+
+
+# the V1 / V2 matrix for a single sample
 cov_eval1_eval0 <- function(evecs, mcov){
   indx <- expand.grid(1:nrow(evecs), 1:nrow(evecs))
   dupmat <- dup(nrow(evecs))
@@ -43,3 +66,5 @@ cov_eval1_eval0_inside <- function(j, k, evecs, dupmat, mcov){
   tmp <- evecs[, j] %*% t(evecs[, k])
   sum(diag(t(dupmat) %*% kronecker(tmp, tmp) %*% dupmat %*% mcov))
 }
+
+
