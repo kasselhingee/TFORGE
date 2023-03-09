@@ -27,9 +27,12 @@ test_that("commoneigenvals doesn't reject for simulation of multi sample from nu
   #est_via_av <- eigen(mmean(do.call(c, Ysamples)))$values
 
   Ystdsamples <- lapply(Ysamples, function(Ysample){standardise_commoneigenvals(t0info$esteval,Ysample)})
+  tmpres <- stat_commonevals_ksample(Ystdsamples)
+  expect_equal(tmpres$stat, 0)
+  expect_equal(tmpres$esteval, t0info$esteval)
 
   B <- 10
-  nullt <- replicate(B, { stat_commonevals_ksample(lapply(Ystdsamples, sample))$stat })
+  nullt <- replicate(B, { stat_commonevals_ksample(lapply(Ystdsamples, sample, replace = TRUE))$stat })
   pval <- mean(nullt > t0info$stat)
   expect_gt(pval, 0.2)
 })
