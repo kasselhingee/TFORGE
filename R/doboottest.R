@@ -3,9 +3,10 @@
 #' @param stdms List of matrices standardized to satisty the null.
 #' @param stat Function to compute the statistic
 #' @param B The number of bootstrap samples to use
-singlesampletest <- function(ms, stdms, stat, B){
-  t0 <- stat(ms)
-  nullt <- replicate(B, stat(sample(stdms, replace = TRUE)))
+#' @param ... Passed to `stat`
+singlesampletest <- function(ms, stdms, stat, B, ...){
+  t0 <- stat(ms, ...)
+  nullt <- replicate(B, stat(sample(stdms, replace = TRUE), ...))
   pval <- mean(nullt > t0)
   return(list(
     pval = pval,

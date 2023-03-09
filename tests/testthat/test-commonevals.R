@@ -6,7 +6,7 @@ test_that("commoneigenvals doesn't reject for simulation of multi sample from nu
   expect_equal(t0info$esteval, c(3, 2, 1), tolerance = 1E-2) 
   #est_via_av <- eigen(mmean(do.call(c, Ysamples)))$values
 
-  Ystdsamples <- lapply(Ysamples, function(Ysample){standardise_commoneigenvals(t0info$esteval,Ysample)})
+  Ystdsamples <- lapply(Ysamples, standardise_specifiedevals, t0info$esteval)
   tmpres <- stat_commonevals_ksample(Ystdsamples)
   expect_equal(tmpres$stat, 0)
   expect_equal(tmpres$esteval, t0info$esteval)

@@ -3,7 +3,7 @@
 #' @param evals The eigenvalues are specified for single sample tests. In descending order.
 #' @param ms Sample of matrices
 #' @details Corresponds to eqn 13 in the draft `tensors_4`.
-stat_commoneigenvals <- function(evals, ms){
+stat_specifiedevals <- function(ms, evals){
   evals <- sort(evals, decreasing = TRUE)
   n <- length(ms)
   av <- mmean(ms)
@@ -16,7 +16,7 @@ stat_commoneigenvals <- function(evals, ms){
   return(drop(out))
 }
 
-standardise_commoneigenvals <- function(evals, ms){
+standardise_specifiedevals <- function(ms, evals){
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(ms)
   errs <- merr(ms, mean = av)
