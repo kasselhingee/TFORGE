@@ -2,13 +2,11 @@ test_that("stat_commoneigenvals() doesn't reject for simulation of single sample
   set.seed(13131)
   Ysample <- rsymm(50, 3)
   Ysample <- lapply(Ysample, `+`, diag(c(3,2,1)))
-  t0 <- stat_commoneigenvals(c(3, 2, 1), Ysample)
   Ystdsample <- standardise_commoneigenvals(c(3,2,1), Ysample)
-  B <- 10
-  nullt <- replicate(B,
-    stat_commoneigenvals(c(3, 2, 1), sample(Ystdsample, replace = TRUE)))
-  pval <- mean(nullt > t0)
-  expect_gt(pval, 0.2)
+  res <- singlesampletest(Ysample, Ystdsample, 
+    stat = function(Y){stat_commoneigenvals(c(3, 2, 1), Y)},
+    B =  100)
+  expect_gt(res$pval, 0.2)
 })
 
 test_that("stat_commoneigenvals() is zero for standarised sample", {
