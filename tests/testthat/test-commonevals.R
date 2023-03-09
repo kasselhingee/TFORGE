@@ -1,4 +1,4 @@
-testthat("stat_commoneigenvals() doesn't reject for simulation of single sample from null", {
+test_that("stat_commoneigenvals() doesn't reject for simulation of single sample from null", {
   set.seed(13131)
   Ysample <- rsymm(50, 3)
   Ysample <- lapply(Ysample, `+`, diag(c(3,2,1)))
@@ -11,7 +11,7 @@ testthat("stat_commoneigenvals() doesn't reject for simulation of single sample 
   expect_gt(pval, 0.2)
 })
 
-testthat("stat_commoneigenvals() is zero for standarised sample", {
+test_that("stat_commoneigenvals() is zero for standarised sample", {
   set.seed(13131)
   Ysample <- rsymm(50, 3)
   Ysample <- lapply(Ysample, `+`, diag(c(3,2,1)))
