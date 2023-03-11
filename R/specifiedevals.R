@@ -24,8 +24,8 @@ stat_specifiedevals <- function(ms, evals){
 #' @param B The number of bootstrap samples
 #' @export
 test_specifiedevals <- function(ms, evals, B){
-  Ystdsample <- standardise_specifiedevals(Ysample, evals)
-  res <- singlesampletest(Ysample, Ystdsample, 
+  ms_std <- standardise_specifiedevals(ms, evals)
+  res <- singlesampletest(ms, ms_std, 
     stat = stat_specifiedevals,
     B = B,
     evals = evals)
