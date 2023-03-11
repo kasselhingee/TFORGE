@@ -16,6 +16,15 @@ stat_specifiedevals <- function(ms, evals){
   return(drop(out))
 }
 
+test_specifiedevals <- function(ms, evals, B){
+  Ystdsample <- standardise_specifiedevals(Ysample, evals)
+  res <- singlesampletest(Ysample, Ystdsample, 
+    stat = stat_specifiedevals,
+    B = B,
+    evals = evals)
+  return(res)
+}
+
 standardise_specifiedevals <- function(ms, evals){
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(ms)

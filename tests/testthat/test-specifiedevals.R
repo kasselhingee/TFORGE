@@ -1,12 +1,8 @@
-test_that("stat_specifiedevals() doesn't reject for simulation of single sample from null", {
+test_that("stat_specifiedevals() doesn't reject for simulation of single sample from null and rejects otherwise", {
   set.seed(13131)
   Ysample <- rsymm(50, 3)
   Ysample <- lapply(Ysample, `+`, diag(c(3,2,1)))
-  Ystdsample <- standardise_specifiedevals(Ysample, c(3,2,1))
-  res <- singlesampletest(Ysample, Ystdsample, 
-    stat = stat_specifiedevals,
-    B =  100,
-    evals = c(3,2,1))
+  res <- test_specifiedevals(Ysample, c(3,2,1), 100)
   expect_gt(res$pval, 0.2)
 })
 

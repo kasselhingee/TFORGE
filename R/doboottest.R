@@ -11,7 +11,8 @@ singlesampletest <- function(ms, stdms, stat, B, ...){
   return(list(
     pval = pval,
     t0 = t0,
-    nullt = nullt
+    nullt = nullt,
+    B = B
   ))
 }
 
