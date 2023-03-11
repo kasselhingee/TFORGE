@@ -5,6 +5,7 @@
 #' @param p Number of rows and columns of the matrices
 #' @param s Width of the uniform distribution.
 #' @return A list of matrices.
+#' @export
 rsymm <- function(n, p, s = 1){
   replicate(n, invvech(runif(p*(p+1)/2, min = -s, max = s)), simplify = FALSE)
 }

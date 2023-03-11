@@ -1,8 +1,12 @@
-#' @title Test statistic for specified eigenvalues and single sample
-#' @description For the case that the eigenvectors are free, but the eigenvalues are fixed (single) sample.
+#' @name specifiedevals
+#' @title Tools for testing specified eigenvalues for a single sample
+#' @description For the case that the eigenvectors are free and the eigenvalues are specified.
 #' @param evals The eigenvalues are specified for single sample tests. In descending order.
 #' @param ms Sample of matrices
-#' @details Corresponds to eqn 13 in the draft `tensors_4`.
+NULL
+
+#' @describeIn specifiedevals Test statistic (corresponds to eqn 13 in the draft `tensors_4`).
+#' @export
 stat_specifiedevals <- function(ms, evals){
   evals <- sort(evals, decreasing = TRUE)
   n <- length(ms)
@@ -16,6 +20,9 @@ stat_specifiedevals <- function(ms, evals){
   return(drop(out))
 }
 
+#' @describeIn specifiedevals Bootstrap test.
+#' @param B The number of bootstrap samples
+#' @export
 test_specifiedevals <- function(ms, evals, B){
   Ystdsample <- standardise_specifiedevals(Ysample, evals)
   res <- singlesampletest(Ysample, Ystdsample, 
@@ -25,6 +32,8 @@ test_specifiedevals <- function(ms, evals, B){
   return(res)
 }
 
+#' @describeIn specifiedevals Standardise a sample to satisty the null hypothesis (i.e. the average has eigenvalues equal to `eval`).
+#' @export
 standardise_specifiedevals <- function(ms, evals){
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(ms)

@@ -1,7 +1,11 @@
-#' @title Test statistic for common eigenvalues across multiple samples
-#' @description For the case that the eigenvectors are free, but the eigenvalues are fixed (single) sample.
-#' @param mss List of samples
-#' @details Corresponds to eqn 13 in the draft `tensors_4`.
+#' @name commonevals
+#' @title Tools for testing common eigenvalues across multiple samples
+#' @description For the case that the eigenvalues are common across multiple samples (and unknown), and the eigenvectors are free.
+#' @param mss List of samples. Each sample is itself a list of symmetric matrices.
+NULL
+
+#' @describeIn commonevals The test statistic (corresponds to eqn 13 in the draft `tensors_4`)
+#' @export
 stat_commonevals_ksample <- function(mss){
   esteval <- est_commonevals(mss)
   stat <- sum(vapply(mss, stat_specifiedevals, esteval, FUN.VALUE = 0.1))
@@ -11,9 +15,9 @@ stat_commonevals_ksample <- function(mss){
   ))
 }
 
-#' @title Estimate common eigenvalues from multiple samples
-#' @details Eqn 24 in `tensors_4.pdf`, used for estimating eigenvalues for a multisample hypothesis test.
+#' @describeIn commonevals Estimate eigenvalues in common to multiple sampler (Eqn 24 in `tensors_4.pdf`).
 #' My implementation is surprisingly involved - there could be more elegant methods (or maybe my implementation is wrong).
+#' @export
 est_commonevals <- function(mss){
   avs <- lapply(mss, mmean)
   ess <- lapply(avs, eigen)
@@ -32,7 +36,9 @@ est_commonevals <- function(mss){
   return(drop(solve(sum_invVs) %*% sum_invVevals))
 }
 
+#' @describeIn commonevals Bootstrap test of common eigenvalues
 #' @param B Number of bootstrap samples
+#' @export
 test_commonevals <- function(mss, B){
   t0info <- stat_commonevals_ksample(mss)
   mss_std <- lapply(mss, standardise_specifiedevals, t0info$esteval)
