@@ -1,14 +1,24 @@
 #' @name commonevals
 #' @title Tools for testing common eigenvalues across multiple samples
 #' @description For the case that the eigenvalues are common across multiple samples (and unknown), and the eigenvectors are free.
+#' __What is the appropriate way to handle singularities in resamples?__
 #' @param mss List of samples. Each sample is itself a list of symmetric matrices.
 NULL
 
 #' @describeIn commonevals The test statistic (corresponds to eqn 13 in the draft `tensors_4`)
+#' @param NAonerror If TRUE then when an error occurs NA values are returned. If error in estimating the eigenvalue then both return slots are `NA`. If an error occurs after eigenvalues are estimated, then just the `stat` slot is `NA`.
 #' @export
-stat_commonevals_ksample <- function(mss){
-  esteval <- est_commonevals(mss)
-  stat <- sum(vapply(mss, stat_specifiedevals, esteval, FUN.VALUE = 0.1))
+stat_commonevals_ksample <- function(mss, NAonerror = FALSE){
+  erroraction <- function(e){
+    if (!NAonerror){stop(e)}
+    else {
+     out <- NA
+     attr(out, "message") <- e$message
+     return(out)
+   }
+  }
+  esteval <- tryCatch(est_commonevals(mss), error = erroraction)
+  stat <- tryCatch(sum(vapply(mss, stat_specifiedevals, esteval, FUN.VALUE = 0.1)), error = erroraction)
   return(list(
     stat = stat,
     esteval = esteval
@@ -38,17 +48,21 @@ est_commonevals <- function(mss){
 
 #' @describeIn commonevals Bootstrap test of common eigenvalues
 #' @param B Number of bootstrap samples
+#' @return A slot `seed` contains the value of `.Random.seed` before resampling started. To repeat results run `.Random.seed <- out$seed`.
 #' @export
 test_commonevals <- function(mss, B){
   t0info <- stat_commonevals_ksample(mss)
   mss_std <- lapply(mss, standardise_specifiedevals, t0info$esteval)
-  nullt <- replicate(B, { stat_commonevals_ksample(lapply(mss_std, sample, replace = TRUE))$stat })
-  pval <- mean(nullt > t0info$stat)
+  seed <- .Random.seed
+  nullt <- replicate(B, { stat_commonevals_ksample(lapply(mss_std, sample, replace = TRUE), NAonerror = TRUE)$stat })
+  if (any(is.na(nullt))){warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))}
+  pval <- mean(nullt > t0info$stat, na.rm = TRUE)
   return(list(
    pval = pval,
    t0 = t0info$stat,
    nullt = nullt,
    esteval = t0info$esteval,
-   B = B
+   B = B,
+   seed = seed
   ))
 }
