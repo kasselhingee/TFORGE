@@ -2,11 +2,7 @@
 #' @param ms Set of matrices as a list or a 3-array.
 #' @details Uses [`abind::abind()`] which can be very slow for large numbers of matrices as it tries to store them all in memory.
 mmean <- function(ms){
-  if(is.array(ms)){if (length(dim(ms))==3){
-    ms <- lapply(1:dim(ms)[3], function(i) ms[,,i])
-}}
-  msum <- purrr::reduce(ms, `+`)
-  return(msum/length(ms))
+  return(msum(ms)/length(ms))
 }
 
 merr <- function(ms, mean = mmean(ms)){
@@ -25,4 +21,11 @@ mcovar <- function(merr){
     x %*% t(x)
   })
   mmean(mcovarls)
+}
+
+msum <- function(ms){
+  if(is.array(ms)){if (length(dim(ms))==3){
+    ms <- lapply(1:dim(ms)[3], function(i) ms[,,i])
+  }}
+  return(purrr::reduce(ms, `+`))
 }
