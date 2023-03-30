@@ -11,3 +11,7 @@ helmert <- function(p){
   return(m)
 }
 
+helmertsub <- function(p){
+  helmert(p)[-1, , drop = FALSE]
+}
+
