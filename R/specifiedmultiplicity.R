@@ -10,9 +10,8 @@ NULL
 test_specifiedmultiplicity <- function(ms, mult, B){
   ms_std <- standardise_specifiedmultiplicity(ms, mult)
   res <- singlesampletest(ms, ms_std, 
-    stat = stat_specifiedmultiplicity,
-    B = B,
-    mult = mult)
+    stat = function(ms,...){stat_specifiedmultiplicity(ms, mult = mult)},
+    B = B)
   return(res)
 }
 
