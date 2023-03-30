@@ -4,9 +4,25 @@
 #' @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
 NULL
 
+#' @describeIn specifiedmultiplicity Bootstrap test
+#' @param B The number of bootstrap samples
+#' @export
+test_specifiedmultiplicity <- function(ms, mult, B){
+  ms_std <- standardise_specifiedmultiplicity(ms, mult)
+  res <- singlesampletest(ms, ms_std, 
+    stat = stat_specifiedmultiplicity,
+    B = B,
+    mult = mult)
+  return(res)
+}
+
+#' @describeIn specifiedmultiplicity Test statistic
+#' @export
 stat_specifiedmultiplicity <- function(ms, mult){
   av <- mmean(ms)
-  stopifnot(sum(mult) == ncol(av))
+  if (sum(mult) != ncol(av)){
+    stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
+  }
   stopifnot(all(mult > 0))
   es <- eigen(av)
 
