@@ -14,8 +14,8 @@ test_that("stat_specifiedmultiplicity() is zero for standarised sample", {
   expect_equal(newes$values[3], es$values[3])
   expect_equal(newav %*% es$vectors %*% diag(1/newes$values), es$vectors)
 
-
-  #expect_equal(stat_specifiedmultiplicity(Ystdsample, c(3,2,1)), 0)
+  expect_equal(stat_specifiedmultiplicity(Ystdsample, mult = c(2,1)), 0)
+  expect_error(expect_equal(stat_specifiedmultiplicity(Ysample, mult = c(2,1)), 0))
 })
 
 

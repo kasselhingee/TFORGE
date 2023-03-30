@@ -4,7 +4,83 @@
 #' @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
 NULL
 
+stat_specifiedmultiplicity <- function(ms, mult){
+  av <- mmean(ms)
+  stopifnot(sum(mult) == ncol(av))
+  stopifnot(all(mult > 0))
+  es <- eigen(av)
+
+  #indices
+  cmult <- cumsum(mult)
+  esvalstart <- c(0, cmult[-length(cmult)]) + 1
+  idxs <- lapply(1:length(mult), function(i){
+    esvalstart[i] : cmult[i]
+  })
+
+  #prod w evecs - should be equal to evals since vectors calculated from av
+  evals <- es$values
+  #vapply(1:ncol(es$vectors), function(i){
+  #  t(es$vectors[, i]) %*% av %*% es$vectors[, i]
+  #}, FUN.VALUE = 1.1)
+
+  # the random variables xi in sets per multiplicity because the weight matrix is different in each one
+  xi <- lapply(1:length(mult), function(j){
+    if (mult[j] < 1.5){return(NULL)}
+    wmat <- helmert(mult[j])[-1, ]
+    return(wmat %*% evals[ idxs[[j]] ])
+  })
+  xi <- unlist(xi)
+  # keep track of order of xi
+  #xiorder <- lapply(1:length(mult), function(j){
+  #  if (mult[j] < 1.5){return(NULL)}
+  #  cbind("eval" = j, wmatrow = 1:(mult[j]-1))
+  #})
+  #xiorder <- purrr::reduce(xiorder, `rbind`)
+
+  C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
+  covar <- xicovar(mult, idxs, es$vectors, C0/length(ms))
+
+  return(drop(t(xi) %*% solve(covar) %*% xi))
+}
+
+# compute/estimate covariance of xi, Cav is the covariance of av = C0/n
+xicovar <- function(mult, idxs, evecs, Cav){
+  # for each pair of distinct eigenvalues with multiplicity>1, create the matrix of covariance between xi, these are entries in the block-matrix form of V3 in my notes 
+  valpairs <- expand.grid(1:length(idxs), 1:length(idxs))
+  blocks <- apply(valpairs, MARGIN = 1, function(jk){
+    if (mult[jk[1]] < 1.5){return(NULL)}
+    if (mult[jk[2]] < 1.5){return(NULL)}
+    t(helmert(mult[jk[1]])[-1, ]) %*% t(covarbetweenevals(jk[1], jk[2], idxs, evecs, Cav)) %*% helmert(mult[jk[2]])[-1, ]
+  }, simplify = FALSE)
+
+  #bind the blocks together appropriately
+  # bind by row, columns still seperate
+  cblocks <- lapply(1:length(mult), function(k){
+     purrr::reduce(blocks[valpairs[, 2] == k], `rbind`)
+  })
+  covar <- purrr::reduce(cblocks, `cbind`)
+  return(covar)
+}
+
+# for each pair of distinct eigenvalues with multiplicity>1, create the matrix of covariance between eigenvalues (I've called this matrix A_jk in my notes)
+# j and k refer to index of *distinct* eigenvalues, i.e. entries of mult
+# idxs is a list of vectors, each vector contains the columns of evecs that have columns corresponding to the vectors eigenvalue
+covarbetweenevals <- function(j, k, idxs, evecs, Cav){
+  Dp <- dup(nrow(evecs))
+  idxj = idxs[[j]]
+  idxk = idxs[[k]]
+  if ((length(idxj) == 1 ) || (length(idxk) == 1)){return(NULL)}
+  vecpairs <- expand.grid(idxj, idxk)
+  At <- apply(vecpairs, MARGIN = 1, function(uv){
+    qjuqkv <- evecs[, uv[1]] %*% t(evecs[, uv[2]])
+    t(vec(qjuqkv)) %*% Dp %*% Cav %*% t(Dp) %*% vec(t(qjuqkv))
+  }, simplify = TRUE)
+  dim(At) <- c(length(idxj), length(idxk)) # converts to matrix taking advantage that the first index is filled fastest
+  return(t(At)) # to be consitent with my notes, return such that rows correpond to idxk
+}
+
 #' @describeIn specifiedmultiplicity Standardise a sample to satisfy the (null) hypothesis of the given eigenvalue multiplicity
+#' @export
 standardise_specifiedmultiplicity <- function(ms, mult){
   av <- mmean(ms)
   stopifnot(sum(mult) == ncol(av))
