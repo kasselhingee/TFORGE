@@ -46,6 +46,8 @@ test_that("stat_specifiedevals() doesn't reject for simulation of single sample 
   Ysample <- lapply(Ysample, `+`, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
   res <- test_specifiedmultiplicity(Ysample, mult = c(3,2,1,1), 100)
   expect_gt(res$pval, 0.2)
+  
+  res <- test_specifiedmultiplicity(Ysample, mult = c(3,2,2), 100)
+  expect_lt(res$pval, 0.2)
 })
 
-})
