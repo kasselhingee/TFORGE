@@ -26,7 +26,7 @@ stat_specifiedmultiplicity <- function(ms, mult){
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
   xi <- lapply(1:length(mult), function(j){
     if (mult[j] < 1.5){return(NULL)}
-    wmat <- helmert(mult[j])[-1, ]
+    wmat <- helmertsub(mult[j])
     return(wmat %*% evals[ idxs[[j]] ])
   })
   xi <- unlist(xi)
@@ -50,7 +50,7 @@ xicovar <- function(mult, idxs, evecs, Cav){
   blocks <- apply(valpairs, MARGIN = 1, function(jk){
     if (mult[jk[1]] < 1.5){return(NULL)}
     if (mult[jk[2]] < 1.5){return(NULL)}
-    t(helmert(mult[jk[1]])[-1, ]) %*% t(covarbetweenevals(jk[1], jk[2], idxs, evecs, Cav)) %*% helmert(mult[jk[2]])[-1, ]
+    helmertsub(mult[jk[1]]) %*% t(covarbetweenevals(jk[1], jk[2], idxs, evecs, Cav)) %*% t(helmertsub(mult[jk[2]]))
   }, simplify = FALSE)
 
   #bind the blocks together appropriately
