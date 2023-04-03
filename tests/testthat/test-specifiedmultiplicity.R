@@ -68,6 +68,45 @@ test_that("xiget() behaves", {
   expect_equal(xiget(c(3.0, 2.9, 3.1, 2, 2.1), mult, idxs)==0, c(FALSE, FALSE, FALSE))
 })
 
+test_that("covarbetweenevals() gets close to a sample covariance", {
+  p = 5
+  n = 10
+  mult <- c(3, 2)
+  #indices
+  cmult <- cumsum(mult)
+  esvalstart <- c(0, cmult[-length(cmult)]) + 1
+  idxs <- lapply(1:length(mult), function(i){
+    esvalstart[i] : cmult[i]
+  })
+  
+  # set up distribution covariance
+  set.seed(316)
+  nvar <- (p + 1) * p/2
+  C0_U <- mclust::randomOrthogonalMatrix(nvar, nvar)
+  C0 <- C0_U %*% diag(1:nrow(C0_U)) %*% t(C0_U) #use this to simulate
+  set.seed(348)
+  mn_U <- mclust::randomOrthogonalMatrix(p, p)
+  mn <- mn_U %*% diag(c(3, 3, 3, 2, 2)) %*% t(mn_U)
+  evecs <- mn_U
+  
+
+  
+  simqYbarq <- function(n, mn, sigma, evecs = NULL){
+    Ysample <- rsymm(n, mn, sigma)
+    Ybar <- mmean(Ysample)
+    if (is.null(evecs)){evals <- eigen(Ybar)$values} 
+    else {evals <- diag(t(evecs) %*% Ybar %*% evecs)} #use the true eigenvectors
+    return(evals)
+  }
+  
+  emcovar <- replicate(1000,
+    simqYbarq(n, mn, sigma = C0, evecs = evecs)) |>
+    t() |>
+    cov()
+  #theoretical for 1,1
+  expect_equal(emcovar[1:3, 1:3], covarbetweenevals(1, 1, idxs, evecs, C0/n))
+})
+
 test_that("xicovar() gives the same covariance as sample covariance", {
   p = 5
   n = 10

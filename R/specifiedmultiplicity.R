@@ -47,12 +47,18 @@ stat_specifiedmultiplicity <- function(ms, mult){
   return(drop(t(xi) %*% solve(covar) %*% xi))
 }
 
+#this function turns the qYbarq into vectors perpendicular to 1,1,1,1,1,1...
+evalsvs111 <- function(evals){
+    if (length(evals) < 2){return(NULL)}
+    wmat <- helmertsub(length(evals))
+    return(wmat %*% evals)
+}
+
 # the random variables xi in sets per multiplicity because the weight matrix is different in each one
 xiget <- function(evals, mult, idxs){
   xi <- lapply(1:length(mult), function(j){
-    if (mult[j] < 1.5){return(NULL)}
-    wmat <- helmertsub(mult[j])
-    return(wmat %*% evals[ idxs[[j]] ])
+    evals <- evals[ idxs[[j]] ]
+    return(evalsvs111(evals))
   })
   xi <- unlist(xi)
   # keep track of order of xi
