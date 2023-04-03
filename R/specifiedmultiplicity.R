@@ -39,6 +39,16 @@ stat_specifiedmultiplicity <- function(ms, mult){
   #}, FUN.VALUE = 1.1)
 
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
+  xi <- xiget(evals, mult, idxs)
+
+  C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
+  covar <- xicovar(mult, idxs, es$vectors, C0/length(ms))
+
+  return(drop(t(xi) %*% solve(covar) %*% xi))
+}
+
+# the random variables xi in sets per multiplicity because the weight matrix is different in each one
+xiget <- function(evals, mult, idxs){
   xi <- lapply(1:length(mult), function(j){
     if (mult[j] < 1.5){return(NULL)}
     wmat <- helmertsub(mult[j])
@@ -51,11 +61,7 @@ stat_specifiedmultiplicity <- function(ms, mult){
   #  cbind("eval" = j, wmatrow = 1:(mult[j]-1))
   #})
   #xiorder <- purrr::reduce(xiorder, `rbind`)
-
-  C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
-  covar <- xicovar(mult, idxs, es$vectors, C0/length(ms))
-
-  return(drop(t(xi) %*% solve(covar) %*% xi))
+  return(xi)
 }
 
 # compute/estimate covariance of xi, Cav is the covariance of av = C0/n
