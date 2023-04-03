@@ -51,7 +51,7 @@ test_that("stat_specifiedevals() doesn't reject for simulation of single sample 
   expect_lt(res$pval, 0.2)
 })
 
-test_that("xiget() behaves", {
+test_that("xiget() behaves properly", {
   p = 5
   n = 10
   mult <- c(3, 2)
@@ -99,12 +99,30 @@ test_that("covarbetweenevals() gets close to a sample covariance", {
     return(evals)
   }
   
-  emcovar <- replicate(1000,
+  emcovar <- replicate(10000,
     simqYbarq(n, mn, sigma = C0, evecs = evecs)) |>
     t() |>
     cov()
-  #theoretical for 1,1
-  expect_equal(emcovar[1:3, 1:3], covarbetweenevals(1, 1, idxs, evecs, C0/n))
+  
+  #theoretical for 1,1 (diagonals are ok)
+  expect_equal(emcovar[1:3, 1:3], covarbetweenevals(1, 1, idxs, evecs, C0/n), tolerance = 0.1)
+  expect_equal(emcovar[4:5, 4:5], covarbetweenevals(2, 2, idxs, evecs, C0/n), tolerance = 0.1)
+  
+  #individually
+  Dp <- dup(nrow(evecs))
+  qjuqkv <- evecs[, 1] %*% t(evecs[, 2])
+  expect_equal(emcovar[1, 2], t(vec(qjuqkv)) %*% Dp %*% (C0/n) %*% t(Dp) %*% vec(t(qjuqkv)) |> drop(), tolerance = 0.1)
+  
+  #individually
+  qjuqju <- evecs[, 3] %*% t(evecs[, 3])
+  qkvqkv <- evecs[, 5] %*% t(evecs[, 5])
+  expect_equal(emcovar[3, 5], t(vec(qjuqju)) %*% Dp %*% (C0/n) %*% t(Dp) %*% vec(qkvqkv) |> drop(), tolerance = 0.1)
+  
+  #individually
+  qjuqju <- evecs[, 1] %*% t(evecs[, 1])
+  qkvqkv <- evecs[, 2] %*% t(evecs[, 2])
+  expect_equal(emcovar[1, 2], t(vec(qjuqju)) %*% Dp %*% (C0/n) %*% t(Dp) %*% vec(qkvqkv) |> drop(), tolerance = 0.1)
+  
 })
 
 test_that("xicovar() gives the same covariance as sample covariance", {
@@ -144,6 +162,6 @@ test_that("xicovar() gives the same covariance as sample covariance", {
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen(mn)$vectors)) |>
     t() |>
     cov()
-  expect_equal(emcov, thecov)
+  expect_equal(emcov, thecov, tolerance = 0.1)
   abs(emcov - thecov) / abs(thecov)
 })

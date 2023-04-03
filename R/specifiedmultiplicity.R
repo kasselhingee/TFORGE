@@ -99,8 +99,10 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
   if ((length(idxj) == 1 ) || (length(idxk) == 1)){return(NULL)}
   vecpairs <- expand.grid(idxj, idxk)
   At <- apply(vecpairs, MARGIN = 1, function(uv){
-    qjuqkv <- evecs[, uv[1]] %*% t(evecs[, uv[2]])
-    t(vec(qjuqkv)) %*% Dp %*% Cav %*% t(Dp) %*% vec(t(qjuqkv))
+    # qjuqkv <- evecs[, ] %*% t(evecs[, uv[2]])
+    qjuqju <- evecs[, uv[1]] %*% t(evecs[, uv[1]])
+    qkvqkv <- evecs[, uv[2]] %*% t(evecs[, uv[2]])
+    t(vec(qjuqju)) %*% Dp %*% Cav %*% t(Dp) %*% vec(t(qkvqkv))
   }, simplify = TRUE)
   dim(At) <- c(length(idxj), length(idxk)) # converts to matrix taking advantage that the first index is filled fastest
   return(t(At)) # to be consitent with my notes, return such that rows correpond to idxk
