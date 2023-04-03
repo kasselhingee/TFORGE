@@ -51,9 +51,9 @@ test_that("stat_specifiedevals() doesn't reject for simulation of single sample 
   expect_lt(res$pval, 0.2)
 })
 
-test_that("xicovar() gives the same covariance as sample covariance", {
+test_that("xiget() behaves", {
   p = 5
-  n = 50
+  n = 10
   mult <- c(3, 2)
   #indices
   cmult <- cumsum(mult)
@@ -62,27 +62,47 @@ test_that("xicovar() gives the same covariance as sample covariance", {
     esvalstart[i] : cmult[i]
   })
   
-  simxi <- function(n, mn, sigma, mult, idxs){
+  expect_equal(xiget(c(3.0, 3.0, 3, 2, 2), mult, idxs), rep(0, 3))
+  expect_equal(xiget(c(3.0, 3.0, 3.1, 2, 2), mult, idxs)==0, c(TRUE, FALSE, TRUE))
+  expect_equal(xiget(c(3.0, 3.0, 3.1, 2, 2.1), mult, idxs)==0, c(TRUE, FALSE, FALSE))
+  expect_equal(xiget(c(3.0, 2.9, 3.1, 2, 2.1), mult, idxs)==0, c(FALSE, FALSE, FALSE))
+})
+
+test_that("xicovar() gives the same covariance as sample covariance", {
+  p = 5
+  n = 10
+  mult <- c(3, 2)
+  #indices
+  cmult <- cumsum(mult)
+  esvalstart <- c(0, cmult[-length(cmult)]) + 1
+  idxs <- lapply(1:length(mult), function(i){
+    esvalstart[i] : cmult[i]
+  })
+  
+  simxi <- function(n, mn, sigma, mult, idxs, evecs = NULL){
     Ysample <- rsymm(n, mn, sigma)
     Ybar <- mmean(Ysample)
-    xi <- xiget(eigen(Ybar)$values, mult, idxs)
+    if (is.null(evecs)){evals <- eigen(Ybar)$values} 
+    else {evals <- diag(t(evecs) %*% Ybar %*% evecs)} #use the true eigenvectors
+    xi <- xiget(evals, mult, idxs)
     return(xi)
   }
   
   # set up distribution covariance
-  set.seed(31654)
+  set.seed(316)
   nvar <- (p + 1) * p/2
   C0_U <- mclust::randomOrthogonalMatrix(nvar, nvar)
-  C0 <- C0_U %*% (5 * diag(nvar)) %*% t(C0_U) #use this to simulate
+  C0 <- C0_U %*% diag(1:nrow(C0_U)) %*% t(C0_U) #use this to simulate
   set.seed(348)
   mn_U <- mclust::randomOrthogonalMatrix(p, p)
-  mn <- mn_U %*% diag(c(3.1, 3.0, 2.9, 2.1, 1.9)) %*% t(mn_U)
+  mn <- mn_U %*% diag(c(3, 3, 3, 2, 2)) %*% t(mn_U)
   
   # theoretical covariance
   thecov <- xicovar(mult, idxs, eigen(mn)$vectors, C0/n)
-  
-  emcov <- replicate(1000,
-   simxi(n, mn = mn, sigma = C0, mult, idxs)) |>
+ 
+  set.seed(35468) 
+  emcov <- replicate(100,
+   simxi(n, mn = mn, sigma = C0, mult, idxs, eigen(mn)$vectors)) |>
     t() |>
     cov()
   expect_equal(emcov, thecov)
