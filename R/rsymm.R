@@ -1,11 +1,13 @@
 #' @title Simulate Symmetric Matrices
 #' @description
-#' Simulate symmetric matrices with elements iid from a Normal distribution centred on zero.
+#' Simulate symmetric matrices with elements from a multivariate Normal distribution.
 #' @param n Number of matrices
-#' @param p Number of rows and columns of the matrices
-#' @param s The standard deviation(s) of the elements.
+#' @param mean Centre of disribution. Must be symmetric.
+#' @param sigma The standard deviation(s) of the elements.
 #' @return A list of matrices.
 #' @export
-rsymm <- function(n, p, sd = 1){
-  replicate(n, invvech(rnorm(p*(p+1)/2, sd = sd)), simplify = FALSE)
+rsymm <- function(n, mean, sigma = diag(length(vech(mean)))){
+  stopifnot(isSymmetric(mean))
+  tmp <- mvtnorm::rmvnorm(n, mean = vech(mean), sigma = sigma)
+  return(apply(tmp, MARGIN = 1, invvech, simplify = FALSE))
 }
