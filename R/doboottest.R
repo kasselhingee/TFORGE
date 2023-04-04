@@ -6,7 +6,9 @@
 #' @param ... Passed to `stat`
 singlesampletest <- function(ms, stdms, stat, B, ...){
   t0 <- stat(ms, ...)
-  nullt <- replicate(B, stat(sample(stdms, replace = TRUE), ...))
+  exargs <- list(...)
+  nullt <- replicate(B, do.call(stat, c(list(ms = sample(stdms, replace = TRUE)),
+                                        exargs)))
   pval <- mean(nullt > t0)
   return(list(
     pval = pval,
