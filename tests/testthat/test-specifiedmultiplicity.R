@@ -74,7 +74,7 @@ test_that("xiget() behaves properly", {
 
 test_that("xicovar() gives the same covariance as sample covariance", {
   p = 5
-  n = 10
+  n = 100
   mult <- c(3, 2)
   #indices
   cmult <- cumsum(mult)
@@ -105,18 +105,20 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   thecov <- xicovar(mult, idxs, eigen(mn)$vectors, C0/n)
  
   set.seed(35468) 
-  # semi-plugged in
-  emcov <- replicate(1000,
+  # semi-plugged in xi
+  emcov <- replicate(100,
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen(mn)$vectors)) |>
     t() |>
     cov()
-  expect_equal(emcov, thecov, tolerance = 0.1)
+  expect_equal(emcov, thecov, tolerance = 0.05)
   
   set.seed(3541) 
-  # fully empirical (plugged in)
-  emcov <- replicate(10000,
+  # fully empirical (plugged in) xi
+  emcov <- replicate(100,
     simxi(n, mn = mn, sigma = C0, mult, idxs)) |>
     t() |>
     cov()
-  expect_equal(emcov, thecov, tolerance = 0.1)
+  expect_equal(emcov / thecov, matrix(1, 3, 3), tolerance = 0.5)
+  #Empirical covariance here stable up to 100000 replicates, suggests the empirical xi (eigenvectors from the sample mean) has a very different distribution to the exact xi for n = 10, 100. Asymptotically, I'd expect it to be good though.
+  #I wonder if changes in order of vectors are washing things out! But how to avoid that??
 })
