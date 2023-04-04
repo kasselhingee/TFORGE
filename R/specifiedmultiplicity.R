@@ -61,12 +61,6 @@ xiget <- function(evals, mult, idxs){
     return(evalsvs111(evals))
   })
   xi <- unlist(xi)
-  # keep track of order of xi
-  #xiorder <- lapply(1:length(mult), function(j){
-  #  if (mult[j] < 1.5){return(NULL)}
-  #  cbind("eval" = j, wmatrow = 1:(mult[j]-1))
-  #})
-  #xiorder <- purrr::reduce(xiorder, `rbind`)
   return(xi)
 }
 
@@ -77,7 +71,7 @@ xicovar <- function(mult, idxs, evecs, Cav){
   blocks <- apply(valpairs, MARGIN = 1, function(jk){
     if (mult[jk[1]] < 1.5){return(NULL)}
     if (mult[jk[2]] < 1.5){return(NULL)}
-    helmertsub(mult[jk[1]]) %*% t(covarbetweenevals(jk[1], jk[2], idxs, evecs, Cav)) %*% t(helmertsub(mult[jk[2]]))
+    helmertsub(mult[jk[1]]) %*% covarbetweenevals(jk[1], jk[2], idxs, evecs, Cav) %*% t(helmertsub(mult[jk[2]]))
   }, simplify = FALSE)
 
   #bind the blocks together appropriately
@@ -105,7 +99,7 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
     t(vec(qjuqju)) %*% Dp %*% Cav %*% t(Dp) %*% vec(t(qkvqkv))
   }, simplify = TRUE)
   dim(At) <- c(length(idxj), length(idxk)) # converts to matrix taking advantage that the first index is filled fastest
-  return(t(At)) # to be consitent with my notes, return such that rows correpond to idxk
+  return(At) # this is actually the transpose of whats in my notes (where rows correspond to idxk)
 }
 
 #' @describeIn specifiedmultiplicity Standardise a sample to satisfy the (null) hypothesis of the given eigenvalue multiplicity
