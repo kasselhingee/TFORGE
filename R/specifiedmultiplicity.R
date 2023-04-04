@@ -103,7 +103,7 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
   return(At) # this is actually the transpose of whats in my notes (where rows correspond to idxk)
 }
 
-#' @describeIn specifiedmultiplicity Standardise a sample to satisfy the (null) hypothesis of the given eigenvalue multiplicity
+#' @describeIn specifiedmultiplicity Standardise a sample to satisfy the (null) hypothesis of the given eigenvalue multiplicity in `mult`.
 #' @export
 standardise_specifiedmultiplicity <- function(ms, mult){
   av <- mmean(ms)
