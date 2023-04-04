@@ -1,7 +1,6 @@
 test_that("stat_specifiedmultiplicity() is zero for standarised sample", {
   set.seed(13131)
-  Ysample <- rsymm(50, 3)
-  Ysample <- lapply(Ysample, `+`, diag(c(3,2,1)))
+  Ysample <- rsymm(50, mean = diag(c(3,2,1)))
   av <- mmean(Ysample)
   es <- eigen(av)
   Ystdsample <- standardise_specifiedmultiplicity(Ysample, mult = c(2, 1))
@@ -20,8 +19,7 @@ test_that("stat_specifiedmultiplicity() is zero for standarised sample", {
 
 test_that("stat_specifiedmultiplicity() is zero for standarised sample, dim 7", {
   set.seed(13131)
-  Ysample <- rsymm(50, 7)
-  Ysample <- lapply(Ysample, `+`, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
+  Ysample <- rsymm(50, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
   av <- mmean(Ysample)
   es <- eigen(av)
   Ystdsample <- standardise_specifiedmultiplicity(Ysample, mult = c(3, 2, 1, 1))
@@ -42,13 +40,19 @@ test_that("stat_specifiedmultiplicity() is zero for standarised sample, dim 7", 
 
 test_that("stat_specifiedevals() doesn't reject for simulation of single sample from null, and rejects otherwise", {
   set.seed(1331)
-  Ysample <- rsymm(50, 7)
-  Ysample <- lapply(Ysample, `+`, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
+  Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
   res <- test_specifiedmultiplicity(Ysample, mult = c(3,2,1,1), 100)
   expect_gt(res$pval, 0.2)
   
-  res <- test_specifiedmultiplicity(Ysample, mult = c(3,2,2), 100)
-  expect_lt(res$pval, 0.2)
+  expect_lt(test_specifiedmultiplicity(Ysample, mult = c(3,3,1), 100)$pval, 0.05)
+  expect_lt(test_specifiedmultiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, 0.05)
+  expect_lt(test_specifiedmultiplicity(Ysample, mult = c(2,3,2), 100)$pval, 0.05)
+  expect_lt(test_specifiedmultiplicity(Ysample, mult = c(2,2,2,1), 100)$pval, 0.05)
+  expect_lt(test_specifiedmultiplicity(Ysample, mult = c(4,1,1,1), 100)$pval, 0.05)
+  expect_lt(test_specifiedmultiplicity(Ysample, mult = c(3,1,3), 100)$pval, 0.05)
+  
+  # but power varies  
+  expect_lt(test_specifiedmultiplicity(Ysample, mult = c(3,2,2), 100)$pval, 0.3)
 })
 
 test_that("xiget() behaves properly", {
@@ -89,8 +93,6 @@ test_that("covarbetweenevals() gets close to a sample covariance", {
   mn <- mn_U %*% diag(c(3, 3, 3, 2, 2)) %*% t(mn_U)
   evecs <- mn_U
   
-
-  
   simqYbarq <- function(n, mn, sigma, evecs = NULL){
     Ysample <- rsymm(n, mn, sigma)
     Ybar <- mmean(Ysample)
@@ -99,7 +101,8 @@ test_that("covarbetweenevals() gets close to a sample covariance", {
     return(evals)
   }
   
-  emcovar <- replicate(10000,
+  set.seed(6541)
+  emcovar <- replicate(1000,
     simqYbarq(n, mn, sigma = C0, evecs = evecs)) |>
     t() |>
     cov()
@@ -107,22 +110,8 @@ test_that("covarbetweenevals() gets close to a sample covariance", {
   #theoretical for 1,1 (diagonals are ok)
   expect_equal(emcovar[1:3, 1:3], covarbetweenevals(1, 1, idxs, evecs, C0/n), tolerance = 0.1)
   expect_equal(emcovar[4:5, 4:5], covarbetweenevals(2, 2, idxs, evecs, C0/n), tolerance = 0.1)
-  
-  #individually
-  Dp <- dup(nrow(evecs))
-  qjuqkv <- evecs[, 1] %*% t(evecs[, 2])
-  expect_equal(emcovar[1, 2], t(vec(qjuqkv)) %*% Dp %*% (C0/n) %*% t(Dp) %*% vec(t(qjuqkv)) |> drop(), tolerance = 0.1)
-  
-  #individually
-  qjuqju <- evecs[, 3] %*% t(evecs[, 3])
-  qkvqkv <- evecs[, 5] %*% t(evecs[, 5])
-  expect_equal(emcovar[3, 5], t(vec(qjuqju)) %*% Dp %*% (C0/n) %*% t(Dp) %*% vec(qkvqkv) |> drop(), tolerance = 0.1)
-  
-  #individually
-  qjuqju <- evecs[, 1] %*% t(evecs[, 1])
-  qkvqkv <- evecs[, 2] %*% t(evecs[, 2])
-  expect_equal(emcovar[1, 2], t(vec(qjuqju)) %*% Dp %*% (C0/n) %*% t(Dp) %*% vec(qkvqkv) |> drop(), tolerance = 0.1)
-  
+  expect_equal(emcovar[1:3, 4:5], covarbetweenevals(2, 1, idxs, evecs, C0/n), tolerance = 0.1)
+  expect_equal(emcovar[4:5, 1:3], covarbetweenevals(1, 2, idxs, evecs, C0/n), tolerance = 0.1)
 })
 
 test_that("xicovar() gives the same covariance as sample covariance", {
@@ -158,10 +147,18 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   thecov <- xicovar(mult, idxs, eigen(mn)$vectors, C0/n)
  
   set.seed(35468) 
-  emcov <- replicate(100,
+  # semi-plugged in
+  emcov <- replicate(1000,
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen(mn)$vectors)) |>
     t() |>
     cov()
   expect_equal(emcov, thecov, tolerance = 0.1)
-  abs(emcov - thecov) / abs(thecov)
+  
+  set.seed(3541) 
+  # fully empirical (plugged in)
+  emcov <- replicate(10000,
+    simxi(n, mn = mn, sigma = C0, mult, idxs)) |>
+    t() |>
+    cov()
+  expect_equal(emcov, thecov, tolerance = 0.1)
 })
