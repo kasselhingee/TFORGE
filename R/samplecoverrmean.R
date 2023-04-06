@@ -20,7 +20,8 @@ mcovar <- function(merr){
     x <- vech(m)
     x %*% t(x)
   })
-  mmean(mcovarls)
+  n <- length(merr)
+  mmean(mcovarls) * n / (n-1)
 }
 
 msum <- function(ms){
