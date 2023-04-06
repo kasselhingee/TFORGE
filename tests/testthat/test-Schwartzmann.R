@@ -17,6 +17,6 @@ test_that("makeblockdiagonal works", {
   expect_equal(blockdiag(A, B)[4,6], 2)
 })
 
-test_that("Distribution is exact for 'OI' covariances", {
-  
+test_that("S_anv() gives exact distribution for 'OI' covariances", {
+  stop()
 })

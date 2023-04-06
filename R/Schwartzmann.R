@@ -57,14 +57,17 @@ Omega_eval <- function(n1, n2, U1, U2){
 
 #compute estimates Schwartzmann's a and v for the test statistic distribution
 #ms1 and ms2 are the two samples
-S_anv <- function(ms1, ms2){
-  cov1 <- S_mcovar(merr(ms1))
-  cov2 <- S_mcovar(merr(ms2))
-  Sigma <- blockdiag(cov1, cov2)
+#M1 and M2 are the means
+#C1 and C2 are the covariances (Schwartzmann style)
+#n1 and n2 are the lengths
+S_anv <- function(n1, n2, M1, M2, C1, C2){
+  # cov1 <- S_mcovar(merr(ms1))
+  # cov2 <- S_mcovar(merr(ms2))
+  Sigma <- blockdiag(C1, C2)
   
-  es1 <- eigen(mmean(ms1))
-  es2 <- eigen(mmean(ms2))
-  Omega <- Omega_eval(length(ms1), length(ms2), es1$vectors, es2$vectors)
+  es1 <- eigen(M1)
+  es2 <- eigen(M2)
+  Omega <- Omega_eval(n1, n2, es1$vectors, es2$vectors)
   
   tr_soso <- sum(diag(Sigma %*% Omega %*% Sigma %*% Omega))
   tr_so <- sum(diag(Sigma %*% Omega))
@@ -79,9 +82,23 @@ S_anv <- function(ms1, ms2){
 stat_schwartzmann_eval <- function(ms1, ms2){
   n1 <- length(ms1)
   n2 <- length(ms2)
-  L1 <- eigen(mmean(ms1))$values
+  M1 <- mmean(ms1)
+  M2 <- mmean(ms2)
+  L1 <- eigen(M1)$values
   L2 <- eigen(mmean(ms2))$values
-  sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
+  Tstat <- sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
+
+  #now for the distribution
+  anv <- S_anv(n1, n2, M1, M2, 
+        C1 = S_mcovar(merr(ms1, mean = M1)),
+        C2 = S_mcovar(merr(ms2, mean = M2)))
+  pval <- pchisq(Tstat / anv$a, df = anv$v)
+  return(list(
+    pval = pval,
+    t = tstat,
+    a = anv$a,
+    v = anv$v
+  ))
 }
 
 
