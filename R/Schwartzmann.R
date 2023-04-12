@@ -95,7 +95,7 @@ stat_schwartzmann_eval <- function(ms1, ms2){
   pval <- pchisq(Tstat / anv$a, df = anv$v)
   return(list(
     pval = pval,
-    t = tstat,
+    t = Tstat,
     a = anv$a,
     v = anv$v
   ))
