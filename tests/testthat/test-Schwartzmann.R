@@ -18,5 +18,29 @@ test_that("makeblockdiagonal works", {
 })
 
 test_that("S_anv() gives exact distribution for 'OI' covariances", {
-  stop()
+  p <- 3
+  C2 <- C1 <- diag(p*(p+1)/2)
+  
+  # set up distribution means
+  set.seed(348)
+  mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
+  set.seed(543)
+  mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
+  
+  # simulate test statistic
+  simulateTstat <- function(n1, n2){
+    ms1 <- rsymm(n1, mn1, C1)
+    ms2 <- rsymm(n2, mn2, C2)
+    res <- stat_schwartzmann_eval(ms1, ms2)
+    return(res$t)
+  }
+  simts <- replicate(100, simulateTstat(50, 100))
+  
+  # approximate distribution parameters
+  anv <- S_anv(n1, n2, mn1, mn2, 
+               C1 = C1, #missing something with the sqrt2
+               C2 = C2) #missing something with the sqrt2
+  qqline(simts / anv$a, qchisq, v = anv$v)
 })
