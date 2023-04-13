@@ -1,6 +1,9 @@
 test_that("vecd() works", {
   expect_equal(vecd(matrix(1:9, byrow = FALSE, nrow = 3)),
                c(1, 5, 9, sqrt(2) * c(2,3,6)))
+  
+  m <- rsymm(1, diag(3))[[1]]
+  expect_equal(invvecd(vecd(m)), m)
 })
 
 test_that("S_mcovar gets close to true", {
@@ -18,32 +21,21 @@ test_that("makeblockdiagonal works", {
 })
 
 test_that("Results are consistent with the simulation check at the start of Schwartzmann Section 3.1.", {
-  p <- 3
-  C2 <- C1 <- diag(p*(p+1)/2)
-  
   # set up distribution means
   M0 <- diag(c(1,2,4))
  
-  Sigma <- rWishart(1, 6, diag(6)) 
-  # simulate test statistic
-  simulateTstat <- function(n1, n2){
-    ms1 <- rsymm(n1, mn1, C1)
-    ms2 <- rsymm(n2, mn2, C2)
+  simulatestat <- function(n1, n2, M0){
+    # simulate Sigma
+    Sigma <- drop(rWishart(1, 6, diag(6)))
+    #simulate samples
+    ms1 <- rsymm_Schwartzmann(n1, M0, Sigma)
+    ms2 <- rsymm_Schwartzmann(n2, M0, Sigma)
     res <- stat_schwartzmann_eval(ms1, ms2)
-    return(res$t)
+    return(unlist(res))
   }
-  simts <- replicate(100, simulateTstat(50, 100))
-
-  #map from vech back to a matrix and then forward with vecd
-  #vecd(invvech(1:6))
-  #vecd(invvech(diag(C1)))
   
-  # approximate distribution parameters
-  anv <- S_anv(50, 100, mn1, mn2, 
-               C1 = diag(vecd(invvech(diag(C1)))), 
-               C2 = diag(vecd(invvech(diag(C1))))) #the extra work accounts for strange vecd of Schwartzmann
-  qqplot(simts/anv$a,
-    qchisq(ppoints(100), df = anv$v))
+  sims <- replicate(1000, simulatestat(50, 50, M0))
+  plot(ecdf(sims["pval", ]))
 })
 
 test_that("S_anv() gives exact distribution for 'OI' covariances", {

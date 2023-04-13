@@ -3,6 +3,14 @@
 vecd <- function(m){
   c(diag(m), sqrt(2) * m[lower.tri(m, diag = FALSE)])
 }
+invvecd <- function(x){
+  n <- (-1 + sqrt(8*length(x) + 1))/2
+  m <- matrix(NA, nrow = n, ncol = n)
+  diag(m) <- x[1:n]
+  m[lower.tri(m)] <- x[(n+1):length(x)] / sqrt(2)
+  m[upper.tri(m)] <- t(m)[upper.tri(m)]
+  return(m)
+}
 
 S_mcovar <- function(merr){
   if(is.array(merr)){if (length(dim(merr))==3){
@@ -101,4 +109,10 @@ stat_schwartzmann_eval <- function(ms1, ms2){
   ))
 }
 
+# simulate matrices using rmvnorm where conversion to and from vector is via vecd
+rsymm_Schwartzmann <- function(n, mean, sigma = diag(length(vecd(mean)))){
+  stopifnot(isSymmetric(mean))
+  tmp <- mvtnorm::rmvnorm(n, mean = vecd(mean), sigma = sigma)
+  return(apply(tmp, MARGIN = 1, invvecd, simplify = FALSE))
+}
 
