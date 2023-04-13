@@ -71,7 +71,7 @@ Omega_eval <- function(n1, n2, U1, U2){
 S_anv <- function(n1, n2, M1, M2, C1, C2){
   # cov1 <- S_mcovar(merr(ms1))
   # cov2 <- S_mcovar(merr(ms2))
-  Sigma <- blockdiag(C1, C2)
+  Sigma <- blockdiag(C1/n1, C2/n2)
   
   es1 <- eigen(M1)
   es2 <- eigen(M2)

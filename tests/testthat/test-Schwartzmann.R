@@ -34,6 +34,7 @@ test_that("Results are consistent with the simulation check at the start of Schw
     return(unlist(res))
   }
   
+  set.seed(3546)
   sims <- replicate(1000, simulatestat(50, 50, M0))
   plot(ecdf(sims["pval", ]))
 })
