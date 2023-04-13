@@ -88,7 +88,7 @@ test_that("S_anv() gives good distribution of Tstat for diagonal covariances", {
   abline(0, 1, lty = "dotted")
 })
 
-test_that("Schwartzmann's LRT Statistic (Tstatstar) is well approximated by S_anv() with a chisq", {
+test_that("Schwartzmann's Statistic (Tstatstar) is well approximated by S_anv() with a chisq", {
   skip("Schwartzmann's distribution approximation using two moments doesn't appear to converge with increasing sample sizes.")
   p <- 3
   C2 <- C1 <- diag(p*(p+1)/2)

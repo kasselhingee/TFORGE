@@ -1,4 +1,3 @@
-
 # Schwartzmann vecd (which is not quite vech and has a different ordering)
 vecd <- function(m){
   c(diag(m), sqrt(2) * m[lower.tri(m, diag = FALSE)])
@@ -12,6 +11,7 @@ invvecd <- function(x){
   return(m)
 }
 
+# Special sample covariance that uses Schwartzmann's vecd
 S_mcovar <- function(merr){
   if(is.array(merr)){if (length(dim(merr))==3){
     merr <- lapply(1:dim(merr)[3], function(i) merr[,,i])
@@ -50,11 +50,11 @@ wii <- function(i, U1, U2){
   )
 }
 
-#Schwartzmann's eigenvalue Omega(M) (eq 16)
-#' @param n1 Sample size of 1
-#' @param n2 Sample size of 2
-#' @param U1 Eigenvectors for mean of 1
-#' @param U2 Eigenvectors for mean of 2
+# Schwartzmann's eigenvalue Omega(M) (eq 16)
+# @param n1 Sample size of 1
+# @param n2 Sample size of 2
+# @param U1 Eigenvectors for mean of 1
+# @param U2 Eigenvectors for mean of 2
 Omega_eval <- function(n1, n2, U1, U2){
   vals <- lapply(1:nrow(U1), function(i){
     w <- wii(i, U1, U2)
@@ -87,7 +87,13 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
   ))
 }
 
-#' @description Schwartzmann eigenvalue test with approximate distribution for arbitrary distributions
+#' @title Schwartzmann et. al. Two Sample Eigenvalue Test 
+#' @description Computes the citeSchwartzmann test statistic for equality between eigenvalues (eq 11 Schwartzmann 2010) and corresponding approximate p value.
+#' @details The test statistic computed is (eq 11 Schwartzmann 2010).
+#' The p value computed uses the approximate distribution reached at the end of section 2.4 Schwartzmann: the distribution is chi-squared with first two moments approximating the first two moments of a statistic (eq 16 Schwartzmann), that approximates (eq 11 Schwartzmann 2010) for large samples.
+#' @param ms1 Sample of matrices.
+#' @param ms2 Sample of matrices.
+#' @export
 stat_schwartzmann_eval <- function(ms1, ms2){
   n1 <- length(ms1)
   n2 <- length(ms2)
@@ -110,8 +116,11 @@ stat_schwartzmann_eval <- function(ms1, ms2){
   ))
 }
 
-# Schwartzmann's theoretical LRT Tstar statistic for eigenvalues (eq 16)
-# M1 and M2 are population expectation for each population
+# @title Schwartzmann's theoretical Tstar statistic for eigenvalues (eq 16)
+# @details The test statistic computed is (eq 16 Schwartzmann 2010), using given population means M1 and M2.
+# @param M1 population expectation for first population
+# @param M2 population expectation for second population
+#' @export
 statstar_schwartzmann_eval <- function(ms1, ms2, M1, M2){
   Z1 <- mmean(ms1) - M1
   Z2 <- mmean(ms2) - M2
