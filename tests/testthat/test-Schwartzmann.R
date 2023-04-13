@@ -49,6 +49,37 @@ test_that("Results are consistent with the simulation check at the start of Schw
   # expect_lt(max(abs(ecdffun(ppoints(100)) - ppoints(100))), 0.05)
 })
 
+test_that("Results are consistent with the simulation check at the start of Schwartzmann Section 3.1 with fixed Sigma", {
+  # set up distribution means
+  M0 <- diag(c(1,2,4))
+
+  # simulate Sigma  
+  set.seed(3145)
+  Sigma <- drop(rWishart(1, 6, diag(6)))
+  
+  simulatestat <- function(n1, n2, M0){
+    #simulate samples
+    ms1 <- rsymm_Schwartzmann(n1, M0, Sigma)
+    ms2 <- rsymm_Schwartzmann(n2, M0, Sigma)
+    res <- stat_schwartzmann_eval(ms1, ms2)
+    return(unlist(res))
+  }
+  
+  # fast
+  set.seed(1354)
+  sims <- replicate(100, simulatestat(50, 50, M0))
+  ecdffun <- ecdf(sims["pval", ])
+  #plot(ecdffun); abline(0, 1, lty = "dotted") #pvalue distribution should be approximately uniform for the null
+  expect_lt(max(abs(ecdffun(ppoints(100)) - ppoints(100))), 0.1)
+  
+  # much slower
+  # set.seed(3546)
+  # sims <- replicate(10000, simulatestat(50, 50, M0))
+  # ecdffun <- ecdf(sims["pval", ])
+  # plot(ecdffun); abline(0, 1, lty = "dotted")
+  # expect_lt(max(abs(ecdffun(ppoints(100)) - ppoints(100))), 0.05)
+})
+
 test_that("S_anv() gives good distribution of Tstat for diagonal covariances", {
   skip("Schwartzmann's distribution approximation using two moments and projection onto a manifold doesn't appear to converge with increasing sample sizes.")
   p <- 3
@@ -121,4 +152,27 @@ test_that("Schwartzmann's Statistic (Tstatstar) is well approximated by S_anv() 
          qchisq(ppoints(1000), df = anv$v))
   abline(0, 1, lty = "dotted")
   plot(ecdf(pchisq(sims/anv$a, df = anv$v))); abline(0, 1, lty = "dotted")
+})
+
+
+test_that("stat_schwartzmann_eval() doesn't reject for simulation of multi sample from null", {
+  set.seed(13)
+  Ysamples <- list(
+    rsymm(50, diag(c(3,2,1))),
+    rsymm(50, diag(c(3,2,1)))
+  )
+  
+  res <- stat_schwartzmann_eval(Ysamples[[1]], Ysamples[[2]])
+  expect_gt(res$pval, 0.2)
+})
+
+test_that("stat_schwartzmann_eval() reject for simulation of multi sample not from null", {
+  set.seed(13)
+  Ysamples <- list(
+    rsymm(50, diag(c(3,2,1))),
+    rsymm(50, diag(c(4,3,2)))
+  )
+  
+  res <- stat_schwartzmann_eval(Ysamples[[1]], Ysamples[[2]])
+  expect_lt(res$pval, 0.05)
 })
