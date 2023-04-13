@@ -34,12 +34,22 @@ test_that("Results are consistent with the simulation check at the start of Schw
     return(unlist(res))
   }
   
-  set.seed(3546)
-  sims <- replicate(1000, simulatestat(50, 50, M0))
-  plot(ecdf(sims["pval", ]))
+  # fast
+  set.seed(1354)
+  sims <- replicate(100, simulatestat(50, 50, M0))
+  ecdffun <- ecdf(sims["pval", ])
+  plot(ecdffun); abline(0, 1, lty = "dotted")
+  expect_lt(max(abs(ecdffun(ppoints(100)) - ppoints(100))), 0.1)
+  
+  # much slower
+  # set.seed(3546)
+  # sims <- replicate(10000, simulatestat(50, 50, M0))
+  # ecdffun <- ecdf(sims["pval", ])
+  # plot(ecdffun); abline(0, 1, lty = "dotted")
+  # expect_lt(max(abs(ecdffun(ppoints(100)) - ppoints(100))), 0.05)
 })
 
-test_that("S_anv() gives exact distribution for 'OI' covariances", {
+test_that("S_anv() gives exact distribution for diagonal covariances", {
   p <- 3
   C2 <- C1 <- diag(p*(p+1)/2)
   
