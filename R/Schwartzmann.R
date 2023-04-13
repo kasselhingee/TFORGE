@@ -87,6 +87,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
   ))
 }
 
+#' @description Schwartzmann eigenvalue test with approximate distribution for arbitrary distributions
 stat_schwartzmann_eval <- function(ms1, ms2){
   n1 <- length(ms1)
   n2 <- length(ms2)
@@ -107,6 +108,18 @@ stat_schwartzmann_eval <- function(ms1, ms2){
     a = anv$a,
     v = anv$v
   ))
+}
+
+# Schwartzmann's theoretical LRT Tstar statistic for eigenvalues (eq 16)
+# M1 and M2 are population expectation for each population
+statstar_schwartzmann_eval <- function(ms1, ms2, M1, M2){
+  Z1 <- mmean(ms1) - M1
+  Z2 <- mmean(ms2) - M2
+  U1 <- eigen(M1)$vectors
+  U2 <- eigen(M2)$vectors
+  Omega <- Omega_eval(length(ms1), length(ms2), U1, U2)
+  Tstatstar <- t(c(vecd(Z1), vecd(Z2))) %*% Omega %*% c(vecd(Z1), vecd(Z2))
+  return(drop(Tstatstar))
 }
 
 # simulate matrices using rmvnorm where conversion to and from vector is via vecd
