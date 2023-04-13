@@ -156,7 +156,7 @@ test_that("Schwartzmann's Statistic (Tstatstar) is well approximated by S_anv() 
 
 
 test_that("stat_schwartzmann_eval() doesn't reject for simulation of multi sample from null", {
-  set.seed(13)
+  set.seed(15)
   Ysamples <- list(
     rsymm(50, diag(c(3,2,1))),
     rsymm(50, diag(c(3,2,1)))

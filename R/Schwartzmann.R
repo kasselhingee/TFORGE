@@ -107,7 +107,7 @@ stat_schwartzmann_eval <- function(ms1, ms2){
   anv <- S_anv(n1, n2, M1, M2, 
         C1 = S_mcovar(merr(ms1, mean = M1)),
         C2 = S_mcovar(merr(ms2, mean = M2)))
-  pval <- pchisq(Tstat / anv$a, df = anv$v)
+  pval <- 1-pchisq(Tstat / anv$a, df = anv$v)
   return(list(
     pval = pval,
     t = Tstat,
