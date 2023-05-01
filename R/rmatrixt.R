@@ -20,20 +20,16 @@
 #' rmatrixt(2, n, M, Sigma, Omega)
 #' @export
 rmatrixt <- function(N, n, M, Sigma, Omega){
-  replicate(N, rmatrixt_single(n, M, Sigma, Omega), simplify = FALSE)  
-}
-
-rmatrixt_single <- function(n, M, Sigma, Omega){
   p <- nrow(Sigma)
   # first simulate Y s.t. S = Y%*%t(Y) = W(n + p - 1, inv(Sigma))
   # which means Y ~ N(0, inv(Sigma) %kronecker% I_{n + p - 1}) (theorem 3.2.2)
-  Y <- mvtnorm::rmvnorm(1, mean = rep(0, p*(n+p-1)), sigma = solve(Sigma) %x% diag(n + p -1)) |>
-    drop() |> invvec(nrow = p)
-  S <- Y %*% t(Y)
+  Ys <- mvtnorm::rmvnorm(N, mean = rep(0, p*(n+p-1)), sigma = solve(Sigma) %x% diag(n + p -1)) |>
+    apply(MARGIN = 1, invvec, nrow = p, simplify = FALSE)
+  Ss <- lapply(Ys, function(Y){Y %*% t(Y)})
   
   # now simulate X ~ N(0, I_p %x% Omega) (also from theorem 4.3.1)
-  X <- mvtnorm::rmvnorm(1, mean = rep(0, p*m), sigma = diag(p) %x% Omega) |>
-    drop() |> invvec(nrow = p)
-  matT <- t(solve(S)) %*% X + M
-  return(matT)
+  Xs <- mvtnorm::rmvnorm(N, mean = rep(0, p*m), sigma = diag(p) %x% Omega) |>
+    apply(MARGIN = 1, invvec, nrow = p, simplify = FALSE)
+  matTs <- mapply(function(S, X, M){t(solve(S)) %*% X + M}, S = Ss, X = Xs, MoreArgs = list(M = M), SIMPLIFY = FALSE)
+  return(matTs)
 }
