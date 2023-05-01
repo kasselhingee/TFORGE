@@ -21,6 +21,9 @@
 #' @export
 rmatrixt <- function(N, n, M, Sigma, Omega){
   p <- nrow(Sigma)
+  stopifnot(nrow(M) == nrow(Sigma))
+  stopifnot(ncol(M) == ncol(Omega))
+  stopifnot(n > p)
   # first simulate Y s.t. S = Y%*%t(Y) = W(n + p - 1, inv(Sigma))
   # which means Y ~ N(0, inv(Sigma) %kronecker% I_{n + p - 1}) (theorem 3.2.2)
   Ys <- mvtnorm::rmvnorm(N, mean = rep(0, p*(n+p-1)), sigma = solve(Sigma) %x% diag(n + p -1)) |>
