@@ -28,7 +28,7 @@ rmatrixt <- function(N, n, M, Sigma, Omega){
   Ss <- lapply(Ys, function(Y){Y %*% t(Y)})
   
   # now simulate X ~ N(0, I_p %x% Omega) (also from theorem 4.3.1)
-  Xs <- mvtnorm::rmvnorm(N, mean = rep(0, p*m), sigma = diag(p) %x% Omega) |>
+  Xs <- mvtnorm::rmvnorm(N, mean = rep(0, p*nrow(Omega)), sigma = diag(p) %x% Omega) |>
     apply(MARGIN = 1, invvec, nrow = p, simplify = FALSE)
   matTs <- mapply(function(S, X, M){t(solve(S)) %*% X + M}, S = Ss, X = Xs, MoreArgs = list(M = M), SIMPLIFY = FALSE)
   return(matTs)
