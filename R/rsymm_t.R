@@ -3,7 +3,7 @@
 #' Simulate symmetric matrices with elements from a multivariate t distribution.
 #' @param n Number of matrices
 #' @param delta Centre of distribution. Must be symmetric.
-#' @param sigma The covariance of the matrix elements arranged by [`vech()`]. `sigma` is passed to [`mvtnorm::rmvt()`] without any transformation.
+#' @param sigma The scale paramater matrix for the elements arranged by [`vech()`]. `sigma` is passed to [`mvtnorm::rmvt()`] without any transformation.
 #' @param df Degrees of freedom
 #' @return A list of matrices.
 #' @details The `delta` is vectorised (with [`vech()`]) and then [`mvtnorm::rmvt()`] is called with `type = "shifted"`
