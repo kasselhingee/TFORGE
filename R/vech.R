@@ -6,8 +6,16 @@
 #' Matrix is not checked for symmetry.
 #' `vech` uses [`lower.tri()`].
 #' `invvech` is the opposite of `vech`. It could be much more efficient with memory and operations.
-vech <- function(m){
-  m[lower.tri(m, diag = TRUE)]
+#' @param m A symmetric matrix
+#' @param name If TRUE vector elements are named `eij` where `i` is the row ang `j` is the column.
+vech <- function(m, name = FALSE){
+  out <- m[lower.tri(m, diag = TRUE)]
+  if (name){
+    indx <- which(lower.tri(m, diag = TRUE), arr.ind = TRUE)
+    nam <- paste0("e", indx[, "row"], indx[, "col"])
+    names(out) <- nam
+  }
+  return(out)
 }
 
 invvech <- function(x,...){
