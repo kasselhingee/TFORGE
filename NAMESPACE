@@ -2,6 +2,7 @@
 
 export(est_commonevals)
 export(rmatrixt)
+export(rmixtnorm)
 export(rsymm)
 export(rsymm_norm)
 export(rsymm_t)
