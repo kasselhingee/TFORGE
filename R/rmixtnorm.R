@@ -13,7 +13,7 @@ rmixtnorm <- function(n, mean, w = 0.2, cov = diag(length(vech(mean))), tdelta =
   } else { YA <- NULL }
   # from law of total expectation the mean of the Gaussian component must be (delta - w * tdelta)/(1-w)
   if (sum(!distA) > 0){
-    YB <- rsymm_norm(sum(!distA), mean = (delta - w * tdelta)/(1-w), sigma = cov)
+    YB <- rsymm_norm(sum(!distA), mean = (mean - w * tdelta)/(1-w), sigma = cov)
   } else {YB <- NULL}
   c(YA, YB)
 }
