@@ -24,6 +24,7 @@ stat_specifiedmultiplicity <- function(ms, mult){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
   }
   stopifnot(all(mult > 0))
+  stopifnot(any(mult != 1))
   es <- eigen(av)
 
   #indices
@@ -109,6 +110,7 @@ standardise_specifiedmultiplicity <- function(ms, mult){
   av <- mmean(ms)
   stopifnot(sum(mult) == ncol(av))
   stopifnot(all(mult > 0))
+  stopifnot(any(mult != 1))
   es <- eigen(av, symmetric = TRUE)
 
   #indices
