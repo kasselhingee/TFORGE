@@ -8,6 +8,7 @@
 #' `invvech` is the opposite of `vech`. It could be much more efficient with memory and operations.
 #' @param m A symmetric matrix
 #' @param name If TRUE vector elements are named `eij` where `i` is the row ang `j` is the column.
+#' @export
 vech <- function(m, name = FALSE){
   out <- m[lower.tri(m, diag = TRUE)]
   if (name){
@@ -18,6 +19,8 @@ vech <- function(m, name = FALSE){
   return(out)
 }
 
+#' @describeIn vech The inverse of vech.
+#' @export
 invvech <- function(x,...){
   # n is s.t. l = 0.5 n (n+1) --> n = 0.5(-1 + sqrt(4l+1))
   n <- (-1 + sqrt(8*length(x) + 1))/2
