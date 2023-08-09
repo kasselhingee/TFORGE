@@ -12,13 +12,14 @@ stat_specifiedevals <- function(ms, evals){
   n <- length(ms)
   av <- mmean(ms)
   av_eigenspace <- eigen(av, symmetric = TRUE)
-  av_evecs <- av_eigenspace$vectors
   d1 <- av_eigenspace$values
   d0 <- evals
-  V <- cov_eval1_eval0(av_evecs, mcovar(merr(ms, mean = av)))
+  V <- cov_evals(ms, evecs = av_eigenspace$vectors)
   out <- n * t(d1 - d0) %*% solve(V) %*% (d1 - d0)
   return(drop(out))
 }
+
+
 
 #' @describeIn specifiedevals Bootstrap test.
 #' @param B The number of bootstrap samples
@@ -45,7 +46,24 @@ standardise_specifiedevals <- function(ms, evals){
   return(newms)
 }
 
-# the V1 / V2 matrix for a single sample
+#' General function for getting covariance of eigenvalues from a single sample
+#' @param evecs If supplied these eigenvectors will be used instead of estimated eigenvectors. Each column is an eigenvector.
+#' @param ms A single sample (list of matrices)
+#' @details Computes equation (11) of `tensors_4` with \eqn{C_0} replaced with the sample analogue. If `evecs` is not provided then the eigenvectors \eqn{q_{0i}} are replaced with the eigenvectors of the average of `ms`.
+#' @return An estimated covariance matrix for the eigenvalues of `ms`.
+#' @export
+cov_evals <- function(ms, evecs = NULL){
+  ms <- as.mstorsst(ms)
+  stopifnot(inherits(ms, "sst"))
+  av <- mmean(ms)
+  if (is.null(evecs)){
+    evecs <- eigen(av, symmetric = TRUE)$vectors
+  }
+  V <- cov_eval1_eval0(evecs, mcovar(merr(ms, mean = av)))
+  return(V)
+}
+
+# the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
 cov_eval1_eval0 <- function(evecs, mcov){
   indx <- expand.grid(1:nrow(evecs), 1:nrow(evecs))
   dupmat <- dup(nrow(evecs))
