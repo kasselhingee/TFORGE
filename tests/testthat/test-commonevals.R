@@ -17,11 +17,11 @@ test_that("test_commonevals() reject for simulation of multi sample not from nul
 })
 
 test_that("test_commonevals() repeats under set.seed()", {
-  set.seed(34)
+  set.seed(134)
   Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE) 
-  set.seed(134)
+  set.seed(1345)
   res1 <- test_commonevals(Ysamples, 10)
-  set.seed(134)
+  set.seed(1345)
   res2 <- test_commonevals(Ysamples, 10)
   expect_equal(res1, res2)
 })
