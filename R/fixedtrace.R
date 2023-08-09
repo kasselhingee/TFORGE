@@ -18,7 +18,7 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @param evecs Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
 #' `t(evecs) %*% av %*% evecs`, where `av` is the average of `ms`.
 #' @param ms A sample of matrices.
-#' @param evals A set of hypothesised eigenvalues for the mean.
+#' @param evals A set of hypothesised eigenvalues for the mean. `evals` must sum to the trace of the matrices.
 #' @return A single numeric value.
 stat_ss_fixedtrace <- function(ms, evals, evecs = NULL){
   browser()
