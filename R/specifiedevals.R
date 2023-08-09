@@ -6,15 +6,21 @@
 NULL
 
 #' @describeIn specifiedevals Test statistic (corresponds to eqn 13 in the draft `tensors_4`).
+#' @param evecs Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
 #' @export
-stat_specifiedevals <- function(ms, evals){
+stat_specifiedevals <- function(ms, evals, evecs = NULL){
   evals <- sort(evals, decreasing = TRUE)
   n <- length(ms)
   av <- mmean(ms)
-  av_eigenspace <- eigen(av, symmetric = TRUE)
-  d1 <- av_eigenspace$values
+  if (is.null(evecs)){
+    av_eigenspace <- eigen(av, symmetric = TRUE)
+    d1 <- av_eigenspace$values
+    evecs <- av_eigenspace$vectors
+  } else {
+    d1 <- t(evecs) %*% av %*% evecs
+  }
   d0 <- evals
-  V <- cov_evals(ms, evecs = av_eigenspace$vectors, av = av)
+  V <- cov_evals(ms, evecs = evecs, av = av)
   out <- n * t(d1 - d0) %*% solve(V) %*% (d1 - d0)
   return(drop(out))
 }
