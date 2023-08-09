@@ -17,7 +17,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){
     d1 <- av_eigenspace$values
     evecs <- av_eigenspace$vectors
   } else {
-    d1 <- t(evecs) %*% av %*% evecs
+    d1 <- diag(t(evecs) %*% av %*% evecs)
   }
   d0 <- evals
   V <- cov_evals(ms, evecs = evecs, av = av)
