@@ -48,12 +48,10 @@ est_commonevals <- function(mss){
 
 #' @describeIn commonevals Bootstrap test of common eigenvalues
 #' @param B Number of bootstrap samples
-#' @return A slot `seed` contains the value of `.Random.seed` before resampling started. To repeat results run `.Random.seed <- out$seed`.
 #' @export
 test_commonevals <- function(mss, B){
   t0info <- stat_commonevals_ksample(mss)
   mss_std <- lapply(mss, standardise_specifiedevals, t0info$esteval)
-  seed <- .Random.seed
   nullt <- replicate(B, { stat_commonevals_ksample(lapply(mss_std, sample, replace = TRUE), NAonerror = TRUE)$stat })
   if (any(is.na(nullt))){warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))}
   pval <- mean(nullt > t0info$stat, na.rm = TRUE)
@@ -62,7 +60,6 @@ test_commonevals <- function(mss, B){
    t0 = t0info$stat,
    nullt = nullt,
    esteval = t0info$esteval,
-   B = B,
-   seed = seed
+   B = B
   ))
 }
