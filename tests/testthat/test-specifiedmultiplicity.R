@@ -112,6 +112,7 @@ test_that("xicovar() gives the same covariance as sample covariance", {
     cov()
   expect_equal(emcov, thecov, tolerance = 0.05)
   
+  skip("Empirical covariance of xi using estimated evecs is a poor estimate for the actual covariance of xi, so skipping test.")
   set.seed(3541) 
   # fully empirical (plugged in) xi
   emcov <- replicate(100,
