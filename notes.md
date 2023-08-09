@@ -19,3 +19,5 @@ There are the following types of functions
 + utility functions
 + detector of constraints
 
++ mss and ss objects, tests for these
+
