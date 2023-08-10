@@ -19,7 +19,7 @@ stat_commonevals_ksample <- function(mss, NAonerror = FALSE){
   }
   esteval <- tryCatch(est_commonevals(mss), error = erroraction)
   stat <- tryCatch(sum(vapply(mss, stat_specifiedevals, esteval, FUN.VALUE = 0.1)), error = erroraction)
-  attr(stat, "est_eval") <- esteval
+  attr(stat, "esteval") <- esteval
   return(stat)
 }
 
@@ -49,7 +49,7 @@ est_commonevals <- function(mss){
 #' @export
 test_commonevals <- function(mss, B){
   t0info <- stat_commonevals_ksample(mss)
-  mss_std <- lapply(mss, standardise_specifiedevals, attr(t0info, "est_eval"))
+  mss_std <- lapply(mss, standardise_specifiedevals, attr(t0info, "esteval"))
   out <- bootresampling(mss, mss_std, stat_commonevals_ksample, B = B, NAonerror = TRUE)
-  return(c(out, list(esteval = t0info$esteval)))
+  return(c(out, list(esteval = attr(t0info, "esteval"))))
 }

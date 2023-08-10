@@ -9,7 +9,7 @@ NULL
 #' @export
 test_specifiedmultiplicity <- function(ms, mult, B){
   ms_std <- standardise_specifiedmultiplicity(ms, mult)
-  res <- singlesampletest(ms, ms_std, 
+  res <- bootresampling(ms, ms_std, 
     stat = stat_specifiedmultiplicity,
     B = B,
     mult = mult)
