@@ -43,5 +43,39 @@ stat_ss_fixedtrace <- function(ms, evals, evecs = NULL){
   out <- n * t(d1 - d0) %*% t(H) %*% solve(Vproj) %*% H %*% (d1 - d0)
   return(drop(out))
 }
+
+#' @describeIn stat_ss_fixedtrace Bootstrap test.
+#' @param B The number of bootstrap samples
+#' @export
+test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL){
+  evals <- sort(evals, decreasing = TRUE)
+  if (!isTRUE(all.equal(sum(evals), sum(diag(ms[[1]]))))){
+    warning("Provided evals do not sum to trace of average.")
+  }
+  if (is.null(evecs)){
+    av <- mmean(ms)
+    es <- eigen(av, symmetric = TRUE)
+    nullmean <- es$vectors %*% diag(evals) %*% t(es$vectors)
+  } else {
+    nullmean <- evecs %*% diag(evals) %*% t(evecs)
+  }
   
+  elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), vech(nullmean))
+  if (abs(length(ms) - sum(elres$wts)) > 1E-2){
+    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
+    return(list(
+      pval = 0,
+      t0 = Inf,
+      nullt = NA,
+      B = NA
+    ))
+  }
+  
+  res <- bootresampling(ms, elres$wts, 
+                        stat = stat_ss_fixedtrace,
+                        B = B,
+                        evals = evals,
+                        evecs = evecs)
+  return(res)
+}
   
