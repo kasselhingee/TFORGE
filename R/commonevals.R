@@ -6,7 +6,7 @@
 NULL
 
 #' @describeIn commonevals The test statistic (corresponds to eqn 13 in the draft `tensors_4`)
-#' @param NAonerror If TRUE then when an error occurs NA values are returned. If error in estimating the eigenvalue then both return slots are `NA`. If an error occurs after eigenvalues are estimated, then just the `stat` slot is `NA`.
+#' @param NAonerror If TRUE then when an error occurs NA values are returned. If error is before estimating the eigenvalues then the attribute `est_eval` is also `NA`.
 #' @export
 stat_commonevals_ksample <- function(mss, NAonerror = FALSE){
   erroraction <- function(e){
@@ -19,10 +19,8 @@ stat_commonevals_ksample <- function(mss, NAonerror = FALSE){
   }
   esteval <- tryCatch(est_commonevals(mss), error = erroraction)
   stat <- tryCatch(sum(vapply(mss, stat_specifiedevals, esteval, FUN.VALUE = 0.1)), error = erroraction)
-  return(list(
-    stat = stat,
-    esteval = esteval
-  ))
+  attr(stat, "est_eval") <- esteval
+  return(stat)
 }
 
 #' @describeIn commonevals Estimate eigenvalues in common to multiple sampler (Eqn 24 in `tensors_4.pdf`).
@@ -51,15 +49,7 @@ est_commonevals <- function(mss){
 #' @export
 test_commonevals <- function(mss, B){
   t0info <- stat_commonevals_ksample(mss)
-  mss_std <- lapply(mss, standardise_specifiedevals, t0info$esteval)
-  nullt <- replicate(B, { stat_commonevals_ksample(lapply(mss_std, sample, replace = TRUE), NAonerror = TRUE)$stat })
-  if (any(is.na(nullt))){warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))}
-  pval <- mean(nullt > t0info$stat, na.rm = TRUE)
-  return(list(
-   pval = pval,
-   t0 = t0info$stat,
-   nullt = nullt,
-   esteval = t0info$esteval,
-   B = B
-  ))
+  mss_std <- lapply(mss, standardise_specifiedevals, attr(t0info, "est_eval"))
+  out <- bootresampling(mss, mss_std, stat_commonevals_ksample, B = B, NAonerror = TRUE)
+  return(c(out, list(esteval = t0info$esteval)))
 }
