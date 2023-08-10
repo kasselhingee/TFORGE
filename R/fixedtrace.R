@@ -72,13 +72,14 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
     }
   }
   precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms) %*% t(H)), error = erroraction)})
-  #get estimate of common evals
+  
+  #get estimate of common evals from the above
   sum_precisions <- purrr::reduce(precisions, `+`)
   precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
   sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
   d0 <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
   
-  #now compute the statistic, not using the single sample function to avoid redoing eigen()
+  #now compute the statistic, not using the single sample function to avoid redoing eigen(), remembering that d0 is projectected using H already, but d1 is not.
   tmp <- mapply(function(n, d1, precision){
     n * t((H %*% d1) - d0) %*% precision %*% ((H %*% d1) - d0)
     },
@@ -87,7 +88,9 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
     precision = precisions
   )
   stat <- purrr::reduce(tmp, `+`)
-  attr(stat, "esteval") <- d0
+  
+  attr(stat, "esteval") <- (t(H) %*% d0) + mean(diag(mss[[1]][[1]])) #first convert projected evals back to p-dimensions, then shift to give correct trace.
+  attr(stat, "esteval_proj") <- d0
   return(stat)
 }
  
