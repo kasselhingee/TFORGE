@@ -28,16 +28,22 @@ bootresampling <- function(x, stdx, stat, B, ...){
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
   exargs <- list(...)
-  if (inherits(stdx[[1]], "numeric") | inherits(stdx[[1]][[1]], "numeric")){
-    #stdx is a set of weights
-    if (inherits(x, "mst")){nullt <- replicate(B, do.call(stat, c(list(multisample(x, w = stdx)), exargs)))}
-    if (inherits(x, "sst")){nullt <- replicate(B, do.call(stat, c(list(sample(x, w = stdx, replace = TRUE)), exargs)))}
-  } else {
-    #stdx is a set of transformed x
-    stdx <- as.mstorsst(stdx)
-    if (inherits(x, "mst")){nullt <- replicate(B, do.call(stat, c(list(multisample(x)), exargs)))}
-    if (inherits(x, "sst")){nullt <- replicate(B, do.call(stat, c(list(sample(x, replace = TRUE)), exargs)))}
+  if (inherits(x, "mst")){
+    if (inherits(stdx[[1]][[1]], "numeric")){
+      #stdx is weights for an mst because first element of first sample is not a matrix/array, but just a numeric
+      nullt <- replicate(B, do.call(stat, c(list(multisample(x, prob = stdx)), exargs)))
+    } else {
+      nullt <- replicate(B, do.call(stat, c(list(multisample(stdx)), exargs)))
+    }
+  } else if (inherits(x, "sst")){
+    if (inherits(stdx[[1]], "numeric")){
+      #stdx is weights for an sst because first element sample is not a matrix/array, but just a numeric
+      nullt <- replicate(B, do.call(stat, c(list(sample(x, prob = stdx, replace = TRUE)), exargs)))
+    } else {
+      nullt <- replicate(B, do.call(stat, c(list(sample(stdx, replace = TRUE)), exargs)))
+    }
   }
+  
   pval <- mean(nullt > t0)
   return(list(
     pval = pval,
@@ -50,12 +56,12 @@ bootresampling <- function(x, stdx, stat, B, ...){
 #equivalent of sample, but for multiple samples
 #' @param x a `mst`
 #' @param w weights. If present, must have the same structure as `x`
-multisample <- function(x, w = NULL){
-  if (is.null(w)){return(lapply(x, sample, replace = TRUE))}
+multisample <- function(x, prob = NULL){
+  if (is.null(prob)){return(lapply(x, sample, replace = TRUE))}
   else {
-    stopifnot(length(w) == length(x))
-    stopifnot(all(vapply(x, length, 2) == vapply(w, length, 2)))
-    return(mapply(sample, x, prob = w, MoreArgs = list(replace = TRUE)))
+    stopifnot(length(prob) == length(x))
+    stopifnot(all(vapply(x, length, 2) == vapply(prob, length, 2)))
+    return(mapply(sample, x, prob = prob, MoreArgs = list(replace = TRUE)))
   }
 }
 

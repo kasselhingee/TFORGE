@@ -21,7 +21,6 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @param evals A set of hypothesised eigenvalues for the mean. `evals` must sum to the trace of the matrices.
 #' @return A single numeric value.
 stat_ss_fixedtrace <- function(ms, evals, evecs = NULL){
-  browser()
   ms <- as.mstorsst(ms)
   stopifnot(hasfixedtrace((ms)))
   evals <- sort(evals, decreasing = TRUE)

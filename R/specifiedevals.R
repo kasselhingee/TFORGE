@@ -32,7 +32,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){
 #' @export
 test_specifiedevals <- function(ms, evals, B){
   ms_std <- standardise_specifiedevals(ms, evals)
-  res <- singlesampletest(ms, ms_std, 
+  res <- bootresampling(ms, ms_std, 
     stat = stat_specifiedevals,
     B = B,
     evals = evals)
