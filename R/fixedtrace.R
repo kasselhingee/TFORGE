@@ -59,7 +59,7 @@ stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = TRUE){
 stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
   mss <- as.mstorsst(mss)
   H <- helmertsub(ncol(mss[[1]][[1]]))
-  ess <- lapply(mss, eigen)
+  ess <- lapply(mss, function(ms){eigen(mmean(ms))})
   ns <- lapply(mss, length)
   
   #first get all eval precision matrices
@@ -74,13 +74,13 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
   precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms) %*% t(H)), error = erroraction)})
   #get estimate of common evals
   sum_precisions <- purrr::reduce(precisions, `+`)
-  precisionsbyevals <- mapply(`%*%`, precisions, lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
+  precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
   sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
   d0 <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
   
   #now compute the statistic, not using the single sample function to avoid redoing eigen()
   tmp <- mapply(function(n, d1, precision){
-    n * t(d1 - d0) %*% t(H) %*% precision %*% H %*% (d1 - d0)
+    n * t((H %*% d1) - d0) %*% precision %*% ((H %*% d1) - d0)
     },
     n = ns,
     d1 = lapply(ess, "[[", "values"),
