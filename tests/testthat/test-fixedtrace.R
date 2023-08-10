@@ -10,8 +10,8 @@ test_that("test_ss_fixedtrace() soundly doesn't reject for simulation of single 
 })
 
 test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
-  set.seed(136)
-  Y <- rsymm_norm(50, diag(c(3,2,1)/6))
+  set.seed(1333)
+  Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
   Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
   expect_warning(res <- test_ss_fixedtrace(Y, c(1,-1,1)/10, 100))
   expect_equal(res$pval, 0)
