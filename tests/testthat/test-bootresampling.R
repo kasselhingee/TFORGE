@@ -1,7 +1,4 @@
-
-test_that("multisample() gives correct sizes", {})
-
-test_that("multisample() listens to weights", {
+test_that("multisample() listens to weights and gives correct sizes", {
   set.seed(13)
   Ysamples <- list(rsymm_norm(5, diag(c(3,2,1))),
                 rsymm_norm(6, diag(c(3,2,1))),
@@ -14,6 +11,12 @@ test_that("multisample() listens to weights", {
             )
   
   newY <- multisample(Ysamples, w = w)
-  expect_equal(lapply(Ysamples, "[[", 1), lapply(newY, "[[", 1))
-  expect_equal(lapply(Ysamples, "[[", 1), lapply(newY, "[[", 5))
+  expect_equal(lapply(newY, "[[", 1), lapply(Ysamples, "[[", 1))
+  expect_equal(lapply(newY, "[[", 5), lapply(Ysamples, "[[", 1))
+  expect_equal(lapply(newY, length), lapply(Ysamples, length))
+  
+  set.seed(315)
+  newY <- multisample(Ysamples)
+  expect_equal(lapply(newY, length), lapply(Ysamples, length))
+  expect_error(expect_equal(lapply(newY, "[[", 1), lapply(Ysamples, "[[", 1)))
 })
