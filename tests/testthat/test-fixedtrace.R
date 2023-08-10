@@ -1,7 +1,7 @@
 test_that("test_ss_fixedtrace() soundly doesn't reject for simulation of single sample from null", {
   set.seed(13131)
-  Y <- rsymm_norm(200, diag(c(3,2,1)/6)) #50 matrices is too small
-  Y <- lapply(Y, function(m) {m/sum(diag(m))})
+  Y <- rsymm_norm(50, diag(c(3,2,1)/6)) #50 matrices is too small
+  Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)}) #this method of getting the correct trace seems to create narrower distributions than the normalising method
   res <- test_ss_fixedtrace(Y, c(3,2,1)/6, 100)
   expect_gt(res$pval, 0.2)
   #hopefully even more accurate with correct evectors supplied, but doesn't seem to be
@@ -11,14 +11,18 @@ test_that("test_ss_fixedtrace() soundly doesn't reject for simulation of single 
 
 test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
   set.seed(136)
-  Y <- rsymm_norm(1000, diag(c(3,2,1)/6))
-  Y <- lapply(Y, function(m) {m/sum(diag(m))})
+  Y <- rsymm_norm(50, diag(c(3,2,1)/6))
+  Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
   expect_warning(res <- test_ss_fixedtrace(Y, c(1,-1,1)/10, 100))
   expect_equal(res$pval, 0)
   
   badevals <- c(1,1,1)
   badevals <- badevals/sum(badevals)
   res <- test_ss_fixedtrace(Y, badevals, 100)
+  expect_lt(res$pval, 0.05)
+ 
+  #try with eigenvectors supplied
+  res <- test_ss_fixedtrace(Y, badevals, 100, evecs = diag(1, 3))
   expect_lt(res$pval, 0.05)
 })
 
