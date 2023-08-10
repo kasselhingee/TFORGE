@@ -20,7 +20,7 @@ singlesampletest <- function(ms, stdms, stat, B, ...){
 
 #' @title A function for helping perform single-sample and k-sample bootstrap tests
 #' @param x Observations as a list of matices, or list of list of matrices.
-#' @param stdx List of matrices standardized to satisty the null OR sampling weights for each matrix in `x`, in the same structure as `x`.
+#' @param stdx List of matrices standardized to satisfy the null OR sampling weights for each matrix in `x`, in the same structure as `x`.
 #' @param stat Function to compute the statistic
 #' @param B The number of bootstrap samples to use
 #' @param ... Passed to `stat`
@@ -28,8 +28,16 @@ bootresampling <- function(x, stdx, stat, B, ...){
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
   exargs <- list(...)
-  nullt <- replicate(B, do.call(stat, c(list(ms = sample(stdms, replace = TRUE)),
-                                        exargs)))
+  if (inherits(stdx[[1]], "numeric") | inherits(stdx[[1]][[1]], "numeric")){
+    #stdx is a set of weights
+    if (inherits(x, "mst")){nullt <- replicate(B, do.call(stat, c(list(multisample(x, w = stdx)), exargs)))}
+    if (inherits(x, "sst")){nullt <- replicate(B, do.call(stat, c(list(sample(x, w = stdx, replace = TRUE)), exargs)))}
+  } else {
+    #stdx is a set of transformed x
+    stdx <- as.mstorsst(stdx)
+    if (inherits(x, "mst")){nullt <- replicate(B, do.call(stat, c(list(multisample(x)), exargs)))}
+    if (inherits(x, "sst")){nullt <- replicate(B, do.call(stat, c(list(sample(x, replace = TRUE)), exargs)))}
+  }
   pval <- mean(nullt > t0)
   return(list(
     pval = pval,
