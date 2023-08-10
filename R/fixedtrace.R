@@ -20,7 +20,7 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @param ms A sample of matrices.
 #' @param evals A set of hypothesised eigenvalues for the mean. `evals` must sum to the trace of the matrices.
 #' @return A single numeric value.
-stat_ss_fixedtrace <- function(ms, evals, evecs = NULL){
+stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = TRUE){
   ms <- as.mstorsst(ms)
   stopifnot(hasfixedtrace((ms)))
   evals <- sort(evals, decreasing = TRUE)
@@ -40,10 +40,58 @@ stat_ss_fixedtrace <- function(ms, evals, evecs = NULL){
   #project all eval covariances etc to plane orthogonal 1,1,1,1,1
   H <- helmertsub(ncol(av))
   Vproj <- H %*% V %*% t(H)
-  out <- n * t(d1 - d0) %*% t(H) %*% solve(Vproj) %*% H %*% (d1 - d0)
+  
+  erroraction <- function(e){
+    if (!NAonerror){stop(e)}
+    else {
+      out <- NA * Vproj
+      attr(out, "message") <- e$message
+      return(out)
+    }
+  }
+  Vprojinv <- tryCatch(solve(Vproj), error = erroraction)
+  out <- n * t(d1 - d0) %*% t(H) %*% Vprojinv %*% H %*% (d1 - d0)
   return(drop(out))
 }
 
+#' @describeIn stat_ss_fixedtrace 
+#' @param mss Multiple samples of matrices, all with the same trace. See [`as.mstorsst()`] for required structure.
+stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
+  mss <- as.mstorsst(mss)
+  H <- helmertsub(ncol(mss[[1]][[1]]))
+  ess <- lapply(mss, eigen)
+  ns <- lapply(mss, length)
+  
+  #first get all eval precision matrices
+  erroraction <- function(e){
+    if (!NAonerror){stop(e)}
+    else {
+      out <- NA * diag(mss[[1]][[1]]$values)
+      attr(out, "message") <- e$message
+      return(out)
+    }
+  }
+  precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms) %*% t(H)), error = erroraction)})
+  #get estimate of common evals
+  sum_precisions <- purrr::reduce(precisions, `+`)
+  precisionsbyevals <- mapply(`%*%`, precisions, lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
+  sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
+  d0 <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
+  
+  #now compute the statistic, not using the single sample function to avoid redoing eigen()
+  tmp <- mapply(function(n, d1, precision){
+    n * t(d1 - d0) %*% t(H) %*% precision %*% H %*% (d1 - d0)
+    },
+    n = ns,
+    d1 = lapply(ess, "[[", "values"),
+    precision = precisions
+  )
+  stat <- purrr::reduce(tmp, `+`)
+  attr(stat, "esteval") <- d0
+  return(stat)
+}
+ 
+ 
 #' @describeIn stat_ss_fixedtrace Bootstrap test.
 #' @param B The number of bootstrap samples
 #' @export
