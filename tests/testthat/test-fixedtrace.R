@@ -26,7 +26,7 @@ test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
   expect_lt(res$pval, 0.05)
 })
 
-test_that("a simple multisample null situation ???", {
+test_that("a simple multisample null situation doesn't reject", {
   set.seed(13)
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -35,8 +35,23 @@ test_that("a simple multisample null situation ???", {
   }, simplify = FALSE)
   
   stat_ms_fixedtrace(Ysamples)
-  test_ms_fixedtrace(Ysamples, 100)
+  res <- test_ms_fixedtrace(Ysamples, 100)
   expect_gt(res$pval, 0.2)
+})
+
+test_that("a multisample strongly non-null situation rejects", {
+  set.seed(13)
+  symm <- function(n, mn){
+    Y <- rsymm_norm(n, mn)
+    lapply(Y, function(m) {diag(m) <- diag(m) - mean(diag(m)) + 1/3; return(m)})
+  }
+  Y1 <- symm(50, diag(c(3,2,1)))
+  # lapply(Y1, function(m) sum(diag(m)))
+  Ys <- list(Y1,
+       symm(50, diag(c(1,1,1))))
+  
+  res <- test_ms_fixedtrace(Ys, 100)
+  expect_lt(res$pval, 0.05)
 })
 
 
