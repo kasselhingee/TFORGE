@@ -15,49 +15,26 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 }
 
 #' @title Test statistic for given eigenvalues when trace is fixed.
-#' @param evecs Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
+#' @param evecs Optional argument for single sample statistic. Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
 #' `t(evecs) %*% av %*% evecs`, where `av` is the average of `ms`.
 #' @param ms A sample of matrices.
 #' @param evals A set of hypothesised eigenvalues for the mean. `evals` must sum to the trace of the matrices.
 #' @return A single numeric value.
-stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = TRUE){
-  ms <- as.mstorsst(ms)
-  stopifnot(hasfixedtrace((ms)))
-  evals <- sort(evals, decreasing = TRUE)
-  n <- length(ms)
-  av <- mmean(ms)
-  if (is.null(evecs)){
-    av_eigenspace <- eigen(av, symmetric = TRUE)
-    d1 <- av_eigenspace$values
-    evecs <- av_eigenspace$vectors
-  } else {
-    d1 <- diag(t(evecs) %*% av %*% evecs)
-  }
-  if (!isTRUE(all.equal(sum(evals), sum(diag(av))))){stop("Provided evals do not sum to trace of average.")}
-  d0 <- evals
-  V <- cov_evals(ms, evecs = evecs, av = av)
-
-  #project all eval covariances etc to plane orthogonal 1,1,1,1,1
-  H <- helmertsub(ncol(av))
-  Vproj <- H %*% V %*% t(H)
-  
-  erroraction <- function(e){
-    if (!NAonerror){stop(e)}
-    else {
-      out <- NA * Vproj
-      attr(out, "message") <- e$message
-      return(out)
-    }
-  }
-  Vprojinv <- tryCatch(solve(Vproj), error = erroraction)
-  out <- n * t(d1 - d0) %*% t(H) %*% Vprojinv %*% H %*% (d1 - d0)
-  return(drop(out))
+stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = FALSE){
+  stat_ms_fixedtrace(ms, evals, evecs = evecs, NAonerror = NAonerror)
 }
 
 #' @describeIn stat_ss_fixedtrace 
-#' @param mss Multiple samples of matrices, all with the same trace. See [`as.mstorsst()`] for required structure.
-stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
-  mss <- as.mstorsst(mss)
+#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
+#' @param evals If supplied the eigenvalues of the null hypothesis. For the multisample statistic this should be `NULL` and is estimated within the function.
+stat_ms_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
+  x <- as.mstorsst(x)
+  stopifnot(hasfixedtrace(x))
+  if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
+  if (!is.null(evals) && inherits(x, "mst")){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
+  if (!is.null(evecs) && inherits(x, "mst")){warning("evecs supplied for multisample situation supplied. This is unusual.")}
+  if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
+  else {mss <- x}
   H <- helmertsub(ncol(mss[[1]][[1]]))
   ess <- lapply(mss, function(ms){eigen(mmean(ms))})
   ns <- lapply(mss, length)
@@ -71,18 +48,22 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
       return(out)
     }
   }
-  precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms) %*% t(H)), error = erroraction)})
+  precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms, evecs = evecs) %*% t(H)), error = erroraction)})
   
-  browser()
-  #get estimate of common evals from the above
-  sum_precisions <- purrr::reduce(precisions, `+`)
-  precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
-  sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
-  d0proj <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
-  d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
-  if (!all(order(d0) == length(d0):1)){
-    d0 <- sort(d0)
-    warning("Estimated common eigenvalues are not in descending order and has been reordered.")
+  #get estimate of common evals for multisample situation
+  if (is.null(evals)){
+    sum_precisions <- purrr::reduce(precisions, `+`)
+    precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
+    sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
+    d0proj <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
+    d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
+    if (!all(order(d0) == length(d0):1)){
+      d0 <- sort(d0)
+      warning("Estimated common eigenvalues are not in descending order and has been reordered.")
+    }
+  } else {
+    if (!isTRUE(all.equal(sum(evals), sum(diag(mss[[1]][[1]]))))){stop("Provided evals do not sum to trace of observations.")}
+    d0 <- sort(evals, decreasing = TRUE)
   }
   
   #now compute the statistic.
@@ -96,8 +77,8 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
   )
   stat <- drop(purrr::reduce(tmp, `+`))
   
-  attr(stat, "esteval") <- drop(d0)
-  attr(stat, "esteval_proj") <- drop(d0proj)
+  attr(stat, "null_evals") <- drop(d0)
+  if (is.null(evals)){attr(stat, "null_evals_proj") <- drop(d0proj)}
   return(stat)
 }
  
@@ -142,7 +123,7 @@ test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL){
 test_ms_fixedtrace <- function(mss, B){
   mss <- as.mstorsst(mss)
   t0 <- stat_ms_fixedtrace(mss, NAonerror = FALSE)
-  evals <- attr(t0, "esteval")
+  evals <- attr(t0, "null_evals")
   
   # compute means that satisfy the NULL hypothesis (eigenvalues equal to evals)
   nullmeans <- lapply(mss, function(ms){
