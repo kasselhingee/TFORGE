@@ -20,9 +20,44 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @param ms A sample of matrices.
 #' @param evals A set of hypothesised eigenvalues for the mean. `evals` must sum to the trace of the matrices.
 #' @return A single numeric value.
-stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = FALSE){
-  stat_ms_fixedtrace(ms, evals, evecs = evecs, NAonerror = NAonerror)
+stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = TRUE){
+  ms <- as.mstorsst(ms)
+  stopifnot(hasfixedtrace((ms)))
+  evals <- sort(evals, decreasing = TRUE)
+  n <- length(ms)
+  av <- mmean(ms)
+  if (is.null(evecs)){
+    av_eigenspace <- eigen(av, symmetric = TRUE)
+    d1 <- av_eigenspace$values
+    evecs <- av_eigenspace$vectors
+  } else {
+    d1 <- diag(t(evecs) %*% av %*% evecs)
+  }
+  if (!isTRUE(all.equal(sum(evals), sum(diag(av))))){stop("Provided evals do not sum to trace of average.")}
+  d0 <- evals
+  V <- cov_evals(ms, evecs = evecs, av = av)
+  
+  #project all eval covariances etc to plane orthogonal 1,1,1,1,1
+  H <- helmertsub(ncol(av))
+  Vproj <- H %*% V %*% t(H)
+  
+  erroraction <- function(e){
+    if (!NAonerror){stop(e)}
+    else {
+      out <- NA * Vproj
+      attr(out, "message") <- e$message
+      return(out)
+    }
+  }
+  Vprojinv <- tryCatch(solve(Vproj), error = erroraction)
+  out <- n * t(d1 - d0) %*% t(H) %*% Vprojinv %*% H %*% (d1 - d0)
+  return(drop(out))
 }
+# stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = FALSE){
+#   stat_ms_fixedtrace(ms, evals, evecs = evecs, NAonerror = NAonerror)
+# }
+
+
 
 #' @describeIn stat_ss_fixedtrace 
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
@@ -50,6 +85,12 @@ stat_ms_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   }
   precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms, evecs = evecs) %*% t(H)), error = erroraction)})
   
+  if (is.null(evecs)){
+    d1s <- lapply(ess, "[[", "values")
+  } else {
+    d1s <- lapply(mss, function(ms){diag(t(evecs) %*% mmean(ms) %*% evecs)})
+  }
+  
   #get estimate of common evals for multisample situation
   if (is.null(evals)){
     sum_precisions <- purrr::reduce(precisions, `+`)
@@ -71,7 +112,7 @@ stat_ms_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
     n * t(d1 - d0) %*% t(H) %*% precision %*% H %*% (d1 - d0)
     },
     n = ns,
-    d1 = lapply(ess, "[[", "values"),
+    d1 = d1s,
     precision = precisions,
     SIMPLIFY = FALSE
   )
