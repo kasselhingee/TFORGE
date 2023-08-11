@@ -35,6 +35,8 @@ test_that("a simple multisample null situation ???", {
   }, simplify = FALSE)
   
   stat_ms_fixedtrace(Ysamples)
+  test_ms_fixedtrace(Ysamples, 100)
+  expect_gt(res$pval, 0.2)
 })
 
 

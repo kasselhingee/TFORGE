@@ -40,11 +40,15 @@ bootresampling <- function(x, stdx, stat, B, ...){
 #' @param x a `mst`
 #' @param w weights. If present, must have the same structure as `x`
 multisample <- function(x, prob = NULL){
-  if (is.null(prob)){return(lapply(x, sample, replace = TRUE))}
+  if (is.null(prob)){
+    out <- lapply(x, sample, replace = TRUE)
+    return(as.mstorsst(out))
+  }
   else {
     stopifnot(length(prob) == length(x))
     stopifnot(all(vapply(x, length, 2) == vapply(prob, length, 2)))
-    return(mapply(sample, x, prob = prob, MoreArgs = list(replace = TRUE)))
+    out <- mapply(sample, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
+    return(as.mstorsst(out))
   }
 }
 

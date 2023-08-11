@@ -77,11 +77,16 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
   sum_precisions <- purrr::reduce(precisions, `+`)
   precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
   sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
-  d0 <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
+  d0proj <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
+  d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
+  if (!all(order(d0) == length(d0):1)){
+    d0 <- sort(d0)
+    warning("Estimated common eigenvalues are not in descending order and has been reordered.")
+  }
   
-  #now compute the statistic, not using the single sample function to avoid redoing eigen(), remembering that d0 is projectected using H already, but d1 is not.
+  #now compute the statistic.
   tmp <- mapply(function(n, d1, precision){
-    n * t((H %*% d1) - d0) %*% precision %*% ((H %*% d1) - d0)
+    n * t(d1 - d0) %*% t(H) %*% precision %*% H %*% (d1 - d0)
     },
     n = ns,
     d1 = lapply(ess, "[[", "values"),
@@ -89,8 +94,8 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
   )
   stat <- purrr::reduce(tmp, `+`)
   
-  attr(stat, "esteval") <- (t(H) %*% d0) + mean(diag(mss[[1]][[1]])) #first convert projected evals back to p-dimensions, then shift to give correct trace.
-  attr(stat, "esteval_proj") <- d0
+  attr(stat, "esteval") <- drop(d0)
+  attr(stat, "esteval_proj") <- drop(d0proj)
   return(stat)
 }
  
@@ -129,4 +134,41 @@ test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL){
                         evecs = evecs)
   return(res)
 }
+
+#' @describeIn stat_ss_fixedtrace Bootstrap test.
+#' @export
+test_ms_fixedtrace <- function(mss, B){
+  mss <- as.mstorsst(mss)
+  t0 <- stat_ms_fixedtrace(mss, NAonerror = FALSE)
+  evals <- attr(t0, "esteval")
   
+  # compute means that satisfy the NULL hypothesis (eigenvalues equal to evals)
+  nullmeans <- lapply(mss, function(ms){
+    av <- mmean(ms)
+    evecs <- eigen(av)$vectors
+    evecs %*% diag(evals) %*% t(evecs)
+  })
+  
+  # compute corresponding weights that lead to emp.lik.
+  wts <- mapply(function(ms, nullmean){
+    elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), vech(nullmean))
+    elres$wts
+  }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
+
+  #check the weights
+  wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
+  if (any(wtsums_discrepacies > 1E-2)){
+    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
+    return(list(
+      pval = 0,
+      t0 = Inf,
+      nullt = NA,
+      B = NA
+    ))
+  }
+  
+  res <- bootresampling(mss, wts, 
+                        stat = stat_ms_fixedtrace,
+                        B = B)
+  return(res)
+}
