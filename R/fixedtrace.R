@@ -73,6 +73,7 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
   }
   precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms) %*% t(H)), error = erroraction)})
   
+  browser()
   #get estimate of common evals from the above
   sum_precisions <- purrr::reduce(precisions, `+`)
   precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
@@ -90,9 +91,10 @@ stat_ms_fixedtrace <- function(mss, NAonerror = FALSE){
     },
     n = ns,
     d1 = lapply(ess, "[[", "values"),
-    precision = precisions
+    precision = precisions,
+    SIMPLIFY = FALSE
   )
-  stat <- purrr::reduce(tmp, `+`)
+  stat <- drop(purrr::reduce(tmp, `+`))
   
   attr(stat, "esteval") <- drop(d0)
   attr(stat, "esteval_proj") <- drop(d0proj)
