@@ -2,10 +2,6 @@ test_that("test_ss_fixedtrace() soundly doesn't reject for simulation of single 
   set.seed(13131)
   Y <- rsymm_norm(50, diag(c(3,2,1)/6)) #50 matrices is too small
   Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)}) #this method of getting the correct trace seems to create narrower distributions than the normalising method
-  stat_ss_fixedtrace(Y, c(3,2,1)/6)
-  stat_ms_fixedtrace(Y, c(3,2,1)/6)
-  stat_ss_fixedtrace(Y, c(3,2,1)/6, evecs = diag(1, nrow = 3))
-  stat_ms_fixedtrace(Y, c(3,2,1)/6, evecs = diag(1, nrow = 3))
   res <- test_ss_fixedtrace(Y, c(3,2,1)/6, 100)
   expect_gt(res$pval, 0.2)
   #hopefully even more accurate with correct evectors supplied, but doesn't seem to be
@@ -38,7 +34,6 @@ test_that("a simple multisample null situation doesn't reject", {
     Y
   }, simplify = FALSE)
   
-  stat_ms_fixedtrace(Ysamples)
   res <- test_ms_fixedtrace(Ysamples, 100)
   expect_gt(res$pval, 0.2)
 })

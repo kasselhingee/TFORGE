@@ -17,52 +17,12 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @title Test statistic for given eigenvalues when trace is fixed.
 #' @param evecs Optional argument for single sample statistic. Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
 #' `t(evecs) %*% av %*% evecs`, where `av` is the average of `ms`.
-#' @param ms A sample of matrices.
-#' @param evals A set of hypothesised eigenvalues for the mean. `evals` must sum to the trace of the matrices.
-#' @return A single numeric value.
-stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = TRUE){
-  ms <- as.mstorsst(ms)
-  stopifnot(hasfixedtrace((ms)))
-  evals <- sort(evals, decreasing = TRUE)
-  n <- length(ms)
-  av <- mmean(ms)
-  if (is.null(evecs)){
-    av_eigenspace <- eigen(av, symmetric = TRUE)
-    d1 <- av_eigenspace$values
-    evecs <- av_eigenspace$vectors
-  } else {
-    d1 <- diag(t(evecs) %*% av %*% evecs)
-  }
-  if (!isTRUE(all.equal(sum(evals), sum(diag(av))))){stop("Provided evals do not sum to trace of average.")}
-  d0 <- evals
-  V <- cov_evals(ms, evecs = evecs, av = av)
-  
-  #project all eval covariances etc to plane orthogonal 1,1,1,1,1
-  H <- helmertsub(ncol(av))
-  Vproj <- H %*% V %*% t(H)
-  
-  erroraction <- function(e){
-    if (!NAonerror){stop(e)}
-    else {
-      out <- NA * Vproj
-      attr(out, "message") <- e$message
-      return(out)
-    }
-  }
-  Vprojinv <- tryCatch(solve(Vproj), error = erroraction)
-  out <- n * t(d1 - d0) %*% t(H) %*% Vprojinv %*% H %*% (d1 - d0)
-  return(drop(out))
-}
-# stat_ss_fixedtrace <- function(ms, evals, evecs = NULL, NAonerror = FALSE){
-#   stat_ms_fixedtrace(ms, evals, evecs = evecs, NAonerror = NAonerror)
-# }
 
 
 
-#' @describeIn stat_ss_fixedtrace 
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
-#' @param evals If supplied the eigenvalues of the null hypothesis. For the multisample statistic this should be `NULL` and is estimated within the function.
-stat_ms_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
+#' @param evals If supplied the eigenvalues of the null hypothesis and `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and is estimated within the function.
+stat_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
   x <- as.mstorsst(x)
   stopifnot(hasfixedtrace(x))
   if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
@@ -85,6 +45,7 @@ stat_ms_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   }
   precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms, evecs = evecs) %*% t(H)), error = erroraction)})
   
+  # if evecs supplied the as per tensors_4.pdf T_1 statistic, using supplied evecs to test eigenvalues
   if (is.null(evecs)){
     d1s <- lapply(ess, "[[", "values")
   } else {
@@ -124,7 +85,7 @@ stat_ms_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
 }
  
  
-#' @describeIn stat_ss_fixedtrace Bootstrap test.
+#' @describeIn stat_fixedtrace Bootstrap test.
 #' @param B The number of bootstrap samples
 #' @export
 test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL){
@@ -152,18 +113,18 @@ test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL){
   }
   
   res <- bootresampling(ms, elres$wts, 
-                        stat = stat_ss_fixedtrace,
+                        stat = stat_fixedtrace,
                         B = B,
                         evals = evals,
                         evecs = evecs)
   return(res)
 }
 
-#' @describeIn stat_ss_fixedtrace Bootstrap test.
+#' @describeIn stat_fixedtrace Bootstrap test.
 #' @export
 test_ms_fixedtrace <- function(mss, B){
   mss <- as.mstorsst(mss)
-  t0 <- stat_ms_fixedtrace(mss, NAonerror = FALSE)
+  t0 <- stat_fixedtrace(mss, NAonerror = FALSE)
   evals <- attr(t0, "null_evals")
   
   # compute means that satisfy the NULL hypothesis (eigenvalues equal to evals)
@@ -192,7 +153,7 @@ test_ms_fixedtrace <- function(mss, B){
   }
   
   res <- bootresampling(mss, wts, 
-                        stat = stat_ms_fixedtrace,
+                        stat = stat_fixedtrace,
                         B = B)
   return(res)
 }
