@@ -1,3 +1,15 @@
+test_that("stat_commonevals_ksample() has correct null distribution", {
+  set.seed(13131)
+  vals <- replicate(100, {
+    Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
+    stat_commonevals_ksample(Ysamples)
+  })
+  
+  # qqplot(vals, y = rchisq(1000, df = (5-1)*3))
+  res <- ks.test(vals, "pchisq", df = (5-1)*3)
+  expect_gt(res$p.value, 0.2)
+})
+
 test_that("test_commonevals() doesn't reject for simulation of multi sample from null", {
   set.seed(13)
   Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)

@@ -1,17 +1,43 @@
-test_that("stat_ss1() runs", {
+test_that("stat_ss1() on single sample from NULL is consistent with chisq", {
   set.seed(13)
+  vals <- replicate(100, {
+    Y <- rsymm_norm(50, diag(c(3,2,1)))
+    Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
+        evecs <- eigen(m)$vectors
+        evals <- eigen(m)$values
+        evals <- evals/sqrt(sum(evals^2))
+        out <- evecs %*% diag(evals) %*% t(evecs)
+        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+        return(out)
+    })
+    stat_ss1(Y, evals = c(3,2,1)/sqrt(sum(c(3,2,1)^2)))
+    })
+  
+  # qqplot(vals, y = rchisq(1000, df = 2))
+  res <- ks.test(vals, "pchisq", df = 2)
+  expect_gt(res$p.value, 0.2)
+})
+
+test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
+  set.seed(13)
+  vals <- replicate(100, {
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
     Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
       evecs <- eigen(m)$vectors
       evals <- eigen(m)$values
       evals <- evals/sqrt(sum(evals^2))
-      return(evecs %*% diag(evals) %*% t(evecs))
+      out <- evecs %*% diag(evals) %*% t(evecs)
+      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      return(out)
     })
   }, simplify = FALSE)
-  
-  as.mstorsst(Ysamples, tol = 1E3 * .Machine$double.eps)
   stat_ss1(Ysamples)
+  })
+  
+  # qqplot(vals, y = rchisq(1000, df = (5-1)*2))
+  res <- ks.test(vals, "pchisq", df = (5-1)*2)
+  expect_gt(res$p.value, 0.2)
 })
 
 test_that("amaral2007Lemma1() produces correct result for a unit vector", {

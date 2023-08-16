@@ -1,13 +1,32 @@
-test_that("test_ss_fixedtrace() soundly doesn't reject for simulation of single sample from null", {
-  set.seed(13131)
-  Y <- rsymm_norm(50, diag(c(3,2,1)/6)) #50 matrices is too small
-  Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)}) #this method of getting the correct trace seems to create narrower distributions than the normalising method
-  res <- test_ss_fixedtrace(Y, c(3,2,1)/6, 100)
-  expect_gt(res$pval, 0.2)
-  #hopefully even more accurate with correct evectors supplied, but doesn't seem to be
-  res2 <- test_ss_fixedtrace(Y, c(3,2,1)/6, 100, evecs = diag(1, nrow = 3))
-  expect_gt(res2$pval, 0.2)
+test_that("stat_fixedtrace() single sample has correct NULL distribution", {
+  set.seed(6514)
+  vals <- replicate(100, {
+    Y <- rsymm_norm(50, diag(c(3,2,1)/6))
+    Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)}) #this method of getting the correct trace seems to create narrower distributions than the normalising method
+    stat_fixedtrace(Y, c(3,2,1)/6)
+  })
+
+  # qqplot(vals, y = rchisq(1000, df = 2))
+  res <- ks.test(vals, "pchisq", df = 2)
+  expect_gt(res$p.value, 0.2)
 })
+
+test_that("stat_fixedtrace() multi sample has correct NULL distribution", {
+  set.seed(65141)
+  vals <- replicate(100, {
+    Ysamples <- replicate(5, {
+      Y <- rsymm_norm(50, diag(c(3,2,1)))
+      Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
+      Y
+    }, simplify = FALSE)
+    stat_fixedtrace(Ysamples)
+  })
+  
+  # qqplot(vals, y = rchisq(1000, df = (5-1)*2))
+  res <- ks.test(vals, "pchisq", df = (5-1)*2)
+  expect_gt(res$p.value, 0.2)
+})
+
 
 test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
   set.seed(1333)
@@ -24,18 +43,6 @@ test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
   #try with eigenvectors supplied
   res <- test_ss_fixedtrace(Y, badevals, 100, evecs = diag(1, 3))
   expect_lt(res$pval, 0.05)
-})
-
-test_that("a simple multisample null situation doesn't reject", {
-  set.seed(13)
-  Ysamples <- replicate(5, {
-    Y <- rsymm_norm(50, diag(c(3,2,1)))
-    Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
-    Y
-  }, simplify = FALSE)
-  
-  res <- test_ms_fixedtrace(Ysamples, 100)
-  expect_gt(res$pval, 0.2)
 })
 
 test_that("a multisample strongly non-null situation rejects", {
