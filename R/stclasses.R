@@ -33,7 +33,7 @@ as.sst <- function(x, ...){
   if (dims[1,2] != dims[1,2]){stop("Matrices are not square.")}
   if (length(unique(dims[,2])) != 1){stop("Some matrices are different sizes.")}
   if (length(unique(dims[,2])) != 1){stop("Some matrices are different sizes.")}
-  if (!all(vapply(x, isSymmetric, FUN.VALUE = FALSE, ...))){warning("Some matrices are not symmetric according to default limits in isSymmetric().")}
+  if (!all(vapply(x, isSymmetric, FUN.VALUE = FALSE, ...))){stop("Some matrices are not symmetric according to default limits in isSymmetric().")}
   class(x) <- c(class(x), "sst")
   return(x)
 }
