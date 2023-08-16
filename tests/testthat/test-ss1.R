@@ -11,6 +11,7 @@ test_that("stat_ss1() runs", {
   }, simplify = FALSE)
   
   as.mstorsst(Ysamples, tol = 1E3 * .Machine$double.eps)
+  stat_ss1(Ysamples)
 })
 
 test_that("amaral2007Lemma1() produces correct result for a unit vector", {

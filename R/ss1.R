@@ -14,9 +14,33 @@ stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
   Deltas <- lapply(evalsav, function(d2){amaral2007Lemma1(d2/sqrt(sum(d2^2)))})
   Omega2s <- mapply(function(d2, covar, Delta){
     Delta %*% covar %*% t(Delta) / sum(d2^2)
-  }, d2 <- evalsav, covar = covars_unconstrained, Delta = Deltas)
+  }, d2 = evalsav, covar = covars_unconstrained, Delta = Deltas, SIMPLIFY = FALSE)
   
+  # now for the eigenvalue for the null
+  if (is.null(evals)){
+    #estimate according to (36)
+    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve(Omega) %*% Delta},
+                   Delta = Deltas,
+                   Omega = Omega2s, SIMPLIFY = FALSE)
+    mat <- purrr::reduce(mats, `+`)
+    d0 <- eigen(mat)$vectors[, ncol(mat)]
+  } else {
+    d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
+  }
   
+  # now the statistic (32) for each sample:
+  persamplestat <- mapply(function(d3, Delta, Omega, n){
+    n * t(d3/sqrt(sum(d3^2)) - d0) %*% t(Delta) %*% solve(Omega) %*% Delta %*% (d3/sqrt(sum(d3^2)) - d0)
+  },
+  d3 = evalsav, #not yet normalised as in (32)
+  Delta = Deltas,
+  Omega = Omega2s,
+  n = lapply(x, length),
+  SIMPLIFY = FALSE
+  )
+  stat <- drop(purrr::reduce(persamplestat, `+`))
+  attr(stat, "null_evals") <- drop(d0)
+  return(stat)
 }
 
 # the construction of matrix A in Lemma1 Amaral, G. J. A., Dryden, I. L., & Wood, A. T. A. (2007). Pivotal Bootstrap Methods for k-Sample Problems in Directional Statistics and Shape Analysis. Journal of the American Statistical Association, 102(478), 695–707. http://www.jstor.org/stable/27639898
