@@ -2,6 +2,9 @@
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
   x <- as.mstorsst(x)
+  if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
+  if (!is.null(evals) && inherits(x, "mst")){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
+  if (!is.null(evecs) && inherits(x, "mst")){warning("evecs supplied for multisample situation supplied. This is unusual.")}
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   
   # means and eigenspaces used in multiple parts, so calculate first here:
