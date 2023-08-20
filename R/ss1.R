@@ -1,6 +1,7 @@
 #' @title Methods for testing eigenvalues with sum of squares = 1
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
+  warning("NAonerror currently does nothing")
   x <- as.mstorsst(x)
   if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && inherits(x, "mst")){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
@@ -58,4 +59,54 @@ amaral2007Lemma1 <- function(m){
   }
   A <- cbind(A1, -m[-d])
   return(A)
+}
+
+
+#' @describeIn stat_ss1 Bootstrap test.
+#' @export
+test_ss1 <- function(mss, evals = NULL, B){
+  browser()
+  mss <- as.mstorsst(mss)
+  if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
+  t0 <- stat_ss1(mss, evals = evals, NAonerror = FALSE)
+  evals <- attr(t0, "null_evals")
+  
+  # compute means that satisfy the NULL hypothesis (eigenvalues equal to evals)
+  # also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
+  nullmeans <- lapply(mss, function(ms){
+    av <- mmean(ms)
+    evecs <- eigen(av)$vectors
+    evecs %*% diag(evals) %*% t(evecs)
+  })
+  
+  # compute corresponding weights that lead to emp.lik.
+  # note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
+  # So there is unique minimum value to the problem where the mean lies on a line.
+  wts <- mapply(function(ms, nullmean){
+    browser()
+    bestmult <- optim(1,
+          fn = function(x){
+            emplik::el.test(do.call(rbind, lapply(ms, vech)), x*vech(nullmean))[["-2LLR"]]
+          },
+          method = "Brent", lower = 0, upper = upper) #optim warns that Nelder-Mead unreliable on 1 dimension
+    elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), bestmult$par*vech(nullmean))
+    elres$wts
+  }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
+  
+  #check the weights
+  wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
+  if (any(wtsums_discrepacies > 1E-2)){
+    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
+    return(list(
+      pval = 0,
+      t0 = Inf,
+      nullt = NA,
+      B = NA
+    ))
+  }
+  
+  res <- bootresampling(mss, wts, 
+                        stat = stat_fixedtrace,
+                        B = B)
+  return(res)
 }

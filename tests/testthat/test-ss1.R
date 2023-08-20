@@ -40,6 +40,23 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
   expect_gt(res$p.value, 0.2)
 })
 
+test_that("test_ss1() reject for single sample with wrong eval", {
+  set.seed(1333)
+  Y <- rsymm_norm(50, diag(c(3,2,1)))
+  Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
+    evecs <- eigen(m)$vectors
+    evals <- eigen(m)$values
+    evals <- evals/sqrt(sum(evals^2))
+    out <- evecs %*% diag(evals) %*% t(evecs)
+    out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+    return(out)
+  })
+
+  res <- test_ss1(Y, c(1,1,1)/3, 100)
+  expect_lt(res$pval, 0.05)
+})
+
+
 test_that("amaral2007Lemma1() produces correct result for a unit vector", {
   m <- runif(5, -1, 1)
   m <- m/sqrt(sum(m^2))
