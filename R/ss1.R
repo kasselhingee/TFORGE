@@ -96,15 +96,18 @@ test_ss1 <- function(mss, evals = NULL, B){
   # note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
   # So there is unique minimum value to the problem where the mean lies on a line.
   wts <- mapply(function(ms, nullmean){
+    if (attr(nullmean, "c_range")[["min"]] > attr(nullmean, "c_range")[["max"]]){
+      return(rep(0, length(ms))) #no pluasible values of c - avoids error triggered in optimise
+    }
     msarr <- do.call(rbind, lapply(ms, vech))
     bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
-            elres <- emplik::el.test(msarr, x*vech(nullmean))
+            elres <- emplik::el.test(msarr, x*vech(nullmean), maxit = 100)
             return(elres[["-2LLR"]])
           },
           lower = attr(nullmean, "c_range")[["min"]], 
           upper = attr(nullmean, "c_range")[["max"]]) 
-    elres <- emplik::el.test(msarr, bestmult$minimum*vech(nullmean), maxit = 100)
-    if (elres$nits == 100){warning("Reached maximum iterations in el.test()")}
+    elres <- emplik::el.test(msarr, bestmult$minimum*vech(nullmean), maxit = 200)
+    if (elres$nits == 200){warning("Reached maximum iterations in el.test()")}
     elres$wts
   }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
   
