@@ -76,8 +76,9 @@ solve_NAonerror <- function(A, NAonerror){
 
 #' @describeIn stat_ss1 Bootstrap test.
 #' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik::el.test()]`.
+#' @details The test did not perform well when the dispersion was very high (e.g. Normal entries with mean diagonal c(3,2,1) and variance of 1) - more studying needed.
 #' @export
-test_ss1 <- function(mss, evals = NULL, B, maxit = 100){
+test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   mss <- as.mstorsst(mss)
   if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
   t0 <- stat_ss1(mss, evals = evals, NAonerror = FALSE)

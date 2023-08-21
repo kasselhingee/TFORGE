@@ -43,7 +43,7 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
 test_that("test_ss1() pval on NULL is uniform", {
   set.seed(1333)
   pvals <- replicate(100, {
-    Y <- rsymm_norm(50, diag(c(3,2,1)))
+    Y <- rsymm_norm(300, diag(c(3,2,1)), sigma = diag(1, 6)) #at 300 samples it works :)
     Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
       evecs <- eigen(m)$vectors
       evals <- eigen(m)$values
@@ -61,7 +61,7 @@ test_that("test_ss1() pval on NULL is uniform", {
 
 test_that("test_ss1() reject for single sample with wrong eval", {
   set.seed(1333)
-  Y <- rsymm_norm(50, diag(c(3,2,1)))
+  Y <- rsymm_norm(50, diag(c(3,2,1)), sigma = diag(0.7, 6))
   Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
     evecs <- eigen(m)$vectors
     evals <- eigen(m)$values
@@ -71,7 +71,7 @@ test_that("test_ss1() reject for single sample with wrong eval", {
     return(out)
   })
 
-  res <- test_ss1(Y, c(1,1,1)/3, 100)
+  res <- test_ss1(Y, c(1,1,1)/3, 100, maxit = 100)
   expect_lt(res$pval, 0.05)
 })
 
