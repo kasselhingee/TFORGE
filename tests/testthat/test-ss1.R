@@ -40,6 +40,25 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
   expect_gt(res$p.value, 0.2)
 })
 
+test_that("test_ss1() pval on NULL is uniform", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Y <- rsymm_norm(50, diag(c(3,2,1)))
+    Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
+      evecs <- eigen(m)$vectors
+      evals <- eigen(m)$values
+      evals <- evals/sqrt(sum(evals^2))
+      out <- evecs %*% diag(evals) %*% t(evecs)
+      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      return(out)
+    })
+    res <- test_ss1(Y, c(3,2,1), 100, maxit = 25)
+    res$pval
+  })
+  qqplot(pvals, y = runif(100))
+  expect_gt(ks.test(pvals, "punif")$p.value, 0.05)
+})
+
 test_that("test_ss1() reject for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)))
