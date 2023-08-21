@@ -40,7 +40,42 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("test_ss1() pval on NULL is uniform", {
+test_that("test_ss1() Omega from sim evals in sst matches", {
+  set.seed(1221)
+  evals <- mvtnorm::rmvnorm(50, mean = c(1, 0, 0))
+  # evals <- evals / sqrt(rowSums(evals^2))
+  # pick a fixed set of vectors randomly
+  Q <- eigen(rsymm_norm(1, mean = diag(c(3,2,1)))[[1]])$vectors
+  Y <- apply(evals, 1, function(v){t(Q) %*% diag(v) %*% Q}, simplify = FALSE)
+  expect_equal(cov_evals(Y), cov(evals))
+  
+  #expect that projection of covariance onto the tangent at c(1,0,0) will 
+  #keep cov(evals) the same for the second two directions, and zero for the first dimension
+  Delta <- amaral2007Lemma1(c(1, 0, 0)/sqrt(sum(c(1, 0, 0)^2)))
+  Delta %*% cov(evals) %*% t(Delta)
+  stat_ss1(Y, evals = c(1,0,0))
+  res <- test_ss1(Y, c(1,0,0), 100, maxit = 25)
+  res$pval
+  
+})
+
+test_that("test_ss1() pval on NULL Normal evals sst is uniform", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    evals <- mvtnorm::rmvnorm(50, mean = c(3, 2, 1))
+    # evals <- evals / sqrt(rowSums(evals^2))
+    # pick a fixed set of vectors randomly
+    Q <- eigen(rsymm_norm(1, mean = diag(c(3,2,1)))[[1]])$vectors
+    Y <- apply(evals, 1, function(v){t(Q) %*% diag(v) %*% Q}, simplify = FALSE)
+    Y <- lapply(Y, function(m){m[lower.tri(m)] <- m[upper.tri(m)]; m}) #remove machine error
+    res <- test_ss1(Y, c(3,2,1), 100, maxit = 100)
+    res$pval
+  })
+  qqplot(pvals, y = runif(100))
+  expect_gt(ks.test(pvals, "punif")$p.value, 0.05)
+})
+
+test_that("test_ss1() pval on NULL Normal sst is uniform", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(300, diag(c(3,2,1)), sigma = diag(1, 6)) #at 300 samples it works :)
