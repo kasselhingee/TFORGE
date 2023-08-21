@@ -27,6 +27,12 @@ stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
     d0 <- eigen(mat)$vectors[, ncol(mat)]
+    # make d0 DOT evalsav have as much positive sign as possible
+    dotprds <- vapply(evalsav, function(v){v %*% d0}, FUN.VALUE = 0.1)
+    avsign <- mean(sign(dotprds))
+    if (avsign < 0){
+      d0 <- -1 * d0
+    }
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
   }
