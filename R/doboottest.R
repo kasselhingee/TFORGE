@@ -41,15 +41,25 @@ bootresampling <- function(x, stdx, stat, B, ...){
 #' @param w weights. If present, must have the same structure as `x`
 multisample <- function(x, prob = NULL){
   if (is.null(prob)){
-    out <- lapply(x, sample, replace = TRUE)
-    return(as.mstorsst(out))
+    out <- lapply(x, samplesst, replace = TRUE)
+    class(out) <- c(class(out), "mst")
+    return(out)
   }
   else {
     stopifnot(length(prob) == length(x))
     stopifnot(all(vapply(x, length, 2) == vapply(prob, length, 2)))
-    out <- mapply(sample, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
-    return(as.mstorsst(out))
+    out <- mapply(samplesst, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
+    class(out) <- c(class(out), "mst")
+    return(out)
   }
+}
+
+# an internal version of sample that automatically marks the result as an sst
+samplesst <- function(x, prob = NULL, replace = TRUE){
+  stopifnot(inherits(x, "sst"))
+  out <- sample(x, prob = prob, replace = replace)
+  class(out) <- c(class(out), "sst")
+  return(out)
 }
 
 
