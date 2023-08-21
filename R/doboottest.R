@@ -32,6 +32,7 @@ bootresampling <- function(x, stdx, stat, B, ...){
     pval = pval,
     t0 = t0,
     nullt = nullt,
+    stdx = stdx,
     B = B
   ))
 }
