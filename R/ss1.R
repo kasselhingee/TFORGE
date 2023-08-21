@@ -1,7 +1,6 @@
 #' @title Methods for testing eigenvalues with sum of squares = 1
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
-  warning("NAonerror currently does nothing")
   x <- as.mstorsst(x)
   if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
@@ -23,7 +22,7 @@ stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
   # now for the eigenvalue for the null
   if (is.null(evals)){
     #estimate according to (36)
-    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve(Omega) %*% Delta},
+    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve_NAonerror(Omega, NAonerror) %*% Delta},
                    Delta = Deltas,
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
@@ -34,7 +33,7 @@ stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
   
   # now the statistic (32) for each sample:
   persamplestat <- mapply(function(d3, Delta, Omega, n){
-    n * t(d3/sqrt(sum(d3^2)) - d0) %*% t(Delta) %*% solve(Omega) %*% Delta %*% (d3/sqrt(sum(d3^2)) - d0)
+    n * t(d3/sqrt(sum(d3^2)) - d0) %*% t(Delta) %*% solve_NAonerror(Omega, NAonerror) %*% Delta %*% (d3/sqrt(sum(d3^2)) - d0)
   },
   d3 = evalsav, #not yet normalised as in (32)
   Delta = Deltas,
@@ -61,10 +60,24 @@ amaral2007Lemma1 <- function(m){
   return(A)
 }
 
+# wrapper around solve that returns a matrix of NA if couldn't solve
+solve_NAonerror <- function(A, NAonerror){
+  erroraction <- function(e){
+    if (!NAonerror){stop(e)}
+    else {
+      out <- NA*A
+      attr(out, "message") <- e$message
+      return(out)
+    }
+  }
+  out <- tryCatch(solve(A), error = erroraction)
+  out
+}
 
 #' @describeIn stat_ss1 Bootstrap test.
+#' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik::el.test()]`.
 #' @export
-test_ss1 <- function(mss, evals = NULL, B){
+test_ss1 <- function(mss, evals = NULL, B, maxit = 100){
   mss <- as.mstorsst(mss)
   if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
   t0 <- stat_ss1(mss, evals = evals, NAonerror = FALSE)
@@ -101,13 +114,13 @@ test_ss1 <- function(mss, evals = NULL, B){
     }
     msarr <- do.call(rbind, lapply(ms, vech))
     bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
-            elres <- emplik::el.test(msarr, x*vech(nullmean), maxit = 100)
+            elres <- emplik::el.test(msarr, x*vech(nullmean), maxit = maxit)
             return(elres[["-2LLR"]])
           },
           lower = attr(nullmean, "c_range")[["min"]], 
           upper = attr(nullmean, "c_range")[["max"]]) 
-    elres <- emplik::el.test(msarr, bestmult$minimum*vech(nullmean), maxit = 200)
-    if (elres$nits == 200){warning("Reached maximum iterations in el.test()")}
+    elres <- emplik::el.test(msarr, bestmult$minimum*vech(nullmean), maxit = maxit)
+    if (elres$nits == maxit){warning("Reached maximum iterations in el.test() at best null mean.")}
     elres$wts
   }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
   
