@@ -4,9 +4,9 @@ stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
   warning("NAonerror currently does nothing")
   x <- as.mstorsst(x)
   if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
-  if (!is.null(evals) && inherits(x, "mst")){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
-  if (!is.null(evecs) && inherits(x, "mst")){warning("evecs supplied for multisample situation supplied. This is unusual.")}
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
+  if (!is.null(evecs) && (length(x) > 1)){warning("evecs supplied for multisample situation supplied. This is unusual.")}
   
   # means and eigenspaces used in multiple parts, so calculate first here:
   mns <- lapply(x, mmean)
@@ -65,7 +65,6 @@ amaral2007Lemma1 <- function(m){
 #' @describeIn stat_ss1 Bootstrap test.
 #' @export
 test_ss1 <- function(mss, evals = NULL, B){
-  browser()
   mss <- as.mstorsst(mss)
   if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
   t0 <- stat_ss1(mss, evals = evals, NAonerror = FALSE)
@@ -76,20 +75,36 @@ test_ss1 <- function(mss, evals = NULL, B){
   nullmeans <- lapply(mss, function(ms){
     av <- mmean(ms)
     evecs <- eigen(av)$vectors
-    evecs %*% diag(evals) %*% t(evecs)
+    nullmean <- evecs %*% diag(evals) %*% t(evecs)
+    # bounds for cj
+    diags <- lapply(ms, function(m){diag(t(evecs) %*% m %*% evecs)})
+    diags <- do.call(cbind, diags)
+    ranges <- t(apply(diags, 1, range))
+    colnames(ranges) <- c("min", "max")
+    # incorporate the proposed eigenvalues:
+    ranges <- ranges/evals
+    ranges <- t(apply(ranges, 1, sort))
+    # take largest min and smallest max as range
+    crange <- c(min = max(ranges[, 1]), max = min(ranges[, 2]))
+    
+    # return
+    attr(nullmean, "c_range") <- crange
+    return(nullmean)
   })
   
   # compute corresponding weights that lead to emp.lik.
   # note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
   # So there is unique minimum value to the problem where the mean lies on a line.
   wts <- mapply(function(ms, nullmean){
-    browser()
-    bestmult <- optim(1,
-          fn = function(x){
-            emplik::el.test(do.call(rbind, lapply(ms, vech)), x*vech(nullmean))[["-2LLR"]]
+    msarr <- do.call(rbind, lapply(ms, vech))
+    bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
+            elres <- emplik::el.test(msarr, x*vech(nullmean))
+            return(elres[["-2LLR"]])
           },
-          method = "Brent", lower = 0, upper = upper) #optim warns that Nelder-Mead unreliable on 1 dimension
-    elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), bestmult$par*vech(nullmean))
+          lower = attr(nullmean, "c_range")[["min"]], 
+          upper = attr(nullmean, "c_range")[["max"]]) 
+    elres <- emplik::el.test(msarr, bestmult$minimum*vech(nullmean), maxit = 100)
+    if (elres$nits == 100){warning("Reached maximum iterations in el.test()")}
     elres$wts
   }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
   
@@ -106,7 +121,7 @@ test_ss1 <- function(mss, evals = NULL, B){
   }
   
   res <- bootresampling(mss, wts, 
-                        stat = stat_fixedtrace,
+                        stat = stat_ss1,
                         B = B)
   return(res)
 }
