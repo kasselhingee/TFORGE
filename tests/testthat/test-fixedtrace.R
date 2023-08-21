@@ -28,6 +28,18 @@ test_that("stat_fixedtrace() multi sample has correct NULL distribution", {
 })
 
 
+test_that("test_ss_fixedtrace() from NULL has uniform p values", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
+    Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
+    res <- test_ss_fixedtrace(Y, c(3,2,1)/6, 100, maxit = 100)
+    res$pval
+  })
+  # qqplot(pvals, y = runif(100))
+  expect_gt(ks.test(pvals, "punif")$p.value, 0.05)
+})
+
 test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
