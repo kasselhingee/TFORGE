@@ -2,8 +2,8 @@
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
   x <- as.mstorsst(x)
-  if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
   if (!is.null(evecs) && (length(x) > 1)){warning("evecs supplied for multisample situation supplied. This is unusual.")}
   
@@ -88,6 +88,9 @@ solve_NAonerror <- function(A, NAonerror){
 test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   mss <- as.mstorsst(mss)
   if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
+  if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
+  if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  
   t0 <- stat_ss1(mss, evals = evals, NAonerror = FALSE)
   d0 <- attr(t0, "null_evals")
   
@@ -128,7 +131,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
           lower = attr(nullmean, "c_range")[["min"]], 
           upper = attr(nullmean, "c_range")[["max"]]) 
     elres <- emplik::el.test(msarr, bestmult$minimum*vech(nullmean), maxit = maxit)
-    if (elres$nits == maxit){warning("Reached maximum iterations in el.test() at best null mean.")}
+    if (elres$nits == maxit){warning("el.test() reached maximum iterations of ", maxit, " at best null mean.")}
     elres$wts
   }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
   
