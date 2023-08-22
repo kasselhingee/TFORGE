@@ -89,21 +89,21 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   mss <- as.mstorsst(mss)
   if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
   t0 <- stat_ss1(mss, evals = evals, NAonerror = FALSE)
-  evals <- attr(t0, "null_evals")
+  d0 <- attr(t0, "null_evals")
   
-  # compute means that satisfy the NULL hypothesis (eigenvalues equal to evals)
+  # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0)
   # also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
   nullmeans <- lapply(mss, function(ms){
     av <- mmean(ms)
     evecs <- eigen(av)$vectors
-    nullmean <- evecs %*% diag(evals) %*% t(evecs)
+    nullmean <- evecs %*% diag(d0) %*% t(evecs)
     # bounds for cj
     diags <- lapply(ms, function(m){diag(t(evecs) %*% m %*% evecs)})
     diags <- do.call(cbind, diags)
     ranges <- t(apply(diags, 1, range))
     colnames(ranges) <- c("min", "max")
     # incorporate the proposed eigenvalues:
-    ranges <- ranges/evals
+    ranges <- ranges/d0
     ranges <- t(apply(ranges, 1, sort))
     # take largest min and smallest max as range
     crange <- c(min = max(ranges[, 1]), max = min(ranges[, 2]))
@@ -146,6 +146,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   
   res <- bootresampling(mss, wts, 
                         stat = stat_ss1,
-                        B = B)
+                        B = B,
+                        evals = evals)
   return(res)
 }
