@@ -35,7 +35,7 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
   stat_ss1(Ysamples)
   })
   
-  qqplot(vals, y = rchisq(1000, df = (5-1)*2))
+  # qqplot(vals, y = rchisq(1000, df = (5-1)*2))
   res <- ks.test(vals, "pchisq", df = (5-1)*2)
   expect_gt(res$p.value, 0.2)
 })
@@ -55,7 +55,7 @@ test_that("test_ss1() uniform pval on NULL sst", {
     res <- test_ss1(Y, c(3,2,1), 100, maxit = 100)
     res$pval
   })
-  qqplot(pvals, y = runif(100))
+  # qqplot(pvals, y = runif(100))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
 })
@@ -77,7 +77,7 @@ test_that("test_ss1() uniform pval on NULL mst", {
     res <- test_ss1(Ysamples, B = 100, maxit = 100)
     res$pval
   })
-  qqplot(pvals, y = runif(100))
+  # qqplot(pvals, y = runif(100))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
 })
