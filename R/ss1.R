@@ -86,6 +86,7 @@ solve_NAonerror <- function(A, NAonerror){
 #' @export
 test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   mss <- as.mstorsst(mss)
+  stopifnot(hasss1(mss))
   if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
   if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
@@ -151,4 +152,16 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
                         B = B,
                         evals = evals)
   return(res)
+}
+
+#' @title Test whether the supplied sample(s) have ss1
+#' @param x Either a list of samples, each sample being a list of matrices, or a single sample as a list of matrices.
+#' @param tolerance Tolerance on the relative difference, passed to `all.equal()`
+#' @export
+#' @return `TRUE` or `FALSE`
+hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
+  x <- as.mstorsst(x)
+  if (inherits(x, "mst")){x <- unlist(x, recursive = FALSE)}
+  ss <- vapply(x, function(y){sum(eigen(y)$values^2)}, FUN.VALUE = 1.64)
+  isTRUE(all.equal(ss, rep(1, length(ss)), tolerance = tolerance))
 }

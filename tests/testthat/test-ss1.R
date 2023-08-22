@@ -125,3 +125,26 @@ test_that("amaral2007Lemma1() produces correct result for a unit vector", {
   expect_equal(drop(A %*% m), rep(0, 4))
   expect_equal(A %*% Conj(t(A)), diag(1, 4))
 })
+
+test_that("hasss1 works", {
+  set.seed(1333)
+  Ysamples <- list(
+    rsymm_norm(30, diag(c(3,2,1))),
+    rsymm_norm(30, diag(c(6,2,1)))
+  )
+  expect_false(hasss1(Ysamples))
+  expect_error(test_ss1(Ysamples, B = 100))
+  
+  Ysamples <- lapply(Ysamples, function(Y){
+    lapply(Y, function(m) { #replace eigenvalues with normalised ones
+      evecs <- eigen(m)$vectors
+      evals <- eigen(m)$values
+      evals <- evals/sqrt(sum(evals^2))
+      out <- evecs %*% diag(evals) %*% t(evecs)
+      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      return(out)
+    }) })
+  
+  expect_true(hasss1(Ysamples))
+  
+})
