@@ -33,15 +33,16 @@ stat_ss1 <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
     if (avsign < 0){
       d0 <- -1 * d0
     }
+    warning("should estimated d0 be descending?")
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
   }
   
   # now the statistic (32) for each sample:
-  persamplestat <- mapply(function(d3, Delta, Omega, n){
-    n * t(d3/sqrt(sum(d3^2)) - d0) %*% t(Delta) %*% solve_NAonerror(Omega, NAonerror) %*% Delta %*% (d3/sqrt(sum(d3^2)) - d0)
+  persamplestat <- mapply(function(d2, Delta, Omega, n){
+    n * t(d2/sqrt(sum(d2^2)) - d0) %*% t(Delta) %*% solve_NAonerror(Omega, NAonerror) %*% Delta %*% (d2/sqrt(sum(d2^2)) - d0)
   },
-  d3 = evalsav, #not yet normalised as in (32)
+  d2 = evalsav, #not yet normalised as in (32)
   Delta = Deltas,
   Omega = Omega2s,
   n = lapply(x, length),
