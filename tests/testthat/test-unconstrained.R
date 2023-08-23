@@ -91,7 +91,7 @@ test_that("test_unconstrained() reject for simulation of multi sample not from n
     rsymm(50, diag(c(3,2,1))),
     rsymm(50, diag(c(4,3,2)))
   )
-  res <- test_unconstrained(Ysamples, 20)
+  res <- test_unconstrained(Ysamples, B = 20)
   expect_lt(res$pval, 0.05)
 })
 
@@ -99,9 +99,9 @@ test_that("test_unconstrained() repeats under set.seed()", {
   set.seed(134)
   Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE) 
   set.seed(1345)
-  res1 <- test_unconstrained(Ysamples, 10)
+  res1 <- test_unconstrained(Ysamples, B = 10)
   set.seed(1345)
-  res2 <- test_unconstrained(Ysamples, 10)
+  res2 <- test_unconstrained(Ysamples, B = 10)
   expect_equal(res1, res2)
 })
 
@@ -110,5 +110,5 @@ test_that("stat_unconstrained() is zero for standarised sample", {
   set.seed(13131)
   Ysample <- rsymm(50, diag(c(3,2,1)))
   Ystdsample <- standardise_specifiedevals(Ysample, c(3,2,1))
-  expect_equal(stat_unconstrained(Ystdsample, c(3,2,1)), 0)
+  expect_equal(as.numeric(stat_unconstrained(Ystdsample, c(3,2,1))), 0)
 })
