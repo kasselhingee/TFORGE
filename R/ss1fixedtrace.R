@@ -46,9 +46,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
     if (avsign < 0){
       d0 <- -1 * d0
     }
-    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){browser()}
     stopifnot(all(order(d0, decreasing = TRUE) == 1:length(d0)))
-    warning("should estimated d0 be descending?")
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
     if (!isTRUE(all.equal(sum(d0), sum(diag(x[[1]][[1]]))))){stop("Provided evals do not sum to trace of observations.")}
@@ -70,15 +68,35 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
 
 test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   x <- as.mstorsst(x)
-  stopifnot(hasss1(x))
-  stopifnot(hasfixedtrace(x))
-  if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
+  if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   
   t0 <- stat_ss1fixedtrace(x, evals = evals)
   d0 <- attr(t0, "null_evals")
   
-  nullmeans <- lapply(mss, elnullmean, getcbound = TRUE)
+  # means corresponding to NULL and d0
+  nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
   
+  # el weights
+  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
+  
+  #check the weights
+  wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
+  if (any(wtsums_discrepacies > 1E-2)){
+    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
+    return(list(
+      pval = 0,
+      t0 = Inf,
+      nullt = NA,
+      stdx = wts,
+      B = NA
+    ))
+  }
+  
+  res <- bootresampling(x, wts, 
+                        stat = stat_ss1fixedtrace,
+                        B = B,
+                        evals = evals)
+  return(res)
 }
