@@ -1,20 +1,44 @@
-test_that("stat_specifiedevals() has correct null distribution", {
-  set.seed(1365)
-  vals <- replicate(100, {
+test_that("stat_unconstrained() for sst has correct null distribution", {
+  vals <- vapply(1:100, function(seed){
+    set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
-    stat_specifiedevals(Ysample, c(3,2,1))
-  })
+    stat_unconstrained(Ysample, c(3,2,1))
+  }, FUN.VALUE = 1.3)
 
-  qqplot(vals, y = rchisq(1000, df = 3))
+  # qqplot(vals, y = rchisq(1000, df = 3))
   res <- ks.test(vals, "pchisq", df = 3)
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat_commonevals_ksample() has correct null distribution", {
+test_that("stat_unconstrained() for sst, specified evecs, has correct null distribution", {
+  vals <- vapply(1:100, function(seed){
+    set.seed(seed)
+    Ysample <- rsymm(50, diag(c(3,2,1)))
+    stat_unconstrained(Ysample, evals = c(3,2,1), evecs = diag(1, 3))
+  }, FUN.VALUE = 1.3)
+  
+  # qqplot(vals, y = rchisq(1000, df = 3))
+  res <- ks.test(vals, "pchisq", df = 3)
+  expect_gt(res$p.value, 0.2)
+})
+
+test_that("stat_unconstrained() for mst has correct null distribution", {
   set.seed(13131)
   vals <- replicate(100, {
     Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
-    stat_commonevals_ksample(Ysamples)
+    stat_unconstrained(Ysamples)
+  })
+  
+  # qqplot(vals, y = rchisq(1000, df = (5-1)*3))
+  res <- ks.test(vals, "pchisq", df = (5-1)*3)
+  expect_gt(res$p.value, 0.2)
+})
+
+test_that("stat_unconstrained() for mst w specified evecs has correct null distribution", {
+  set.seed(13131)
+  vals <- replicate(100, {
+    Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
+    stat_unconstrained(Ysamples, evecs = diag(1, 3))
   })
   
   # qqplot(vals, y = rchisq(1000, df = (5-1)*3))
