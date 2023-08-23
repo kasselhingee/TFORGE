@@ -11,6 +11,7 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
+  if (!is.null(evecs) && (length(x) > 1)){warning("evecs supplied to multisample, but stat_unconstrained() does not support providing evecs for a multisample")}
 
   avs <- lapply(x, mmean)
   ess <- lapply(avs, eigen)
@@ -30,7 +31,6 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
     avevals <- lapply(avs, function(av){sort(diag(t(evecs) %*% av %*% evecs), decreasing = TRUE)})
     avevecs <- replicate(length(x), evecs, simplify = FALSE)
   }
-
 
   # covariance of evals (V matrices)
   Vs <- mapply(cov_evals, ms = x, evecs = avevecs, av = avs , SIMPLIFY = FALSE)
@@ -57,6 +57,7 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  if (!is.null(evecs) && (length(x) > 1)){stop("evecs specified for multisample not supported")}
   
   if (is.null(evals)){#estimate common evals using stat_unconstrained()
     t0info <- stat_unconstrained(x)
