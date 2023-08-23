@@ -20,3 +20,11 @@ stat_commonevals_ksample <- function(mss, NAonerror = FALSE){
   return(stat)
 }
 
+test_commonevals <- function(mss, B){
+  t0info <- stat_commonevals_ksample(mss)
+  mss_std <- lapply(mss, standardise_specifiedevals, attr(t0info, "esteval"))
+  out <- bootresampling(mss, mss_std, stat_commonevals_ksample, B = B, NAonerror = TRUE)
+  return(c(out, list(esteval = attr(t0info, "esteval"))))
+}
+
+
