@@ -117,35 +117,3 @@ standardise_specifiedevals <- function(ms, evals){
   class(newms) <- c(class(newms), "sst")
   return(newms)
 }
-
-
-#' @describeIn stat_unconstrained Estimate eigenvalues in common to multiple sampler (Eqn 24 in `tensors_4.pdf`).
-#' My implementation is surprisingly involved - there could be more elegant methods (or maybe my implementation is wrong).
-#' @export
-est_commonevals <- function(x){
-  avs <- lapply(mss, mmean)
-  ess <- lapply(avs, eigen)
-  mcovars <- .mapply(function(a, b){
-    mcovar(merr(a, mean = b))
-  }, dots = list(a = mss, b = avs), MoreArgs = list())
-
-  Vs <- .mapply(cov_eval1_eval0, 
-          dots = list(evecs = lapply(ess, "[[", "vectors"),
-                      mcov = mcovars),
-          MoreArgs = list())
-  invVs <- lapply(Vs, solve)
-  sum_invVs <- purrr::reduce(invVs, `+`)
-  invVevals <- mapply(`%*%`, invVs, lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
-  sum_invVevals <- purrr::reduce(invVevals, `+`)
-  return(drop(solve(sum_invVs) %*% sum_invVevals))
-}
-
-#' @describeIn commonevals Bootstrap test of common eigenvalues
-#' @param B Number of bootstrap samples
-#' @export
-test_commonevals <- function(mss, B){
-  t0info <- stat_commonevals_ksample(mss)
-  mss_std <- lapply(mss, standardise_specifiedevals, attr(t0info, "esteval"))
-  out <- bootresampling(mss, mss_std, stat_commonevals_ksample, B = B, NAonerror = TRUE)
-  return(c(out, list(esteval = attr(t0info, "esteval"))))
-}
