@@ -110,6 +110,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
       pval = 0,
       t0 = Inf,
       nullt = NA,
+      stdx = wts,
       B = NA
     ))
   }

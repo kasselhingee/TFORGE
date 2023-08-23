@@ -111,6 +111,7 @@ test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL, maxit = 25){
       pval = 0,
       t0 = Inf,
       nullt = NA,
+      stdx = elres$wts,
       B = NA
     ))
   }
