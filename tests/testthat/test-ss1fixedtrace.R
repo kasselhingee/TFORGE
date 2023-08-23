@@ -21,9 +21,10 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
   expect_gt(res$p.value, 0.2)
 })
 
+#seed 495
 test_that("stat_ss1fixedtrace() on mst from NULL is consistent with chisq", {
-  set.seed(13)
-  vals <- pbreplicate(1000, {
+  vals <- pbvapply(13 + (1:1000), function(seed){
+    set.seed(seed)
     Ysamples <- replicate(2, {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
     Y <- lapply(Y, function(m) {diag(m) <- diag(m) - drop(diag(m) %*% rep(1/sqrt(3), 3)) * rep(1/sqrt(3), 3); return(m)}) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
@@ -37,7 +38,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL is consistent with chisq", {
     })
     Y}, simplify = FALSE)
     stat_ss1fixedtrace(Ysamples)
-    }, cl = 2)
+    }, FUN.VALUE = 1.32)
   
   qqplot(vals, y = rchisq(1E6, df = (2-1) * 1))
   res <- ks.test(vals, "pchisq", df = (2-1) * 1)

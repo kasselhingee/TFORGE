@@ -35,7 +35,10 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
       SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
     eigenmat <- eigen(mat)
-    idx <- max(which(eigenmat$values > sqrt(.Machine$double.eps))) #zero eigenvalue corresponds to the 1,1,1 eigenvector
+    idx <- max(which(eigenmat$values > 0)) 
+    #zero eigenvalue corresponds to the 1,1,1 eigenvector so skip if the scalar product is anything like 1
+    # should be easy thershold because all other eigenvectors are perpendicular
+    if (abs(eigenmat$vectors[, idx] %*% rep(1, 3)/ sqrt(3)) > 0.8){idx <- idx - 1}
     d0 <- eigenmat$vectors[, idx]
     # make d0 DOT evalsav have as much positive sign as possible
     dotprds <- vapply(naveval, function(v){v %*% d0}, FUN.VALUE = 0.1)
@@ -43,6 +46,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
     if (avsign < 0){
       d0 <- -1 * d0
     }
+    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){browser()}
     stopifnot(all(order(d0, decreasing = TRUE) == 1:length(d0)))
     warning("should estimated d0 be descending?")
   } else {
@@ -62,4 +66,19 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   stat <- drop(purrr::reduce(persamplestat, `+`))
   attr(stat, "null_evals") <- drop(d0)
   return(stat)
+}
+
+test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25){
+  x <- as.mstorsst(x)
+  stopifnot(hasss1(x))
+  stopifnot(hasfixedtrace(x))
+  if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
+  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
+  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  
+  t0 <- stat_ss1fixedtrace(x, evals = evals)
+  d0 <- attr(t0, "null_evals")
+  
+  nullmeans <- lapply(mss, elnullmean, getcbound = TRUE)
+  
 }
