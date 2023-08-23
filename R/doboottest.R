@@ -19,9 +19,9 @@ bootresampling <- function(x, stdx, stat, B, ...){
   } else if (inherits(x, "sst")){
     if (inherits(stdx[[1]], "numeric")){
       #stdx is weights for an sst because first element sample is not a matrix/array, but just a numeric
-      nullt <- replicate(B, do.call(stat, c(list(sample(x, prob = stdx, replace = TRUE)), exargs)))
+      nullt <- replicate(B, do.call(stat, c(list(samplesst(x, prob = stdx, replace = TRUE)), exargs)))
     } else {
-      nullt <- replicate(B, do.call(stat, c(list(sample(stdx, replace = TRUE)), exargs)))
+      nullt <- replicate(B, do.call(stat, c(list(samplesst(stdx, replace = TRUE)), exargs)))
     }
   }
   
