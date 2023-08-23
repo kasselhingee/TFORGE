@@ -31,6 +31,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){
 #' @param B The number of bootstrap samples
 #' @export
 test_specifiedevals <- function(ms, evals, B){
+  ms <- as.mstorsst(ms)
   ms_std <- standardise_specifiedevals(ms, evals)
   res <- bootresampling(ms, ms_std, 
     stat = stat_specifiedevals,
@@ -39,9 +40,10 @@ test_specifiedevals <- function(ms, evals, B){
   return(res)
 }
 
-#' @describeIn specifiedevals Standardise a sample to satisty the null hypothesis (i.e. the average has eigenvalues equal to `eval`).
+#' @describeIn specifiedevals Standardise a sample to satisfy the null hypothesis (i.e. the average has eigenvalues equal to `eval`).
 #' @export
 standardise_specifiedevals <- function(ms, evals){
+  ms <- as.mstorsst(ms)
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(ms)
   errs <- merr(ms, mean = av)
@@ -49,6 +51,8 @@ standardise_specifiedevals <- function(ms, evals){
   av_evecs <- av_eigenspace$vectors
   cen <- av_evecs %*% diag(evals) %*% t(av_evecs)
   newms <- lapply(errs, function(m) cen + m)
+  newms <- lapply(newms, function(out){out[lower.tri(out)] <- out[upper.tri(out)]; out}) #to remove machine differences
+  class(newms) <- c(class(newms), "sst")
   return(newms)
 }
 
