@@ -2,7 +2,9 @@ test_that("stat_unconstrained() for sst has correct null distribution", {
   vals <- vapply(1:100, function(seed){
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
-    stat_unconstrained(Ysample, c(3,2,1))
+    stat <- stat_unconstrained(Ysample, c(3,2,1))
+    expect_equal(as.numeric(stat), stat_specifiedevals(Ysample, c(3,2,1)))
+    stat
   }, FUN.VALUE = 1.3)
 
   # qqplot(vals, y = rchisq(1000, df = 3))
@@ -14,7 +16,9 @@ test_that("stat_unconstrained() for sst, specified evecs, has correct null distr
   vals <- vapply(1:100, function(seed){
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
-    stat_unconstrained(Ysample, evals = c(3,2,1), evecs = diag(1, 3))
+    stat <- stat_unconstrained(Ysample, evals = c(3,2,1), evecs = diag(1, 3))
+    expect_equal(as.numeric(stat), stat_specifiedevals(Ysample, c(3,2,1), evecs = diag(1, 3)))
+    stat
   }, FUN.VALUE = 1.3)
   
   # qqplot(vals, y = rchisq(1000, df = 3))
@@ -26,7 +30,9 @@ test_that("stat_unconstrained() for mst has correct null distribution", {
   set.seed(13131)
   vals <- replicate(100, {
     Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
-    stat_unconstrained(Ysamples)
+    stat <- stat_unconstrained(Ysamples)
+    expect_equal(as.numeric(stat), as.numeric(stat_commonevals_ksample(Ysamples)))
+    stat
   })
   
   # qqplot(vals, y = rchisq(1000, df = (5-1)*3))
