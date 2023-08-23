@@ -6,6 +6,7 @@
 #' @param ... Passed to `stat`
 #' @export
 bootresampling <- function(x, stdx, stat, B, ...){
+  stopifnot(is_single_whole_number(B))
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
   exargs <- list(...)
@@ -63,4 +64,7 @@ samplesst <- function(x, prob = NULL, replace = TRUE){
   return(out)
 }
 
-
+is_single_whole_number <- function(x, tol = .Machine$double.eps^0.5) {
+  if (length(as.vector(drop(x))) > 1){return(FALSE)}
+  abs(x - round(x)) < tol
+}

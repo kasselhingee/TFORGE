@@ -49,7 +49,34 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   return(stat)
 }
 
+#' @describeIn stat_unconstrained Bootstrap test using `stat_unconstrained()`.
+#' @param B Number of bootstrap samples.
+#' @export
+test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
+  x <- as.mstorsst(x)
+  if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
+  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  
+  if (is.null(evals)){#estimate common evals using stat_unconstrained()
+    t0info <- stat_unconstrained(x)
+    estevals <- attr(t0info, "null_evals") #estevals name here because don't pass estimated evals to bootresampling
+  } else {
+    estevals <- evals
+  }
+  x_std <- lapply(x, standardise_specifiedevals, estevals)
+  
+  res <- bootresampling(x, x_std, 
+                        stat = stat_unconstrained,
+                        B = B,
+                        evals = evals,
+                        evecs = evecs)
+  return(res)
+}
 
+#' @describeIn stat_unconstrained Estimate eigenvalues in common to multiple sampler (Eqn 24 in `tensors_4.pdf`).
+#' My implementation is surprisingly involved - there could be more elegant methods (or maybe my implementation is wrong).
+#' @export
 est_commonevals <- function(mss, evecs = NULL, NAonerror = FALSE){
   avs <- lapply(mss, mmean)
   if (is.null(evecs)){
@@ -73,4 +100,52 @@ est_commonevals <- function(mss, evecs = NULL, NAonerror = FALSE){
   invVevals <- mapply(`%*%`, invVs, evals, SIMPLIFY = FALSE)
   sum_invVevals <- purrr::reduce(invVevals, `+`)
   return(drop(solve(sum_invVs) %*% sum_invVevals))
+}
+
+#' @describeIn stat_unconstrained Standardise a sample to satisfy the null hypothesis (i.e. the average has eigenvalues equal to `eval`).
+#' @export
+standardise_specifiedevals <- function(ms, evals){
+  ms <- as.mstorsst(ms)
+  evals <- sort(evals, decreasing = TRUE)
+  av <- mmean(ms)
+  errs <- merr(ms, mean = av)
+  av_eigenspace <- eigen(av, symmetric = TRUE)
+  av_evecs <- av_eigenspace$vectors
+  cen <- av_evecs %*% diag(evals) %*% t(av_evecs)
+  newms <- lapply(errs, function(m) cen + m)
+  newms <- lapply(newms, function(out){out[lower.tri(out)] <- out[upper.tri(out)]; out}) #to remove machine differences
+  class(newms) <- c(class(newms), "sst")
+  return(newms)
+}
+
+
+#' @describeIn stat_unconstrained Estimate eigenvalues in common to multiple sampler (Eqn 24 in `tensors_4.pdf`).
+#' My implementation is surprisingly involved - there could be more elegant methods (or maybe my implementation is wrong).
+#' @export
+est_commonevals <- function(x){
+  avs <- lapply(mss, mmean)
+  ess <- lapply(avs, eigen)
+  mcovars <- .mapply(function(a, b){
+    mcovar(merr(a, mean = b))
+  }, dots = list(a = mss, b = avs), MoreArgs = list())
+
+  Vs <- .mapply(cov_eval1_eval0, 
+          dots = list(evecs = lapply(ess, "[[", "vectors"),
+                      mcov = mcovars),
+          MoreArgs = list())
+  invVs <- lapply(Vs, solve)
+  sum_invVs <- purrr::reduce(invVs, `+`)
+  invVevals <- mapply(`%*%`, invVs, lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
+  sum_invVevals <- purrr::reduce(invVevals, `+`)
+  return(drop(solve(sum_invVs) %*% sum_invVevals))
+}
+
+#' @describeIn commonevals Bootstrap test of common eigenvalues
+#' @param B Number of bootstrap samples
+#' @export
+test_commonevals <- function(mss, B){
+  t0info <- stat_commonevals_ksample(mss)
+  mss_std <- lapply(mss, standardise_specifiedevals, attr(t0info, "esteval"))
+  out <- bootresampling(mss, mss_std, stat_commonevals_ksample, B = B, NAonerror = TRUE)
+  return(c(out, list(esteval = attr(t0info, "esteval"))))
 }
