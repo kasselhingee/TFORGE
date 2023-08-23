@@ -99,8 +99,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   nullmeans <- lapply(mss, elnullmean, d0 = d0, getcbound = TRUE)
   
   # compute corresponding weights that lead to emp.lik.
-  # note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
-  # So there is unique minimum value to the problem where the mean lies on a line.
+
   wts <- mapply(opt_el.test, ms = mss, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
   
   #check the weights
@@ -163,6 +162,8 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
 
 #function finds the best c and weights such that weighted average of data is c.mu and 
 #empirical likelihood maximised
+# note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
+# So there is unique minimum value to the problem where the mean lies on a line.
 # @param ms A single sample of symmetric tensors
 # @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" range gives a range of values of c, passed to `optimize()`
 opt_el.test <- function(ms, mu, maxit = 25){
