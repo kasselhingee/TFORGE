@@ -28,14 +28,14 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   if (is.null(evals)){
     #estimate according to equation after (41)
     mats <- mapply(function(aveval, Omega){
-      t(A0) %*% aveval %*% t(aveval) %*% A0 / (t(aveval) %*% t(A0) %*% Omega %*% A0 %*% aveval)
+      t(A0) %*% aveval %*% t(aveval) %*% A0 / drop(t(aveval) %*% t(A0) %*% Omega %*% A0 %*% aveval)
       },
       aveval = naveval,
       Omega = Omegas,
       SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
     eigenmat <- eigen(mat)
-    idx <- max(which(eigenmat$values > 0))
+    idx <- max(which(eigenmat$values > sqrt(.Machine$double.eps))) #zero eigenvalue corresponds to the 1,1,1 eigenvector
     d0 <- eigenmat$vectors[, idx]
     # make d0 DOT evalsav have as much positive sign as possible
     dotprds <- vapply(naveval, function(v){v %*% d0}, FUN.VALUE = 0.1)
@@ -43,6 +43,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
     if (avsign < 0){
       d0 <- -1 * d0
     }
+    stopifnot(all(order(d0, decreasing = TRUE) == 1:length(d0)))
     warning("should estimated d0 be descending?")
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
