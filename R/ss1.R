@@ -32,7 +32,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
     if (avsign < 0){
       d0 <- -1 * d0
     }
-    warning("should estimated d0 be descending?")
+    stopifnot(all(order(d0, decreasing = TRUE) == 1:length(d0)))
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
   }
@@ -96,44 +96,12 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   
   # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0)
   # also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
-  nullmeans <- lapply(mss, function(ms){
-    av <- mmean(ms)
-    evecs <- eigen(av)$vectors
-    nullmean <- evecs %*% diag(d0) %*% t(evecs)
-    # bounds for cj
-    diags <- lapply(ms, function(m){diag(t(evecs) %*% m %*% evecs)})
-    diags <- do.call(cbind, diags)
-    ranges <- t(apply(diags, 1, range))
-    colnames(ranges) <- c("min", "max")
-    # incorporate the proposed eigenvalues:
-    ranges <- ranges/d0
-    ranges <- t(apply(ranges, 1, sort))
-    # take largest min and smallest max as range
-    crange <- c(min = max(ranges[, 1]), max = min(ranges[, 2]))
-    
-    # return
-    attr(nullmean, "c_range") <- crange
-    return(nullmean)
-  })
+  nullmeans <- lapply(mss, elnullmean, d0 = d0, getcbound = TRUE)
   
   # compute corresponding weights that lead to emp.lik.
   # note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
   # So there is unique minimum value to the problem where the mean lies on a line.
-  wts <- mapply(function(ms, nullmean){
-    if (attr(nullmean, "c_range")[["min"]] > attr(nullmean, "c_range")[["max"]]){
-      return(rep(0, length(ms))) #no pluasible values of c - avoids error triggered in optimise
-    }
-    msarr <- do.call(rbind, lapply(ms, vech))
-    bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
-            elres <- emplik::el.test(msarr, x*vech(nullmean), maxit = maxit)
-            return(elres[["-2LLR"]])
-          },
-          lower = attr(nullmean, "c_range")[["min"]], 
-          upper = attr(nullmean, "c_range")[["max"]]) 
-    elres <- emplik::el.test(msarr, bestmult$minimum*vech(nullmean), maxit = maxit)
-    if (elres$nits == maxit){warning("el.test() reached maximum iterations of ", maxit, " at best null mean.")}
-    elres$wts
-  }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
+  wts <- mapply(opt_el.test, ms = mss, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
   
   #check the weights
   wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
@@ -164,4 +132,51 @@ hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
   if (inherits(x, "mst")){x <- unlist(x, recursive = FALSE)}
   ss <- vapply(x, function(y){sum(eigen(y)$values^2)}, FUN.VALUE = 1.64)
   isTRUE(all.equal(ss, rep(1, length(ss)), tolerance = tolerance))
+}
+
+
+# compute means that satisfy the NULL hypothesis (eigenvalues equal to d0) for use in empirical likelihood
+# also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
+# @param a single sample of tensors
+# @param d0 the NULL set of eigenvalues
+# @param av The average of `ms`, if omitted then computed from `ms` directly (include to save computation time)
+# @param evecs The eigenvectors of the average of `ms`. If omitted then computed from the average of `ms` directly (include to save computation time).
+elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
+  if (is.null(av)){av <- mmean(ms)}
+  if (is.null(evecs)){evecs <- eigen(av)$vectors}
+  nullmean <- evecs %*% diag(d0) %*% t(evecs)
+  if (getcbound){# bounds for cj
+    diags <- lapply(ms, function(m){diag(t(evecs) %*% m %*% evecs)})
+    diags <- do.call(cbind, diags)
+    ranges <- t(apply(diags, 1, range))
+    colnames(ranges) <- c("min", "max")
+    # incorporate the proposed eigenvalues:
+    ranges <- ranges/d0
+    ranges <- t(apply(ranges, 1, sort))
+    # take largest min and smallest max as range
+    crange <- c(min = max(ranges[, 1]), max = min(ranges[, 2]))
+    
+    attr(nullmean, "c_range") <- crange
+  }
+  return(nullmean)
+}
+
+#function finds the best c and weights such that weighted average of data is c.mu and 
+#empirical likelihood maximised
+# @param ms A single sample of symmetric tensors
+# @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" range gives a range of values of c, passed to `optimize()`
+opt_el.test <- function(ms, mu, maxit = 25){
+  if (attr(mu, "c_range")[["min"]] > attr(mu, "c_range")[["max"]]){
+    return(rep(0, length(ms))) #no pluasible values of c - avoids error triggered in optimise
+  }
+  msarr <- do.call(rbind, lapply(ms, vech))
+  bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
+          elres <- emplik::el.test(msarr, x*vech(mu), maxit = maxit)
+          return(elres[["-2LLR"]])
+        },
+        lower = attr(mu, "c_range")[["min"]], 
+        upper = attr(mu, "c_range")[["max"]]) 
+  elres <- emplik::el.test(msarr, bestmult$minimum*vech(mu), maxit = maxit)
+  if (elres$nits == maxit){warning("el.test() reached maximum iterations of ", maxit, " at best null mean.")}
+  elres$wts
 }
