@@ -79,7 +79,7 @@ test_that("test_commonevals() from NULL mst has uniform p-values", {
     expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
     res$pval
   }, FUN.VALUE = 1.3)
-  qqplot(pvals, y = runif(1000))
+  # qqplot(pvals, y = runif(1000))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
 })
