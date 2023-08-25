@@ -1,3 +1,8 @@
+#' @title Statistic and test of 3-matrices with trace 0 and sum of sq eigenvalues equal to 1
+#' @details Warning: the null distribution of `stat_ss1fixedtrace()` for multisamples does not appear to be chi-sq.
+#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
+#' @param evals If supplied the eigenvalues of the null hypothesis and `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and is estimated within the function.
+#' @export
 stat_ss1fixedtrace <- function(x, evals = NULL){
   x <- as.mstorsst(x)
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
@@ -66,6 +71,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   return(stat)
 }
 
+#' @describeIn stat_ss1fixedtrace Bootstrap test using `stat_ss1fixedtrace()`.
 #' @param maxit Passed to [`el.test()`]
 #' @details The number of iterations in [`el.test()`] can have a big influence on the result, and it seems the mean with the best empirical likelihood can often be on the boundary of the convex hull of the data.
 #' `maxit = 25` is too small. Perhaps `maxit = 1000`?
