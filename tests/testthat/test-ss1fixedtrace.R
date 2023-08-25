@@ -19,7 +19,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL with fixed evecs is n
       }, simplify = FALSE)
     stat_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)))
   })
-  qqplot(vals, y = rchisq(1E6, df = 1))
+  # qqplot(vals, y = rchisq(1E6, df = 1))
   res <- ks.test(vals, "pchisq", df = 1)
   expect_gt(res$p.value, 0.2)
 })
@@ -42,16 +42,16 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
     stat_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)))
     })
   
-  qqplot(vals, y = rchisq(1E6, df = 1))
+  # qqplot(vals, y = rchisq(1E6, df = 1))
   res <- ks.test(vals, "pchisq", df = 1)
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat_ss1fixedtrace() on mst from NULL is consistent with chisq", {
-  vals <- vapply(1300 + (1:1000), function(seed){
+test_that("stat_ss1fixedtrace() on mst from NULL is consistent with chisq on n=50", {
+  vals <- vapply(10300 + (1:1000), function(seed){
     set.seed(seed)
     Ysamples <- replicate(2, {
-    Y <- rsymm_norm(300, diag(c(1/sqrt(2), 0, -1/sqrt(2)))) #samples of 300 are big enough, but 50 are not
+    Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2)))) #samples of 300 are big enough, but 50 are not
     Y <- lapply(Y, function(m) {diag(m) <- diag(m) - drop(diag(m) %*% rep(1/sqrt(3), 3)) * rep(1/sqrt(3), 3); return(m)}) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
     Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
         evecs <- eigen(m)$vectors
@@ -65,7 +65,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL is consistent with chisq", {
     stat_ss1fixedtrace(Ysamples)
     }, FUN.VALUE = 1.32)
   
-  qqplot(vals, y = rchisq(1E6, df = (2-1) * 1))
+  # qqplot(vals, y = rchisq(1E6, df = (2-1) * 1))
   res <- ks.test(vals, "pchisq", df = (2-1) * 1)
   expect_gt(res$p.value, 0.2)
 })
@@ -85,10 +85,10 @@ test_that("test_ss1fixedtrace() uniform pval on NULL sst", {
     })
     stopifnot(hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
     stopifnot(hasss1(Y))
-    res <- test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = 100, maxit = 1000)
+    res <- suppressWarnings(test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = 100, maxit = 1000))
     res$pval
     })
-  qqplot(pvals, y = runif(1000))
+  # qqplot(pvals, y = runif(1000))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
 })
@@ -108,10 +108,10 @@ test_that("test_ss1fixedtrace() uniform pval on NULL mst", {
           return(out)
       })
     }, simplify = FALSE)
-    res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000)
+    res <- suppressWarnings(test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000))
     res$pval
   }, FUN.VALUE = 1.3)
-  qqplot(pvals, y = runif(100))
+  # qqplot(pvals, y = runif(100))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
 })
@@ -130,7 +130,8 @@ test_that("test_ss1fixedtrace() returns on bad el weights for mst", {
       return(out)
     })
   }, simplify = FALSE)
-  res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000)
-  res$pval
+  suppressWarnings(res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000))
+  expect_gt(length(res$nullt), 1)
+  expect_lt(min(vapply(res$stdx, sum, FUN.VALUE = 1.3)), 49)
 })
 
