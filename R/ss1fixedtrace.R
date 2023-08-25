@@ -68,6 +68,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
 
 #' @param maxit Passed to [`el.test()`]
 #' @details The number of iterations in [`el.test()`] can have a big influence on the result, and it seems the mean with the best empirical likelihood can often be on the boundary of the convex hull of the data.
+#' `maxit = 25` is too small. Perhaps `maxit = 1000`?
 #' @export
 test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   x <- as.mstorsst(x)
