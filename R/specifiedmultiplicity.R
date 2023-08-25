@@ -134,6 +134,8 @@ standardise_specifiedmultiplicity <- function(ms, mult){
   newM <- msum(mapply('*', evals, mats, SIMPLIFY = FALSE))
 
   # make new sample out of newM and errors
-  return(lapply(merr(ms, mean = av), '+', newM))
+  out <- lapply(merr(ms, mean = av), '+', newM)
+  class(out) <- c(class(out), "sst")
+  return(out)
 }
 
