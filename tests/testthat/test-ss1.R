@@ -52,7 +52,7 @@ test_that("test_ss1() uniform pval on NULL sst", {
       out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
       return(out)
     })
-    res <- test_ss1(Y, c(3,2,1), 100, maxit = 100)
+    res <- suppressWarnings(test_ss1(Y, c(3,2,1), 100, maxit = 1000))
     res$pval
   })
   # qqplot(pvals, y = runif(100))
@@ -74,7 +74,7 @@ test_that("test_ss1() uniform pval on NULL mst", {
         return(out)
       })
     }, simplify = FALSE)
-    res <- test_ss1(Ysamples, B = 100, maxit = 100)
+    res <- suppressWarnings(test_ss1(Ysamples, B = 100, maxit = 1000))
     res$pval
   })
   # qqplot(pvals, y = runif(100))
@@ -113,7 +113,7 @@ test_that("test_ss1() reject for an mst", {
       out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
       return(out)
     }) })
-  res <- test_ss1(Ysamples, B = 100, maxit = 100)
+  res <- suppressWarnings(test_ss1(Ysamples, B = 100, maxit = 1000))
   expect_lt(res$pval, 0.05)
 })
 

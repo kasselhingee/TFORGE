@@ -102,9 +102,8 @@ test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL, maxit = 25){
     nullmean <- evecs %*% diag(evals) %*% t(evecs)
   }
   
-  warning("need to check maxit for el.test()")
   elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), vech(nullmean), maxit = maxit)
-  if (elres$nits == maxit){warning("Reached maximum iterations in el.test() at best null mean.")}
+  if (elres$nits == maxit){warning(paste("Reached maximum iterations", maxit, "in el.test() at best null mean."))}
   if (abs(length(ms) - sum(elres$wts)) > 1E-2){
     # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
     return(list(
@@ -141,7 +140,7 @@ test_ms_fixedtrace <- function(mss, B, maxit = 25){
   # compute corresponding weights that lead to emp.lik.
   wts <- mapply(function(ms, nullmean){
     elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), vech(nullmean), maxit = maxit)
-  if (elres$nits == maxit){warning("Reached maximum iterations in el.test() at best null mean.")}
+    if (elres$nits == maxit){warning(paste("Reached maximum iterations", maxit, "in el.test() at best null mean."))}
     elres$wts
   }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
 

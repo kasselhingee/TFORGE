@@ -1,8 +1,8 @@
 test_that("multisample() listens to weights and gives correct sizes", {
   set.seed(13)
-  Ysamples <- list(rsymm_norm(5, diag(c(3,2,1))),
+  Ysamples <- as.mstorsst(list(rsymm_norm(5, diag(c(3,2,1))),
                 rsymm_norm(6, diag(c(3,2,1))),
-                rsymm_norm(7, diag(c(3,2,1))))
+                rsymm_norm(7, diag(c(3,2,1)))))
   
   #sample just the first
   w <- list(c(1, rep(0,4)),

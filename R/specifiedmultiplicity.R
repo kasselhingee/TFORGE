@@ -8,6 +8,7 @@ NULL
 #' @param B The number of bootstrap samples
 #' @export
 test_specifiedmultiplicity <- function(ms, mult, B){
+  ms <- as.mstorsst(ms)
   ms_std <- standardise_specifiedmultiplicity(ms, mult)
   res <- bootresampling(ms, ms_std, 
     stat = stat_specifiedmultiplicity,
