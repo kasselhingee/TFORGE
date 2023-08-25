@@ -32,7 +32,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
     if (avsign < 0){
       d0 <- -1 * d0
     }
-    stopifnot(all(order(d0, decreasing = TRUE) == 1:length(d0)))
+    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){warning("Estimated common eigenvalues are not in decreasing order.")}
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
   }
@@ -108,7 +108,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
     # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
     return(list(
       pval = 0,
-      t0 = Inf,
+      t0 = t0,
       nullt = NA,
       stdx = wts,
       B = NA

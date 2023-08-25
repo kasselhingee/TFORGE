@@ -151,7 +151,7 @@ test_ms_fixedtrace <- function(mss, B, maxit = 25){
     # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
     return(list(
       pval = 0,
-      t0 = Inf,
+      t0 = t0,
       nullt = NA,
       B = NA
     ))
