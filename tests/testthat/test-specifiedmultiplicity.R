@@ -38,7 +38,7 @@ test_that("stat_specifiedmultiplicity() is zero for standarised sample, dim 7", 
   expect_error(expect_equal(stat_specifiedmultiplicity(Ysample, mult = c(3, 2, 1, 1)), 0))
 })
 
-test_that("stat_specifiedevals() doesn't reject for simulation of single sample from null, and rejects otherwise", {
+test_that("test_specifiedmultiplicity() doesn't reject for simulation of single sample from null, and rejects otherwise", {
   set.seed(1331)
   Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
   res <- test_specifiedmultiplicity(Ysample, mult = c(3,2,1,1), 100)
