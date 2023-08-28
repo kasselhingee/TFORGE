@@ -28,7 +28,7 @@ bootresampling <- function(x, stdx, stat, B, ...){
   
   if (any(is.na(nullt))){warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))}
   
-  pval <- mean(nullt > t0)
+  pval <- mean(nullt > t0, na.rm = TRUE)
   return(list(
     pval = pval,
     t0 = t0,
