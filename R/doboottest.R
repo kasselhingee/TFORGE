@@ -9,7 +9,7 @@ bootresampling <- function(x, stdx, stat, B, ...){
   stopifnot(is_single_whole_number(B))
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
-  exargs <- list(...)
+  exargs <- c(list(...), NAonerror = TRUE)
   if (inherits(x, "mst")){
     if (inherits(stdx[[1]][[1]], "numeric")){
       #stdx is weights for an mst because first element of first sample is not a matrix/array, but just a numeric
