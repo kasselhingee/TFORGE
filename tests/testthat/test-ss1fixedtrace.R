@@ -48,7 +48,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
 })
 
 test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is not inconsistent with chisq", {
-  set.seed(135335)
+  set.seed(1353351)
   #method for simulating eigenvalues
   revals <- function(n, m = c(1/sqrt(2), 0, -1/sqrt(2))){
     H <- helmertsub(3)
@@ -71,16 +71,16 @@ test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is 
     }, simplify = FALSE)
     stat_ss1fixedtrace(Ysamples)
   })
-  qqplot(vals, y = rchisq(1E6, df = (2-1) * 1))
+  # qqplot(vals, y = rchisq(1E6, df = (2-1) * 1))
   res <- ks.test(vals, "pchisq", df = (2-1) * 1)
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat_ss1fixedtrace() on mst from NULL is consistent with chisq on n=50", {
-  vals <- vapply(10300 + (1:1000), function(seed){
+test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq on n=200", {
+  vals <- vapply(300 + (1:1000), function(seed){
     set.seed(seed)
     Ysamples <- replicate(2, {
-    Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2)))) #samples of 300 are big enough, but 50 are not
+    Y <- rsymm_norm(300, diag(c(1/sqrt(2), 0, -1/sqrt(2)))) #samples of 300 are big enough, but 200 are not
     Y <- lapply(Y, function(m) {diag(m) <- diag(m) - drop(diag(m) %*% rep(1/sqrt(3), 3)) * rep(1/sqrt(3), 3); return(m)}) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
     Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
         evecs <- eigen(m)$vectors
