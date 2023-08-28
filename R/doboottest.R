@@ -4,12 +4,14 @@
 #' @param stat Function to compute the statistic
 #' @param B The number of bootstrap samples to use
 #' @param ... Passed to `stat`
+#' @param NAonerror Passed to `stat` if `stat` has a formal argument called `NAonerror`. If `FALSE` then bootstrap resamples that lead to matrix inversion errors will return a statistic value of `NA`. `NAonerror` is *not* passed to the call of `stat` applied to the original data `x`.
 #' @export
-bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
+bootresampling <- function(x, stdx, stat, B, NAonerror = FALSE, ...){
   stopifnot(is_single_whole_number(B))
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
-  exargs <- c(list(...), NAonerror = NAonerror)
+  exargs <- list(...)
+  if ("NAonerror" %in% names(formals(stat))){ exargs <- c(exargs, , NAonerror = NAonerror) }
   if (inherits(x, "mst")){
     if (inherits(stdx[[1]][[1]], "numeric")){
       #stdx is weights for an mst because first element of first sample is not a matrix/array, but just a numeric
