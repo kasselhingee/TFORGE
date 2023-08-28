@@ -18,7 +18,7 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   
   # null evals
   if (is.null(evals)){
-    d0 <- est_commonevals(x, evecs = evecs, NAonerror = FALSE)
+    d0 <- est_commonevals(x, evecs = evecs, NAonerror = NAonerror)
   } else {
     d0 <- sort(evals, decreasing = TRUE)
   }
@@ -71,7 +71,8 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
                         stat = stat_unconstrained,
                         B = B,
                         evals = evals,
-                        evecs = evecs)
+                        evecs = evecs,
+                        NAonerror = TRUE)
   return(res)
 }
 
