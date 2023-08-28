@@ -11,7 +11,7 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = FALSE, ...){
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
   exargs <- list(...)
-  if ("NAonerror" %in% names(formals(stat))){ exargs <- c(exargs, , NAonerror = NAonerror) }
+  if ("NAonerror" %in% names(formals(stat))){ exargs <- c(exargs, NAonerror = NAonerror) }
   if (inherits(x, "mst")){
     if (inherits(stdx[[1]][[1]], "numeric")){
       #stdx is weights for an mst because first element of first sample is not a matrix/array, but just a numeric
