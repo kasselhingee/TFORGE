@@ -5,11 +5,11 @@
 #' @param B The number of bootstrap samples to use
 #' @param ... Passed to `stat`
 #' @export
-bootresampling <- function(x, stdx, stat, B, ...){
+bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
   stopifnot(is_single_whole_number(B))
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
-  exargs <- c(list(...), NAonerror = TRUE)
+  exargs <- c(list(...), NAonerror = NAonerror)
   if (inherits(x, "mst")){
     if (inherits(stdx[[1]][[1]], "numeric")){
       #stdx is weights for an mst because first element of first sample is not a matrix/array, but just a numeric
