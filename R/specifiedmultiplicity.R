@@ -19,7 +19,7 @@ test_specifiedmultiplicity <- function(ms, mult, B){
 
 #' @describeIn specifiedmultiplicity Test statistic
 #' @export
-stat_specifiedmultiplicity <- function(ms, mult){
+stat_specifiedmultiplicity <- function(ms, mult, NAonerror = TRUE){
   av <- mmean(ms)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
@@ -47,7 +47,7 @@ stat_specifiedmultiplicity <- function(ms, mult){
   C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
   covar <- xicovar(mult, idxs, es$vectors, C0/length(ms))
 
-  return(drop(t(xi) %*% solve(covar) %*% xi))
+  return(drop(t(xi) %*% solve_NAonerror(covar, NAonerror) %*% xi))
 }
 
 #this function turns the qYbarq into vectors perpendicular to 1,1,1,1,1,1...
