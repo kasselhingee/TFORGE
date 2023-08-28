@@ -71,8 +71,7 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
                         stat = stat_unconstrained,
                         B = B,
                         evals = evals,
-                        evecs = evecs,
-                        NAonerror = TRUE)
+                        evecs = evecs)
   return(res)
 }
 
