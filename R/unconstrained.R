@@ -60,7 +60,7 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
   if (!is.null(evecs) && (length(x) > 1)){stop("evecs specified for multisample not supported")}
   
   if (is.null(evals)){#estimate common evals using stat_unconstrained()
-    t0info <- stat_unconstrained(x)
+    t0info <- stat_unconstrained(x, evecs = evecs)
     estevals <- attr(t0info, "null_evals") #estevals name here because don't pass estimated evals to bootresampling
   } else {
     estevals <- evals

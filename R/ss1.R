@@ -84,7 +84,7 @@ solve_NAonerror <- function(A, NAonerror){
 #' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik::el.test()]`.
 #' @details The test did not perform well when the dispersion was very high (e.g. Normal entries with mean diagonal c(3,2,1) and variance of 1) - more studying needed.
 #' @export
-test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
+test_ss1 <- function(mss, evals = NULL, B, maxit = 25, sc = TRUE){
   mss <- as.mstorsst(mss)
   stopifnot(hasss1(mss))
   if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
@@ -100,7 +100,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   
   # compute corresponding weights that lead to emp.lik.
 
-  wts <- mapply(opt_el.test, ms = mss, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
+  wts <- mapply(opt_el.test, ms = mss, mu = nullmeans, maxit = maxit, sc = sc, SIMPLIFY = FALSE)
   
   #check the weights
   wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
@@ -167,18 +167,32 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
 # So there is unique minimum value to the problem where the mean lies on a line.
 # @param ms A single sample of symmetric tensors
 # @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" range gives a range of values of c, passed to `optimize()`
-opt_el.test <- function(ms, mu, maxit = 25){
+# @param sc If TRUE use Owen's self-concordant emplik function
+opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
   if (attr(mu, "c_range")[["min"]] > attr(mu, "c_range")[["max"]]){
     return(rep(0, length(ms))) #no pluasible values of c - avoids error triggered in optimise
   }
   msarr <- do.call(rbind, lapply(ms, vech))
-  bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
-          elres <- emplik::el.test(msarr, x*vech(mu), maxit = maxit)
-          return(elres[["-2LLR"]])
-        },
-        lower = attr(mu, "c_range")[["min"]], 
-        upper = attr(mu, "c_range")[["max"]]) 
-  elres <- emplik::el.test(msarr, bestmult$minimum*vech(mu), maxit = maxit)
-  if (elres$nits == maxit){warning("el.test() reached maximum iterations of ", maxit, " at best null mean.")}
-  elres$wts
+  if (sc) {
+    bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
+      scelres <- emplik(msarr, x*vech(mu), itermax = maxit)
+      return(-scelres$logelr)
+    },
+    lower = attr(mu, "c_range")[["min"]], 
+    upper = attr(mu, "c_range")[["max"]]) 
+    scelres <- emplik(msarr, bestmult$minimum*vech(mu), itermax = maxit)
+    if (!isTRUE(scelres$converged)){warning("emplik() did not converge")}
+    wts <- as.vector(scelres$wts) * nrow(msarr) #the multiple here is to match the weights put out by emplik::el.test()
+  } else {
+    bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
+            elres <- emplik::el.test(msarr, x*vech(mu), maxit = maxit)
+            return(elres[["-2LLR"]])
+          },
+          lower = attr(mu, "c_range")[["min"]], 
+          upper = attr(mu, "c_range")[["max"]]) 
+    elres <- emplik::el.test(msarr, bestmult$minimum*vech(mu), maxit = maxit)
+    if (elres$nits == maxit){warning("el.test() reached maximum iterations of ", maxit, " at best null mean.")}
+    wts <- elres$wts
+  }
+  wts
 }

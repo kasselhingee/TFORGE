@@ -76,7 +76,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
 #' @details The number of iterations in [`el.test()`] can have a big influence on the result, and it seems the mean with the best empirical likelihood can often be on the boundary of the convex hull of the data.
 #' `maxit = 25` is too small. Perhaps `maxit = 1000`?
 #' @export
-test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25){
+test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   x <- as.mstorsst(x)
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
@@ -89,7 +89,7 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
   
   # el weights
-  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
+  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, sc = sc, SIMPLIFY = FALSE)
   
   #check the weights
   lapply(wts, function(w){

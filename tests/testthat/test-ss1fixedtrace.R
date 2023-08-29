@@ -137,15 +137,15 @@ test_that("test_ss1fixedtrace() uniform pval on NULL mst", {
           return(out)
       })
     }, simplify = FALSE)
-    res <- suppressWarnings(test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000))
+    res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000)
     res$pval
   }, FUN.VALUE = 1.3)
-  # qqplot(pvals, y = runif(100))
+  qqplot(pvals, y = runif(100))
   res <- suppressWarnings({ks.test(pvals, "punif")})
-  expect_gt(res$p.value, 0.05)
+  expect_gt(res$p.value, 0.2)
 })
 
-test_that("test_ss1fixedtrace() returns on bad el weights for mst", {
+test_that("test returns on bad el weights for mst", {
   set.seed(13133)
   Ysamples <- replicate(2, {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
@@ -159,7 +159,8 @@ test_that("test_ss1fixedtrace() returns on bad el weights for mst", {
       return(out)
     })
   }, simplify = FALSE)
-  suppressWarnings(res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000))
+  a <- capture.output(res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000))
+  #some of the `lam` in el.test() are huge (-1.7E11) 
   expect_gt(length(res$nullt), 1)
   expect_lt(min(vapply(res$stdx, sum, FUN.VALUE = 1.3)), 49)
 })
