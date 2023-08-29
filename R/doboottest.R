@@ -6,7 +6,7 @@
 #' @param ... Passed to `stat`
 #' @param NAonerror Passed to `stat` if `stat` has a formal argument called `NAonerror`. If `FALSE` then bootstrap resamples that lead to matrix inversion errors will return a statistic value of `NA`. `NAonerror` is *not* passed to the call of `stat` applied to the original data `x`.
 #' @export
-bootresampling <- function(x, stdx, stat, B, NAonerror = FALSE, ...){
+bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
   stopifnot(is_single_whole_number(B))
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
