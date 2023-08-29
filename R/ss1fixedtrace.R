@@ -92,11 +92,12 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
   
   #check the weights
-  wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
-  if (any(wtsums_discrepacies > 0.9)){
-    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). 
-    warning("Empirical likelihood finds mean is on face of convex hull for at least one sample.")
-  }
+  lapply(wts, function(w){
+    if (abs(length(w) - sum(w)) > 0.9){
+      # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). 
+      warning(sprintf("Empirical likelihood weights sum to %0.1f, which suggests the mean is on a face of the convex hull.", sum(w)))
+    }
+  })
   if (any(vapply(wts, sum, FUN.VALUE = 1.3) < 0.5)){
     warning("Empirical likelihood finds mean is outside the convex hull of a sample.")
     # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is outside convex hull and with pval of zero, t0 of +infty
