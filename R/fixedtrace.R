@@ -112,7 +112,7 @@ test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL, maxit = 25, sc = TRUE
     wts <- elres$wts
   }
   
-  if (abs(length(ms) - sum(elres$wts)) > 1E-2){
+  if (abs(length(ms) - sum(wts)) > 1E-2){
     # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
     return(list(
       pval = 0,
