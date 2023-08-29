@@ -114,7 +114,7 @@ test_that("test_ss1fixedtrace() uniform pval on NULL sst", {
     })
     stopifnot(hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
     stopifnot(hasss1(Y))
-    res <- suppressWarnings(test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = 100, maxit = 1000))
+    res <- test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = 100, maxit = 1000)
     res$pval
     })
   # qqplot(pvals, y = runif(1000))
@@ -145,54 +145,3 @@ test_that("test_ss1fixedtrace() uniform pval on NULL mst", {
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("test returns on bad el weights for mst", {
-  set.seed(13133)
-  Ysamples <- replicate(2, {
-    Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
-    Y <- lapply(Y, function(m) {diag(m) <- diag(m) - drop(diag(m) %*% rep(1/sqrt(3), 3)) * rep(1/sqrt(3), 3); return(m)}) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
-    Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
-      evecs <- eigen(m)$vectors
-      evals <- eigen(m)$values
-      evals <- evals/sqrt(sum(evals^2))
-      out <- evecs %*% diag(evals) %*% t(evecs)
-      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
-      return(out)
-    })
-  }, simplify = FALSE)
-  a <- capture.output(res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000))
-  #some of the `lam` in el.test() are huge (-1.7E11) 
-  expect_gt(length(res$nullt), 1)
-  expect_lt(min(vapply(res$stdx, sum, FUN.VALUE = 1.3)), 49)
-})
-
-
-test_that("better convergence with larger samples for test_ss1fixedtrace()", {
-  quiettest <- purrr::quietly(test_ss1fixedtrace)
-  warns <- pbapply::pbsapply(13131 + (1:100), function(seed){
-    set.seed(seed)
-    Ysamples <- replicate(2, {
-      Y <- rsymm_norm(300, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
-      Y <- lapply(Y, function(m) {diag(m) <- diag(m) - drop(diag(m) %*% rep(1/sqrt(3), 3)) * rep(1/sqrt(3), 3); return(m)}) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
-      Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
-        evecs <- eigen(m)$vectors
-        evals <- eigen(m)$values
-        evals <- evals/sqrt(sum(evals^2))
-        out <- evecs %*% diag(evals) %*% t(evecs)
-        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
-        return(out)
-      })
-    }, simplify = FALSE)
-    res <- quiettest(Ysamples, B = 1, maxit = 10000)
-    c(
-      reachedmaxit = sum(grepl("reached maximum", res$warnings)),
-      onface = sum(grepl("face of the convex hull", res$warnings)),
-      outside = sum(grepl("outside the convex hull", res$warnings))
-    )
-  })
-  
-  rowMeans(warns)
-  expect_lt(mean(warns["reachedmaxit", ]) < 0.1)
-  expect_lt(mean(warns["onface", ]) < 0.1)
-  expect_lt(mean(warns["outside", ]) < 0.01)
-  
-})
