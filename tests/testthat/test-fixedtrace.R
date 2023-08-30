@@ -28,28 +28,43 @@ test_that("stat_fixedtrace() multi sample has correct NULL distribution", {
 })
 
 
-test_that("test_ss_fixedtrace() from NULL has uniform p values", {
+test_that("test of NULL has uniform p values for sst", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
     Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
-    res <- suppressWarnings(test_ss_fixedtrace(Y, c(3,2,1)/6, 100, maxit = 100))
+    res <- test_fixedtrace(Y, c(3,2,1)/6, 100, maxit = 100)
     res$pval
   })
   # qqplot(pvals, y = runif(100))
-  expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.05)
+  expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.2)
 })
 
-test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
+test_that("test of NULL has uniform p values for mst", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Ysamples <- replicate(5, {
+      Y <- rsymm_norm(50, diag(c(3,2,1)))
+      Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
+      Y
+    }, simplify = FALSE)
+    res <- test_fixedtrace(Ysamples, B = 100, maxit = 100)
+    res$pval
+  })
+  qqplot(pvals, y = runif(100))
+  expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.2)
+})
+
+test_that("test rejects for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
   Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
-  expect_warning(res <- test_ss_fixedtrace(Y, c(1,-1,1)/10, 100))
+  expect_warning(res <- test_fixedtrace(Y, evals = c(1,-1,1)/10, B = 100))
   expect_equal(res$pval, 0)
   
   badevals <- c(1,1,1)
   badevals <- badevals/sum(badevals)
-  res <- suppressWarnings(test_ss_fixedtrace(Y, badevals, 100, maxit = 100))
+  res <- test_fixedtrace(Y, badevals, B = 100, maxit = 100)
   expect_lt(res$pval, 0.05)
 })
 
@@ -64,7 +79,7 @@ test_that("a multisample strongly non-null situation rejects", {
   Ys <- list(Y1,
        symm(50, diag(c(1,1,1))))
   
-  res <- suppressWarnings(test_ms_fixedtrace(Ys, 100, maxit = 100))
+  res <- test_fixedtrace(Ys, B = 100, maxit = 100)
   expect_lt(res$pval, 0.05)
 })
 

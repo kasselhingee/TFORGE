@@ -78,56 +78,24 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
 #' @param B The number of bootstrap samples
 #' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik::el.test()]`.
 #' @export
-test_ss_fixedtrace <- function(ms, evals, B, maxit = 25, sc = TRUE){
-  evals <- sort(evals, decreasing = TRUE)
-  if (!isTRUE(all.equal(sum(evals), sum(diag(ms[[1]]))))){
-    warning("Provided evals do not sum to trace of average.")
-  }
-  
-  av <- mmean(ms)
-  es <- eigen(av, symmetric = TRUE)
-  nullmean <- es$vectors %*% diag(evals) %*% t(es$vectors)
-  
-  if (sc){
-    scelres <- emplik(do.call(rbind, lapply(ms, vech)), vech(nullmean), itermax = maxit)
-    if (!isTRUE(scelres$converged)){warning("emplik() did not converge")}
-    wts <- as.vector(scelres$wts) * length(ms)
-  } else {
-    elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), vech(nullmean), maxit = maxit)
-    if (elres$nits == maxit){warning(paste("Reached maximum iterations", maxit, "in el.test() at best null mean."))}
-    wts <- elres$wts
-  }
-  
-  if (abs(length(ms) - sum(wts)) > 1E-2){
-    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
-    return(list(
-      pval = 0,
-      t0 = Inf,
-      nullt = NA,
-      stdx = wts,
-      B = NA
-    ))
-  }
-  
-  res <- bootresampling(ms, wts, 
-                        stat = stat_fixedtrace,
-                        B = B,
-                        evals = evals)
-  return(res)
-}
+
 
 #' @describeIn stat_fixedtrace Bootstrap test.
 #' @export
-test_ms_fixedtrace <- function(mss, B, maxit = 25, sc = TRUE){
-  mss <- as.mstorsst(mss)
-  t0 <- stat_fixedtrace(mss, NAonerror = FALSE)
-  evals <- attr(t0, "null_evals")
+test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
+  x <- as.mstorsst(x)
+  if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
+  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+
+  t0 <- stat_fixedtrace(x, evals = evals, NAonerror = FALSE)
+  estevals <- attr(t0, "null_evals")
   
-  # compute means that satisfy the NULL hypothesis (eigenvalues equal to evals)
-  nullmeans <- lapply(mss, function(ms){
+  # compute means that satisfy the NULL hypothesis (eigenvalues equal to estevals)
+  nullmeans <- lapply(x, function(ms){
     av <- mmean(ms)
     evecs <- eigen(av)$vectors
-    evecs %*% diag(evals) %*% t(evecs)
+    evecs %*% diag(estevals) %*% t(evecs)
   })
   
   # compute corresponding weights that lead to emp.lik.
@@ -142,7 +110,7 @@ test_ms_fixedtrace <- function(mss, B, maxit = 25, sc = TRUE){
       wts <- elres$wts
     }
     wts
-  }, ms = mss, nullmean = nullmeans, SIMPLIFY = FALSE)
+  }, ms = x, nullmean = nullmeans, SIMPLIFY = FALSE)
 
   #check the weights
   wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
@@ -157,8 +125,9 @@ test_ms_fixedtrace <- function(mss, B, maxit = 25, sc = TRUE){
     ))
   }
   
-  res <- bootresampling(mss, wts, 
+  res <- bootresampling(x, wts, 
                         stat = stat_fixedtrace,
-                        B = B)
+                        B = B,
+                        evals = evals)
   return(res)
 }
