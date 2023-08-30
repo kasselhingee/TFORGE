@@ -51,10 +51,6 @@ test_that("test_ss_fixedtrace() reject for single sample with wrong eval", {
   badevals <- badevals/sum(badevals)
   res <- suppressWarnings(test_ss_fixedtrace(Y, badevals, 100, maxit = 100))
   expect_lt(res$pval, 0.05)
- 
-  #try with eigenvectors supplied
-  res <- suppressWarnings(test_ss_fixedtrace(Y, badevals, 100, evecs = diag(1, 3), maxit = 100))
-  expect_lt(res$pval, 0.05)
 })
 
 test_that("a multisample strongly non-null situation rejects", {

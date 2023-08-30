@@ -13,23 +13,17 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   tracerange <- range(traces) / mean(traces)
   isTRUE(all.equal(tracerange[1], tracerange[2], tolerance = tolerance))
 }
-
-#' @title Test statistic for given eigenvalues when trace is fixed.
-#' @param evecs Optional argument for single sample statistic. Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
-#' `t(evecs) %*% av %*% evecs`, where `av` is the average of `ms`.
-
-
-
+#' @title Test for eigenvalues when trace is fixed.
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
-#' @param evals If supplied the eigenvalues of the null hypothesis and `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and is estimated within the function.
-stat_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
+#' @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
+stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   x <- as.mstorsst(x)
   stopifnot(hasfixedtrace(x))
-  if (is.null(evals) && inherits(x, "sst")){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
-  if (!is.null(evals) && inherits(x, "mst")){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
-  if (!is.null(evecs) && inherits(x, "mst")){warning("evecs supplied for multisample situation supplied. This is unusual.")}
   if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
   else {mss <- x}
+  if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
+  if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
+
   H <- helmertsub(ncol(mss[[1]][[1]]))
   ess <- lapply(mss, function(ms){eigen(mmean(ms))})
   ns <- lapply(mss, length)
@@ -43,14 +37,9 @@ stat_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
       return(out)
     }
   }
-  precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms, evecs = evecs) %*% t(H)), error = erroraction)})
+  precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms) %*% t(H)), error = erroraction)})
   
-  # if evecs supplied the as per tensors_4.pdf T_1 statistic, using supplied evecs to test eigenvalues
-  if (is.null(evecs)){
-    d1s <- lapply(ess, "[[", "values")
-  } else {
-    d1s <- lapply(mss, function(ms){diag(t(evecs) %*% mmean(ms) %*% evecs)})
-  }
+  d1s <- lapply(ess, "[[", "values")
   
   #get estimate of common evals for multisample situation
   if (is.null(evals)){
@@ -89,18 +78,15 @@ stat_fixedtrace <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE){
 #' @param B The number of bootstrap samples
 #' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik::el.test()]`.
 #' @export
-test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL, maxit = 25, sc = TRUE){
+test_ss_fixedtrace <- function(ms, evals, B, maxit = 25, sc = TRUE){
   evals <- sort(evals, decreasing = TRUE)
   if (!isTRUE(all.equal(sum(evals), sum(diag(ms[[1]]))))){
     warning("Provided evals do not sum to trace of average.")
   }
-  if (is.null(evecs)){
-    av <- mmean(ms)
-    es <- eigen(av, symmetric = TRUE)
-    nullmean <- es$vectors %*% diag(evals) %*% t(es$vectors)
-  } else {
-    nullmean <- evecs %*% diag(evals) %*% t(evecs)
-  }
+  
+  av <- mmean(ms)
+  es <- eigen(av, symmetric = TRUE)
+  nullmean <- es$vectors %*% diag(evals) %*% t(es$vectors)
   
   if (sc){
     scelres <- emplik(do.call(rbind, lapply(ms, vech)), vech(nullmean), itermax = maxit)
@@ -126,8 +112,7 @@ test_ss_fixedtrace <- function(ms, evals, B, evecs = NULL, maxit = 25, sc = TRUE
   res <- bootresampling(ms, wts, 
                         stat = stat_fixedtrace,
                         B = B,
-                        evals = evals,
-                        evecs = evecs)
+                        evals = evals)
   return(res)
 }
 
