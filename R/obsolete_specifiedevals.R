@@ -1,10 +1,11 @@
+#' @noRd
 #' @title Obsolete Tools for testing specified eigenvalues for a single sample
 #' @description For the case that the eigenvectors are free and the eigenvalues are specified.
 #' @param evals The eigenvalues are specified for single sample tests. In descending order.
 #' @param ms Sample of matrices
 NULL
 
-#' @describeIn specifiedevals Test statistic (corresponds to eqn 13 in the draft `tensors_4`).
+#' @title Test statistic (corresponds to eqn 13 in the draft `tensors_4`).
 #' @param evecs Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
 stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
   evals <- sort(evals, decreasing = TRUE)

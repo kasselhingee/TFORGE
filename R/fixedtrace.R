@@ -74,13 +74,8 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
 }
  
  
-#' @describeIn stat_fixedtrace Bootstrap test.
-#' @param B The number of bootstrap samples
-#' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik::el.test()]`.
-#' @export
-
-
-#' @describeIn stat_fixedtrace Bootstrap test.
+#' @describeIn stat_fixedtrace Bootstrap test
+#' @inheritParams stat_ss1fixedtrace
 #' @export
 test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   x <- as.mstorsst(x)
