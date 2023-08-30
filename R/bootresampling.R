@@ -41,8 +41,10 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
 }
 
 #equivalent of sample, but for multiple samples
-#' @param x a `mst`
-#' @param w weights. If present, must have the same structure as `x`
+#' @title Resample a multisample `mst` object
+#' @param x an `mst`
+#' @param prob weights. If present, must have the same structure as `x`
+#' @export
 multisample <- function(x, prob = NULL){
   if (is.null(prob)){
     out <- lapply(x, samplesst, replace = TRUE)

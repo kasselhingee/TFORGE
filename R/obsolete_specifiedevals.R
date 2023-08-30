@@ -5,6 +5,7 @@
 #' @param ms Sample of matrices
 NULL
 
+#' @noRd
 #' @title Test statistic (corresponds to eqn 13 in the draft `tensors_4`).
 #' @param evecs Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
 stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
@@ -25,7 +26,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
 }
 
 
-
+#' @noRd
 #' @param B The number of bootstrap samples
 test_specifiedevals <- function(ms, evals, B){
   ms <- as.mstorsst(ms)
