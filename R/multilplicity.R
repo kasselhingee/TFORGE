@@ -19,7 +19,7 @@ test_multiplicity <- function(ms, mult, B){
 
 #' @describeIn multiplicity Test statistic
 #' @export
-stat_multiplicity <- function(ms, mult, NAonerror = TRUE){
+stat_multiplicity <- function(ms, mult, NAonerror = FALSE){
   av <- mmean(ms)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
