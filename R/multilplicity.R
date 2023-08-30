@@ -1,25 +1,25 @@
-#' @name specifiedmultiplicity
+#' @name multiplicity
 #' @title Tools for testing a specified multiplicity for a single sample
 #' @param ms Sample of matrices
 #' @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
 NULL
 
-#' @describeIn specifiedmultiplicity Bootstrap test
+#' @describeIn multiplicity Bootstrap test
 #' @param B The number of bootstrap samples
 #' @export
-test_specifiedmultiplicity <- function(ms, mult, B){
+test_multiplicity <- function(ms, mult, B){
   ms <- as.mstorsst(ms)
-  ms_std <- standardise_specifiedmultiplicity(ms, mult)
+  ms_std <- standardise_multiplicity(ms, mult)
   res <- bootresampling(ms, ms_std, 
-    stat = stat_specifiedmultiplicity,
+    stat = stat_multiplicity,
     B = B,
     mult = mult)
   return(res)
 }
 
-#' @describeIn specifiedmultiplicity Test statistic
+#' @describeIn multiplicity Test statistic
 #' @export
-stat_specifiedmultiplicity <- function(ms, mult, NAonerror = TRUE){
+stat_multiplicity <- function(ms, mult, NAonerror = TRUE){
   av <- mmean(ms)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
@@ -105,9 +105,9 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
   return(At) # this is actually the transpose of whats in my notes (where rows correspond to idxk)
 }
 
-#' @describeIn specifiedmultiplicity Standardise a sample to satisfy the (null) hypothesis of the given eigenvalue multiplicity in `mult`.
+#' @describeIn multiplicity Standardise a sample to satisfy the (null) hypothesis of the given eigenvalue multiplicity in `mult`.
 #' @export
-standardise_specifiedmultiplicity <- function(ms, mult){
+standardise_multiplicity <- function(ms, mult){
   av <- mmean(ms)
   stopifnot(sum(mult) == ncol(av))
   stopifnot(all(mult > 0))
