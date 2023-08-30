@@ -31,13 +31,15 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
   if (any(is.na(nullt))){warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))}
   
   pval <- mean(nullt > t0, na.rm = TRUE)
-  return(list(
+  out <- list(
     pval = pval,
     t0 = t0,
     nullt = nullt,
     stdx = stdx,
     B = B
-  ))
+  )
+  class(out) <- c(class(out), "tensorboot")
+  return(out)
 }
 
 #equivalent of sample, but for multiple samples
@@ -71,4 +73,11 @@ samplesst <- function(x, prob = NULL, replace = TRUE){
 is_single_whole_number <- function(x, tol = .Machine$double.eps^0.5) {
   if (length(as.vector(drop(x))) > 1){return(FALSE)}
   abs(x - round(x)) < tol
+}
+
+#' @export
+print.tensorboot <- function(x, ...){
+  x <- x[c("pval", "t0")]
+  class(x) <- "list"
+  NextMethod("print")
 }
