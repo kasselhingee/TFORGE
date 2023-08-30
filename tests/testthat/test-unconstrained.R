@@ -59,7 +59,7 @@ test_that("test_unconstrained() sst from NULL has uniform p-values", {
     set.seed(seed+1)
     res <- test_unconstrained(Ysample, c(3,2,1), B = 100)
     set.seed(seed+1)
-    res2 <- test_specifiedevals(Ysample, c(3,2,1), 100)
+    res2 <- test_specifiedevals(Ysample, c(3,2,1), B = 100)
     expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
     res$pval}, FUN.VALUE = 1.1)
   # qqplot(pvals, y = runif(1000))
