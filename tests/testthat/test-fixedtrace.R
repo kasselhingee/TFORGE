@@ -51,7 +51,7 @@ test_that("test of NULL has uniform p values for mst", {
     res <- test_fixedtrace(Ysamples, B = 100, maxit = 100)
     res$pval
   })
-  qqplot(pvals, y = runif(100))
+  # qqplot(pvals, y = runif(100))
   expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.2)
 })
 
