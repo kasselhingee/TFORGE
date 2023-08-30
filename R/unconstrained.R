@@ -88,13 +88,11 @@ est_commonevals <- function(mss, evecs = NULL, NAonerror = FALSE){
     evals <- lapply(avs, function(av){sort(diag(t(evecs) %*% av %*% evecs), decreasing = TRUE)})
     evecs <- replicate(length(mss), evecs, simplify = FALSE)
   }
-  mcovars <- .mapply(function(a, b){
-    mcovar(merr(a, mean = b))
-  }, dots = list(a = mss, b = avs), MoreArgs = list())
 
-  Vs <- .mapply(cov_eval1_eval0, 
-          dots = list(evecs = evecs,
-                      mcov = mcovars),
+  Vs <- .mapply(cov_evals, 
+          dots = list(ms = mss,
+                      evecs = evecs,
+                      av = avs),
           MoreArgs = list())
   invVs <- lapply(Vs, solve_NAonerror, NAonerror = NAonerror)
   sum_invVs <- purrr::reduce(invVs, `+`)
