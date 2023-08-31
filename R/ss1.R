@@ -183,6 +183,14 @@ opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
     scelres <- emplik(msarr, bestmult$minimum*vech(mu), itermax = maxit)
     if (!isTRUE(scelres$converged)){warning("emplik() did not converge")}
     wts <- as.vector(scelres$wts) * nrow(msarr) #the multiple here is to match the weights put out by emplik::el.test()
+    # check result with el.test
+    elres <- emplik::el.test(msarr, 
+                             bestmult$minimum*vech(mu), 
+                             lam = as.vector(scelres$lam),
+                             maxit = maxit)
+    if (!isTRUE(all.equal(elres$wts, wts))){
+      warning("Weights from emplik() differ from check by emplik::el.test()")
+    }
   } else {
     bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
             elres <- emplik::el.test(msarr, x*vech(mu), maxit = maxit)
