@@ -140,8 +140,7 @@ test_that("test_ss1fixedtrace() uniform pval on NULL mst", {
     res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000)
     res$pval
   }, FUN.VALUE = 1.3)
-  qqplot(pvals, y = runif(100))
+  # qqplot(pvals, y = runif(100))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.2)
 })
-
