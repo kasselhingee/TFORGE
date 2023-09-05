@@ -7,7 +7,7 @@ test_that("stat_ss1() on single sample from NULL is consistent with chisq", {
         evals <- eigen(m)$values
         evals <- evals/sqrt(sum(evals^2))
         out <- evecs %*% diag(evals) %*% t(evecs)
-        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+        out <- makeSymmetric(out) #to remove machine differences
         return(out)
     })
     stat_ss1(Y, evals = c(3,2,1)/sqrt(sum(c(3,2,1)^2)))
@@ -28,7 +28,7 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
       evals <- eigen(m)$values
       evals <- evals/sqrt(sum(evals^2))
       out <- evecs %*% diag(evals) %*% t(evecs)
-      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      out <- makeSymmetric(out) #to remove machine differences
       return(out)
     })
   }, simplify = FALSE)
@@ -49,7 +49,7 @@ test_that("test_ss1() uniform pval on NULL sst", {
       evals <- eigen(m)$values
       evals <- evals/sqrt(sum(evals^2))
       out <- evecs %*% diag(evals) %*% t(evecs)
-      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      out <- makeSymmetric(out) #to remove machine differences
       return(out)
     })
     res <- test_ss1(Y, c(3,2,1), 100, maxit = 1000)
@@ -70,7 +70,7 @@ test_that("test_ss1() uniform pval on NULL mst", {
         evals <- eigen(m)$values
         evals <- evals/sqrt(sum(evals^2))
         out <- evecs %*% diag(evals) %*% t(evecs)
-        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+        out <- makeSymmetric(out) #to remove machine differences
         return(out)
       })
     }, simplify = FALSE)
@@ -90,7 +90,7 @@ test_that("test_ss1() reject for single sample with wrong eval", {
     evals <- eigen(m)$values
     evals <- evals/sqrt(sum(evals^2))
     out <- evecs %*% diag(evals) %*% t(evecs)
-    out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+    out <- makeSymmetric(out) #to remove machine differences
     return(out)
   })
 
@@ -110,7 +110,7 @@ test_that("test_ss1() reject for an mst", {
       evals <- eigen(m)$values
       evals <- evals/sqrt(sum(evals^2))
       out <- evecs %*% diag(evals) %*% t(evecs)
-      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      out <- makeSymmetric(out) #to remove machine differences
       return(out)
     }) })
   res <- test_ss1(Ysamples, B = 100, maxit = 1000)
@@ -141,7 +141,7 @@ test_that("hasss1 works", {
       evals <- eigen(m)$values
       evals <- evals/sqrt(sum(evals^2))
       out <- evecs %*% diag(evals) %*% t(evecs)
-      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      out <- makeSymmetric(out) #to remove machine differences
       return(out)
     }) })
   

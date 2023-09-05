@@ -14,7 +14,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL with fixed evecs is n
     evals <- revals(50, m = c(1/sqrt(2), 0, -1/sqrt(2)))
     Y <- apply(evals, 1, function(v){
       out <- evecs %*% diag(v) %*% t(evecs)
-      out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+      out <- makeSymmetric(out) #to remove machine differences
       out
       }, simplify = FALSE)
     stat_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)))
@@ -34,7 +34,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
         evals <- eigen(m)$values
         evals <- evals/sqrt(sum(evals^2))
         out <- evecs %*% diag(evals) %*% t(evecs)
-        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+        out <- makeSymmetric(out) #to remove machine differences
         return(out)
     })
     # hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps))
@@ -64,7 +64,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is 
       evals <- revals(50, m = c(1/sqrt(2), 0, -1/sqrt(2)))
       Y <- apply(evals, 1, function(v){
         out <- evecs %*% diag(v) %*% t(evecs)
-        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+        out <- makeSymmetric(out) #to remove machine differences
         out
       }, simplify = FALSE)
       Y
@@ -87,7 +87,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq 
         evals <- eigen(m)$values
         evals <- evals/sqrt(sum(evals^2))
         out <- evecs %*% diag(evals) %*% t(evecs)
-        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+        out <- makeSymmetric(out) #to remove machine differences
         return(out)
     })
     Y}, simplify = FALSE)
@@ -109,7 +109,7 @@ test_that("test_ss1fixedtrace() uniform pval on NULL sst", {
         evals <- eigen(m)$values
         evals <- evals/sqrt(sum(evals^2))
         out <- evecs %*% diag(evals) %*% t(evecs)
-        out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+        out <- makeSymmetric(out) #to remove machine differences
         return(out)
     })
     stopifnot(hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
@@ -133,7 +133,7 @@ test_that("test_ss1fixedtrace() uniform pval on NULL mst", {
           evals <- eigen(m)$values
           evals <- evals/sqrt(sum(evals^2))
           out <- evecs %*% diag(evals) %*% t(evecs)
-          out[lower.tri(out)] <- out[upper.tri(out)] #to remove machine differences
+          out <- makeSymmetric(out) #to remove machine differences
           return(out)
       })
     }, simplify = FALSE)
