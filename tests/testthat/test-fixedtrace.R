@@ -2,7 +2,7 @@ test_that("stat_fixedtrace() single sample has correct NULL distribution", {
   set.seed(6514)
   vals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1)/6))
-    Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)}) #this method of getting the correct trace seems to create narrower distributions than the normalising method
+    Y <- lapply(Y, projtrace) #this method of getting the correct trace seems to create narrower distributions than the normalising method
     stat_fixedtrace(Y, c(3,2,1)/6)
   })
 
@@ -16,7 +16,7 @@ test_that("stat_fixedtrace() multi sample has correct NULL distribution", {
   vals <- replicate(100, {
     Ysamples <- replicate(5, {
       Y <- rsymm_norm(50, diag(c(3,2,1)))
-      Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
+      Y <- lapply(Y, projtrace)
       Y
     }, simplify = FALSE)
     stat_fixedtrace(Ysamples)
@@ -32,7 +32,7 @@ test_that("test of NULL has uniform p values for sst", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
-    Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
+    Y <- lapply(Y, projtrace)
     res <- test_fixedtrace(Y, c(3,2,1)/6, 100, maxit = 100)
     res$pval
   })
@@ -45,7 +45,7 @@ test_that("test of NULL has uniform p values for mst", {
   pvals <- replicate(100, {
     Ysamples <- replicate(5, {
       Y <- rsymm_norm(50, diag(c(3,2,1)))
-      Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
+      Y <- lapply(Y, projtrace)
       Y
     }, simplify = FALSE)
     res <- test_fixedtrace(Ysamples, B = 100, maxit = 100)
@@ -58,7 +58,7 @@ test_that("test of NULL has uniform p values for mst", {
 test_that("test rejects for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
-  Y <- lapply(Y, function(m) {m[1,1] <- 1 - sum(diag(m)[-1]); return(m)})
+  Y <- lapply(Y, projtrace)
   expect_error(res <- test_fixedtrace(Y, evals = c(1,-1,1)/10, B = 100))
   expect_equal(res$pval, 0)
   
@@ -72,7 +72,7 @@ test_that("a multisample strongly non-null situation rejects", {
   set.seed(13)
   symm <- function(n, mn){
     Y <- rsymm_norm(n, mn)
-    lapply(Y, function(m) {diag(m) <- diag(m) - mean(diag(m)) + 1/3; return(m)})
+    lapply(Y, projtrace)
   }
   Y1 <- symm(50, diag(c(3,2,1)))
   # lapply(Y1, function(m) sum(diag(m)))

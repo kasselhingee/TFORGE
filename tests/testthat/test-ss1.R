@@ -2,14 +2,7 @@ test_that("stat_ss1() on single sample from NULL is consistent with chisq", {
   set.seed(130)
   vals <- replicate(100, {
     Y <- rsymm_norm(30, diag(c(3,2,1)))
-    Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
-        evecs <- eigen(m)$vectors
-        evals <- eigen(m)$values
-        evals <- evals/sqrt(sum(evals^2))
-        out <- evecs %*% diag(evals) %*% t(evecs)
-        out <- makeSymmetric(out) #to remove machine differences
-        return(out)
-    })
+    Y <- lapply(Y, normL2evals)
     stat_ss1(Y, evals = c(3,2,1)/sqrt(sum(c(3,2,1)^2)))
     })
   
@@ -23,14 +16,8 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
   vals <- replicate(100, {
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(30, diag(c(3,2,1)))
-    Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
-      evecs <- eigen(m)$vectors
-      evals <- eigen(m)$values
-      evals <- evals/sqrt(sum(evals^2))
-      out <- evecs %*% diag(evals) %*% t(evecs)
-      out <- makeSymmetric(out) #to remove machine differences
-      return(out)
-    })
+    Y <- lapply(Y, normL2evals)
+    Y
   }, simplify = FALSE)
   stat_ss1(Ysamples)
   })
@@ -44,14 +31,7 @@ test_that("test_ss1() uniform pval on NULL sst", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(30, diag(c(3,2,1)), sigma = diag(1, 6))
-    Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
-      evecs <- eigen(m)$vectors
-      evals <- eigen(m)$values
-      evals <- evals/sqrt(sum(evals^2))
-      out <- evecs %*% diag(evals) %*% t(evecs)
-      out <- makeSymmetric(out) #to remove machine differences
-      return(out)
-    })
+    Y <- lapply(Y, normL2evals)
     res <- test_ss1(Y, c(3,2,1), 100, maxit = 1000)
     res$pval
   })
@@ -65,14 +45,7 @@ test_that("test_ss1() uniform pval on NULL mst", {
   pvals <- replicate(100, {
     Ysamples <- replicate(2, {
       Y <- rsymm_norm(30, diag(c(3,2,1)))
-      Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
-        evecs <- eigen(m)$vectors
-        evals <- eigen(m)$values
-        evals <- evals/sqrt(sum(evals^2))
-        out <- evecs %*% diag(evals) %*% t(evecs)
-        out <- makeSymmetric(out) #to remove machine differences
-        return(out)
-      })
+      Y <- lapply(Y, normL2evals)
     }, simplify = FALSE)
     res <- test_ss1(Ysamples, B = 100, maxit = 1000)
     res$pval
@@ -85,15 +58,7 @@ test_that("test_ss1() uniform pval on NULL mst", {
 test_that("test_ss1() reject for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)), sigma = diag(0.7, 6))
-  Y <- lapply(Y, function(m) { #replace eigenvalues with normalised ones
-    evecs <- eigen(m)$vectors
-    evals <- eigen(m)$values
-    evals <- evals/sqrt(sum(evals^2))
-    out <- evecs %*% diag(evals) %*% t(evecs)
-    out <- makeSymmetric(out) #to remove machine differences
-    return(out)
-  })
-
+  Y <- lapply(Y, normL2evals)
   res <- test_ss1(Y, c(1,1,1)/3, 100, maxit = 100)
   expect_lt(res$pval, 0.05)
 })
@@ -105,14 +70,8 @@ test_that("test_ss1() reject for an mst", {
     rsymm_norm(30, diag(c(6,2,1)))
   )
   Ysamples <- lapply(Ysamples, function(Y){
-      lapply(Y, function(m) { #replace eigenvalues with normalised ones
-      evecs <- eigen(m)$vectors
-      evals <- eigen(m)$values
-      evals <- evals/sqrt(sum(evals^2))
-      out <- evecs %*% diag(evals) %*% t(evecs)
-      out <- makeSymmetric(out) #to remove machine differences
-      return(out)
-    }) })
+      lapply(Y, normL2evals) #replace eigenvalues with normalised ones
+  })
   res <- test_ss1(Ysamples, B = 100, maxit = 1000)
   expect_lt(res$pval, 0.05)
 })
@@ -136,14 +95,8 @@ test_that("hasss1 works", {
   expect_error(test_ss1(Ysamples, B = 100))
   
   Ysamples <- lapply(Ysamples, function(Y){
-    lapply(Y, function(m) { #replace eigenvalues with normalised ones
-      evecs <- eigen(m)$vectors
-      evals <- eigen(m)$values
-      evals <- evals/sqrt(sum(evals^2))
-      out <- evecs %*% diag(evals) %*% t(evecs)
-      out <- makeSymmetric(out) #to remove machine differences
-      return(out)
-    }) })
+    lapply(Y, normL2evals) #replace eigenvalues with normalised ones
+  })
   
   expect_true(hasss1(Ysamples))
   

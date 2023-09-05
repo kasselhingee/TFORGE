@@ -142,19 +142,11 @@ test_that("test p value resistant to fixed trace by normalisation", {
   # division by sum(vec) really changes the sizes of vec, so
   # the covariance of vec changes, so I'd expect the stat to be different
   # p values should be similar
-  normtrace <- function(m){ 
-    ess <- eigen(m)
-    vec <- ess$values
-    newvec <- vec / sum(vec) - rep(1, length(vec))/length(vec)
-    newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
-    newm <- makeSymmetric(newm) #remove computational inaccuracies
-    return(newm)
-  }
   set.seed(134)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   Ysample <- rsymm_norm(10, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
-  Ysample_n <- lapply(Ysample, normtrace)
+  Ysample_n <- lapply(Ysample, normL1trace)
   
   set.seed(34641)
   pval <- test_multiplicity(Ysample, mult = mult, 1000)$pval
@@ -165,15 +157,6 @@ test_that("test p value resistant to fixed trace by normalisation", {
 })
 
 test_that("fixed trace from projection preserved by standardisation and ignored by stat", {
-  projtrace <- function(m){ #project to have trace 0
-    ess <- eigen_desc(m)
-    vec <- ess$values
-    ones <- rep(1, length(vec))/sqrt(length(vec))
-    newvec <- vec - drop(vec %*% ones) * ones
-    newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
-    newm <- makeSymmetric(newm) #remove computational inaccuracies
-    return(newm)
-  }
   set.seed(134)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)

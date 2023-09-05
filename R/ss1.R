@@ -205,3 +205,15 @@ opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
   }
   wts
 }
+
+
+#' Eigenvalues divided to have sum 1 
+#' m A symmetric matric.
+normL2evals <- function(m){ 
+  ess <- eigen(m)
+  vec <- ess$values
+  newvec <- vec / sqrt(sum(vec^2))
+  newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
+  newm <- makeSymmetric(newm) #remove computational inaccuracies
+  return(newm)
+}

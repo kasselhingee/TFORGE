@@ -128,3 +128,26 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
                         evals = evals)
   return(res)
 }
+
+#' Eigenvalues projected onto hyperplane through origin orthogonal to (1,1,..., 1)
+#' m A symmetric matrix
+projtrace <- function(m){ #project to have trace 0
+  ess <- eigen_desc(m)
+  vec <- ess$values
+  ones <- rep(1, length(vec))/sqrt(length(vec))
+  newvec <- vec - drop(vec %*% ones) * ones
+  newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
+  newm <- makeSymmetric(newm) #remove computational inaccuracies
+  return(newm)
+}
+
+#' Eigenvalues divided to have sum 1 
+#' m A symmetric matric.
+normL1trace <- function(m){ 
+  ess <- eigen(m)
+  vec <- ess$values
+  newvec <- vec / sum(vec)
+  newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
+  newm <- makeSymmetric(newm) #remove computational inaccuracies
+  return(newm)
+}
