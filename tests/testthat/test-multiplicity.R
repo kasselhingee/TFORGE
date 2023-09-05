@@ -38,6 +38,20 @@ test_that("stat_multiplicity() is zero for standarised sample, dim 7", {
   expect_error(expect_equal(stat_multiplicity(Ysample, mult = c(3, 2, 1, 1)), 0))
 })
 
+test_that("stat_multiplicity() has correct null distribution", {
+  set.seed(1331)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  vals <- pbapply::pbreplicate(1000, {
+    Ysample <- rsymm_norm(1000, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    stat_multiplicity(Ysample, mult = mult)
+  })
+  
+  qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
+  res <- ks.test(vals, "pchisq", df = sum(mult-1))
+  expect_gt(res$p.value, 0.2)
+})
+
 test_that("test_multiplicity() doesn't reject for simulation of single sample from null, and rejects otherwise", {
   set.seed(1331)
   Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
@@ -122,4 +136,33 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   expect_equal(emcov / thecov, matrix(1, 3, 3), tolerance = 0.5)
   #Empirical covariance here stable up to 100000 replicates, suggests the empirical xi (eigenvectors from the sample mean) has a very different distribution to the exact xi for n = 10, 100. Asymptotically, I'd expect it to be good though.
   #I wonder if changes in order of vectors are washing things out! But how to avoid that??
+})
+
+test_that("fixed trace preserved by standardisation and ignored by stat", {
+  normtrace <- function(m){ #project to have trace 0
+    ess <- eigen(m)
+    vec <- ess$values
+    ones <- rep(1, length(vec))/sqrt(length(vec))
+    newvec <- vec - drop(vec %*% ones) * ones
+    newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
+    newm[upper.tri(newm)] <- t(newm)[upper.tri(newm)] #remove computational inaccuracies
+    return(newm)
+  }
+  set.seed(134)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  Ysample <- rsymm_norm(1000, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
+  Ysample_n <- lapply(Ysample, normtrace)
+  
+  # check that only first element of Hevals  is changed by trace fix
+  evals <- eigen_desc(mmean(Ysample))$values
+  evals_n <- eigen_desc(mmean(Ysample_n))$values
+  expect_equal((helmert(sum(mult)) %*% evals)[-1],
+    (helmert(sum(mult)) %*% evals_n)[-1])
+  
+  std <- standardise_multiplicity(Ysample, mult)
+  std_n <- standardise_multiplicity(Ysample_n, mult)
+  expect_true(all.equal(lapply(std, normtrace), std_n, check.attributes = FALSE))
+  
+  expect_equal(stat_multiplicity(Ysample, mult = mult), stat_multiplicity(Ysample_n, mult = mult))
 })

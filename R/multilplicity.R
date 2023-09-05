@@ -121,7 +121,6 @@ standardise_multiplicity <- function(ms, mult){
 
 
   # get eigenvalues for each multiplicity by averaging 
-  browser()
   evals <- vapply(1:length(mult), function(i){
     rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
     mean(es$values[esvalstart[i] : cmult[i]])
