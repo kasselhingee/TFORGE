@@ -138,9 +138,35 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   #I wonder if changes in order of vectors are washing things out! But how to avoid that??
 })
 
-test_that("fixed trace preserved by standardisation and ignored by stat", {
-  normtrace <- function(m){ #project to have trace 0
+test_that("test p value resistant to fixed trace by normalisation", {
+  # division by sum(vec) really changes the sizes of vec, so
+  # the covariance of vec changes, so I'd expect the stat to be different
+  # p values should be similar
+  normtrace <- function(m){ 
     ess <- eigen(m)
+    vec <- ess$values
+    newvec <- vec / sum(vec) - rep(1, length(vec))/length(vec)
+    newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
+    newm <- makeSymmetric(newm) #remove computational inaccuracies
+    return(newm)
+  }
+  set.seed(134)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  Ysample <- rsymm_norm(10, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
+  Ysample_n <- lapply(Ysample, normtrace)
+  
+  set.seed(34641)
+  pval <- test_multiplicity(Ysample, mult = mult, 1000)$pval
+  set.seed(34641)
+  pval_n <- test_multiplicity(Ysample_n, mult = mult, 1000)$pval
+  expect_equal(pval, 
+               pval_n, tol = 1E-2)
+})
+
+test_that("fixed trace from projection preserved by standardisation and ignored by stat", {
+  projtrace <- function(m){ #project to have trace 0
+    ess <- eigen_desc(m)
     vec <- ess$values
     ones <- rep(1, length(vec))/sqrt(length(vec))
     newvec <- vec - drop(vec %*% ones) * ones
@@ -152,7 +178,7 @@ test_that("fixed trace preserved by standardisation and ignored by stat", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   Ysample <- rsymm_norm(1000, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
-  Ysample_n <- lapply(Ysample, normtrace)
+  Ysample_n <- lapply(Ysample, projtrace)
   
   # check that only first element of Hevals  is changed by trace fix
   evals <- eigen_desc(mmean(Ysample))$values
@@ -162,7 +188,7 @@ test_that("fixed trace preserved by standardisation and ignored by stat", {
   
   std <- standardise_multiplicity(Ysample, mult)
   std_n <- standardise_multiplicity(Ysample_n, mult)
-  expect_true(all.equal(lapply(std, normtrace), std_n, check.attributes = FALSE))
+  expect_true(all.equal(lapply(std, projtrace), std_n, check.attributes = FALSE))
   
   expect_equal(stat_multiplicity(Ysample, mult = mult), stat_multiplicity(Ysample_n, mult = mult))
 })
