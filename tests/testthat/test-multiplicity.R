@@ -145,7 +145,7 @@ test_that("fixed trace preserved by standardisation and ignored by stat", {
     ones <- rep(1, length(vec))/sqrt(length(vec))
     newvec <- vec - drop(vec %*% ones) * ones
     newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
-    newm[upper.tri(newm)] <- t(newm)[upper.tri(newm)] #remove computational inaccuracies
+    newm <- makeSymmetric(newm) #remove computational inaccuracies
     return(newm)
   }
   set.seed(134)
