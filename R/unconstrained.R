@@ -114,7 +114,7 @@ standardise_specifiedevals <- function(ms, evals){
   av_evecs <- av_eigenspace$vectors
   cen <- av_evecs %*% diag(evals) %*% t(av_evecs)
   newms <- lapply(errs, function(m) cen + m)
-  newms <- lapply(newms, function(out){out[lower.tri(out)] <- out[upper.tri(out)]; out}) #to remove machine differences
+  newms <- lapply(newms, makeSymmetric) #to remove machine differences
   class(newms) <- c(class(newms), "sst")
   return(newms)
 }
