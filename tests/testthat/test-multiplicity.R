@@ -1,4 +1,4 @@
-test_that("stat_multiplicity() is zero for standarised sample", {
+test_that("stat is zero for standarised sample", {
   set.seed(13131)
   Ysample <- rsymm(50, mean = diag(c(3,2,1)))
   av <- mmean(Ysample)
@@ -17,7 +17,7 @@ test_that("stat_multiplicity() is zero for standarised sample", {
   expect_error(expect_equal(stat_multiplicity(Ysample, mult = c(2,1)), 0))
 })
 
-test_that("stat_multiplicity() is zero for standarised sample, dim 7", {
+test_that("stat is zero for standarised sample, dim 7", {
   set.seed(13131)
   Ysample <- rsymm(50, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
   av <- mmean(Ysample)
@@ -38,7 +38,7 @@ test_that("stat_multiplicity() is zero for standarised sample, dim 7", {
   expect_error(expect_equal(stat_multiplicity(Ysample, mult = c(3, 2, 1, 1)), 0))
 })
 
-test_that("stat_multiplicity() has correct null distribution", {
+test_that("stat has correct null distribution", {
   set.seed(1331)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
