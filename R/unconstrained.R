@@ -26,6 +26,7 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   #mean evals of samples
   if (is.null(evecs)){
     avevals <- lapply(ess, "[[", "values")
+    warning("need to sort values in case of negative evals")
     avevecs <- lapply(ess, "[[", "vectors")
   } else {
     avevals <- lapply(avs, function(av){sort(diag(t(evecs) %*% av %*% evecs), decreasing = TRUE)})
@@ -84,6 +85,7 @@ est_commonevals <- function(mss, evecs = NULL, NAonerror = FALSE){
     ess <- lapply(avs, eigen)
     evecs <- lapply(ess, "[[", "vectors")
     evals <- lapply(ess, "[[", "values")
+    warning("need to sort values in case of negative evals")
   } else {
     evals <- lapply(avs, function(av){sort(diag(t(evecs) %*% av %*% evecs), decreasing = TRUE)})
     evecs <- replicate(length(mss), evecs, simplify = FALSE)

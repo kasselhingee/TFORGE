@@ -10,6 +10,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
   mns <- lapply(x, mmean)
   ess <- lapply(mns, eigen)
   evalsav <- lapply(ess, "[[", "values")
+    warning("need to sort values in case of negative evals")
   
   # first get each Omega2j:
   covars_unconstrained <- mapply(cov_evals, ms = x, evecs = lapply(ess, "[[", "vectors"), av = mns, SIMPLIFY = FALSE)

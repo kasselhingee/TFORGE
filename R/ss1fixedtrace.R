@@ -17,11 +17,13 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   av <- lapply(x, mmean)
   ess <- lapply(av, eigen)
   naveval <- lapply(ess, function(a){a$values/sqrt(sum(a$values^2))})
+    warning("need to sort values in case of negative evals")
   
   # The Omegas
   Omegas <- mapply(function(ms, av, ess){
     covar_unconstrained <- cov_evals(ms = ms, evecs = ess$vectors, av = av)
     projmat <- (diag(1, nrow(av)) - (ess$values %*% t(ess$values)/sum(ess$values^2)))/sqrt(sum(ess$values^2))
+    warning("need to sort values in case of negative evals")
     projmat %*% covar_unconstrained %*% projmat
     },
     ms = x,
@@ -41,6 +43,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
     mat <- purrr::reduce(mats, `+`)
     eigenmat <- eigen(mat)
     idx <- max(which(eigenmat$values > 0)) 
+    warning("need to sort values in case of negative evals")
     #zero eigenvalue corresponds to the 1,1,1 eigenvector so skip if the scalar product is anything like 1
     # should be easy thershold because all other eigenvectors are perpendicular
     if (abs(eigenmat$vectors[, idx] %*% rep(1, 3)/ sqrt(3)) > 0.8){idx <- idx - 1}
