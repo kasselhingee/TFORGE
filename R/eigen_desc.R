@@ -1,6 +1,6 @@
 # a wrapper around eigen that sorts eigenvalues according to descending order, positive to negative
 eigen_desc <- function(x, ...){
-  raw <- eigen(x, ...)
+  raw <- base::eigen(x, ...)
   ord <- order(raw$values, decreasing = TRUE)
   raw$values <- raw$values[ord]
   if (!is.null(raw$vectors)){
@@ -8,3 +8,9 @@ eigen_desc <- function(x, ...){
   }
   return(raw)
 }
+
+eigen <- function(...){
+  warning("Using base::eigen() without sorting eigenvalues into descending order")
+  base::eigen(...)
+}
+
