@@ -1,9 +1,9 @@
-test_that("stat_fixedtrace() single sample has correct NULL distribution", {
+test_that("stat single sample has correct NULL distribution for projected trace", {
   set.seed(6514)
   vals <- replicate(100, {
-    Y <- rsymm_norm(50, diag(c(3,2,1)/6))
+    Y <- rsymm_norm(50, diag(c(3,2,1) - 2))
     Y <- lapply(Y, projtrace) #this method of getting the correct trace seems to create narrower distributions than the normalising method
-    stat_fixedtrace(Y, c(3,2,1)/6)
+    stat_fixedtrace(Y, c(3,2,1) - 2)
   })
 
   # qqplot(vals, y = rchisq(1000, df = 2))
@@ -11,7 +11,7 @@ test_that("stat_fixedtrace() single sample has correct NULL distribution", {
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat_fixedtrace() multi sample has correct NULL distribution", {
+test_that("stat on multi sample has correct NULL distribution", {
   set.seed(65141)
   vals <- replicate(100, {
     Ysamples <- replicate(5, {
@@ -105,3 +105,12 @@ test_that("hasfixedtrace() gives TRUE or FALSE values", {
   expect_false(hasfixedtrace(Ysamples))
   expect_false(hasfixedtrace(Ysamples[[1]]))
 })
+
+test_that("projtrace() returns matrices that satisty hasfixedtrace", {
+  set.seed(6514) 
+  Y <- rsymm_norm(3, diag(c(3,2,-3)/6))
+  Y <- lapply(Y, projtrace) #this method of getting the correct trace seems to create narrower distributions than the normalising method
+  expect_true(hasfixedtrace(Y))
+})
+
+
