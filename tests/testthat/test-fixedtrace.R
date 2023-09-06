@@ -21,7 +21,7 @@ test_that("stat single sample has WRONG NULL distribution for normtrace", {
   
   # qqplot(vals, y = rchisq(1000, df = 2))
   res <- ks.test(vals, "pchisq", df = 2)
-  expect_gt(res$p.value, 0.2)
+  expect_lt(res$p.value, 0.01)
 })
 
 test_that("stat on multi sample has correct NULL distribution", {
