@@ -40,13 +40,11 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   precisions <- lapply(mss, function(ms){tryCatch(solve(H %*% cov_evals(ms) %*% t(H)), error = erroraction)})
   
   d1s <- lapply(ess, "[[", "values")
-    rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
   
   #get estimate of common evals for multisample situation
   if (is.null(evals)){
     sum_precisions <- purrr::reduce(precisions, `+`)
     precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
-    rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
     d0proj <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
     d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.

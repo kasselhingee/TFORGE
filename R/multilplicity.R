@@ -37,7 +37,6 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE){
 
   #prod w evecs - should be equal to evals since vectors calculated from av
   evals <- es$values
-    rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
   #vapply(1:ncol(es$vectors), function(i){
   #  t(es$vectors[, i]) %*% av %*% es$vectors[, i]
   #}, FUN.VALUE = 1.1)
@@ -122,7 +121,6 @@ standardise_multiplicity <- function(ms, mult){
 
   # get eigenvalues for each multiplicity by averaging 
   evals <- vapply(1:length(mult), function(i){
-    rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
     mean(es$values[esvalstart[i] : cmult[i]])
   }, FUN.VALUE = 1.1)
   
