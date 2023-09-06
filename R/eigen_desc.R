@@ -10,7 +10,7 @@ eigen_desc <- function(x, ...){
 }
 
 eigen <- function(...){
-  warning("Using base::eigen() without sorting eigenvalues into descending order")
+  warning("Using base::eigen() without sorting eigenvalues into descending order. Use eigen_desc() instead.")
   base::eigen(...)
 }
 
