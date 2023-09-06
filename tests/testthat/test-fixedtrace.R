@@ -11,6 +11,19 @@ test_that("stat single sample has correct NULL distribution for projected trace"
   expect_gt(res$p.value, 0.2)
 })
 
+test_that("stat single sample has WRONG NULL distribution for normtrace", {
+  set.seed(6514)
+  vals <- replicate(100, {
+    Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = 0.05 * diag(1, 3*2))
+    Y <- lapply(Y, normtrace) #this method of getting the correct trace seems to create narrower distributions than the normalising method
+    stat_fixedtrace(Y, c(3,2,1)/6)
+  })
+  
+  # qqplot(vals, y = rchisq(1000, df = 2))
+  res <- ks.test(vals, "pchisq", df = 2)
+  expect_gt(res$p.value, 0.2)
+})
+
 test_that("stat on multi sample has correct NULL distribution", {
   set.seed(65141)
   vals <- replicate(100, {

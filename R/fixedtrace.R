@@ -139,13 +139,13 @@ projtrace <- function(m){ #project to have trace 0
   return(newm)
 }
 
-#' Eigenvalues divided to have sum 1. This method is sensitive to traces of zero. Note this normalisation moves the eigenvalue vector towards/away from the origin which will usually break the symmetry of the eigenvalues about their mean. The projection method above projtrace() preserves the symmetry.
+#' Whole matrix is divided by trace.
+#' This is how magnetic susceptibility tensors are scaled to examine isotropy in paleomagnetism (Tauxe, 2010 Essentials of Paleomagnetism, p248).
+#' The method is sensitive to traces of zero and I think will usually break the symmetry of the eigenvalues about their mean.
+#' The projection method above projtrace() preserves the symmetry.
 #' m A symmetric matric.
-normL1trace <- function(m){ 
-  ess <- eigen_desc(m)
-  vec <- ess$values
-  newvec <- vec / sum(vec)
-  newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
-  newm <- makeSymmetric(newm) #remove computational inaccuracies
+normtrace <- function(m){ 
+  tr <- sum(diag(m))
+  newm <- m/tr
   return(newm)
 }
