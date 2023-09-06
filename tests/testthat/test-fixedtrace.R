@@ -57,14 +57,13 @@ test_that("test of NULL has uniform p values for mst", {
 
 test_that("test rejects for single sample with wrong eval", {
   set.seed(1333)
-  Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
+  Y <- rsymm_norm(50, diag(c(1,0,-1)), sigma = diag(rep(0.1, 6)))
   Y <- lapply(Y, projtrace)
-  expect_error(res <- test_fixedtrace(Y, evals = c(1,-1,1)/10, B = 100))
-  expect_equal(res$pval, 0)
   
-  badevals <- c(1,1,1)
-  badevals <- badevals/sum(badevals)
-  res <- test_fixedtrace(Y, badevals, B = 100, maxit = 100)
+  badevals <- c(1,1,-2)
+  expect_error(res <- test_fixedtrace(Y, evals = badevals+1, B = 100))
+  
+  expect_warning(res <- test_fixedtrace(Y, badevals, B = 100, maxit = 100))
   expect_lt(res$pval, 0.05)
 })
 

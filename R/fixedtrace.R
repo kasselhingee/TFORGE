@@ -97,7 +97,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   wts <- mapply(function(ms, nullmean){
     if (sc){
       scelres <- emplik(do.call(rbind, lapply(ms, vech)), vech(nullmean), itermax = maxit)
-      if (!isTRUE(scelres$converged)){warning("emplik() did not converge")}
+      if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
       wts <- as.vector(scelres$wts) * length(ms)
     } else {
       elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), vech(nullmean), maxit = maxit)
