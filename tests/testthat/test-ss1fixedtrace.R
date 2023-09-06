@@ -91,7 +91,6 @@ test_that("test_ss1fixedtrace() uniform pval on NULL sst", {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
     Y <- lapply(Y, projtrace) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
     Y <- lapply(Y, normL2evals) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
-    })
     stopifnot(hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
     stopifnot(hasss1(Y))
     res <- test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = 100, maxit = 1000)
