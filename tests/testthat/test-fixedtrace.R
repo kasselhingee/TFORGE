@@ -31,9 +31,9 @@ test_that("stat on multi sample has correct NULL distribution", {
 test_that("test of NULL has uniform p values for sst", {
   set.seed(1333)
   pvals <- replicate(100, {
-    Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = diag(rep(0.1, 6)))
+    Y <- rsymm_norm(50, diag(c(3,2,1) - 2), sigma = diag(rep(0.1, 6)))
     Y <- lapply(Y, projtrace)
-    res <- test_fixedtrace(Y, c(3,2,1)/6, 100, maxit = 100)
+    res <- test_fixedtrace(Y, c(3,2,1) - 2, 100, maxit = 100)
     res$pval
   })
   # qqplot(pvals, y = runif(100))
