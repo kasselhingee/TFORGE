@@ -1,4 +1,4 @@
-# Schwartzmann vecd (which is not quite vech and has a different ordering)
+# Schwartzman vecd (which is not quite vech and has a different ordering)
 vecd <- function(m){
   c(diag(m), sqrt(2) * m[lower.tri(m, diag = FALSE)])
 }
@@ -11,7 +11,7 @@ invvecd <- function(x){
   return(m)
 }
 
-# Special sample covariance that uses Schwartzmann's vecd
+# Special sample covariance that uses Schwartzman's vecd
 S_mcovar <- function(merr){
   if(is.array(merr)){if (length(dim(merr))==3){
     merr <- lapply(1:dim(merr)[3], function(i) merr[,,i])
@@ -41,7 +41,7 @@ blockdiag <- function(A, B){
   return(out)
 }
 
-#Schwartzmann's wii from eqn 16
+#Schwartzman's wii from eqn 16
 wii <- function(i, U1, U2){
   Emat <- Eii(i, nrow(U1))
   c(
@@ -50,7 +50,7 @@ wii <- function(i, U1, U2){
   )
 }
 
-# Schwartzmann's eigenvalue Omega(M) (eq 16)
+# Schwartzman's eigenvalue Omega(M) (eq 16)
 # @param n1 Sample size of 1
 # @param n2 Sample size of 2
 # @param U1 Eigenvectors for mean of 1
@@ -63,10 +63,10 @@ Omega_eval <- function(n1, n2, U1, U2){
   msum(vals) * n1 * n2 / (n1 + n2)
 }
 
-#compute estimates Schwartzmann's a and v for the test statistic distribution
+#compute estimates Schwartzman's a and v for the test statistic distribution
 #ms1 and ms2 are the two samples
 #M1 and M2 are the means
-#C1 and C2 are the covariances (Schwartzmann style)
+#C1 and C2 are the covariances (Schwartzman style)
 #n1 and n2 are the lengths
 S_anv <- function(n1, n2, M1, M2, C1, C2){
   # cov1 <- S_mcovar(merr(ms1))
@@ -89,14 +89,14 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
   ))
 }
 
-#' @title Schwartzmann et. al. Two Sample Eigenvalue Test 
-#' @description Computes the citeSchwartzmann test statistic for equality between eigenvalues (eq 11 Schwartzmann 2010) and corresponding approximate p value.
-#' @details The test statistic computed is (eq 11 Schwartzmann 2010).
-#' The p value computed uses the approximate distribution reached at the end of section 2.4 Schwartzmann: the distribution is chi-squared with first two moments approximating the first two moments of a statistic (eq 16 Schwartzmann), that approximates (eq 11 Schwartzmann 2010) for large samples.
+#' @title Schwartzman et. al. Two Sample Eigenvalue Test 
+#' @description Computes the citeSchwartzman test statistic for equality between eigenvalues (eq 11 Schwartzman 2010) and corresponding approximate p value.
+#' @details The test statistic computed is (eq 11 Schwartzman 2010).
+#' The p value computed uses the approximate distribution reached at the end of section 2.4 Schwartzman: the distribution is chi-squared with first two moments approximating the first two moments of a statistic (eq 16 Schwartzman), that approximates (eq 11 Schwartzman 2010) for large samples.
 #' @param ms1 Sample of matrices.
 #' @param ms2 Sample of matrices.
 #' @export
-stat_schwartzmann_eval <- function(ms1, ms2){
+stat_schwartzman_eval <- function(ms1, ms2){
   n1 <- length(ms1)
   n2 <- length(ms2)
   M1 <- mmean(ms1)
@@ -118,12 +118,12 @@ stat_schwartzmann_eval <- function(ms1, ms2){
   ))
 }
 
-# @title Schwartzmann's theoretical Tstar statistic for eigenvalues (eq 16)
-# @details The test statistic computed is (eq 16 Schwartzmann 2010), using given population means M1 and M2.
+# @title Schwartzman's theoretical Tstar statistic for eigenvalues (eq 16)
+# @details The test statistic computed is (eq 16 Schwartzman 2010), using given population means M1 and M2.
 # @param M1 population expectation for first population
 # @param M2 population expectation for second population
 #' @export
-statstar_schwartzmann_eval <- function(ms1, ms2, M1, M2){
+statstar_schwartzman_eval <- function(ms1, ms2, M1, M2){
   Z1 <- mmean(ms1) - M1
   Z2 <- mmean(ms2) - M2
   U1 <- eigen_desc(M1)$vectors
@@ -134,7 +134,7 @@ statstar_schwartzmann_eval <- function(ms1, ms2, M1, M2){
 }
 
 # simulate matrices using rmvnorm where conversion to and from vector is via vecd
-rsymm_Schwartzmann <- function(n, mean, sigma = diag(length(vecd(mean)))){
+rsymm_Schwartzman <- function(n, mean, sigma = diag(length(vecd(mean)))){
   stopifnot(isSymmetric(mean))
   tmp <- mvtnorm::rmvnorm(n, mean = vecd(mean), sigma = sigma)
   return(apply(tmp, MARGIN = 1, invvecd, simplify = FALSE))
