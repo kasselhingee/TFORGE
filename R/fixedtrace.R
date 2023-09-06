@@ -10,7 +10,7 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
   if (inherits(x, "mst")){x <- unlist(x, recursive = FALSE)}
   traces <- vapply(x, function(y){sum(diag(y))}, FUN.VALUE = 1.64)
-  tracerange <- range(traces) / mean(traces)
+  tracerange <- range(traces)
   isTRUE(all.equal(tracerange[1], tracerange[2], tolerance = tolerance))
 }
 #' @title Test for eigenvalues when trace is fixed.
@@ -141,7 +141,7 @@ projtrace <- function(m){ #project to have trace 0
   return(newm)
 }
 
-#' Eigenvalues divided to have sum 1 
+#' Eigenvalues divided to have sum 1. This method is sensitive to traces of zero. Note this normalisation moves the eigenvalue vector towards/away from the origin which will usually break the symmetry of the eigenvalues about their mean. The projection method above projtrace() preserves the symmetry.
 #' m A symmetric matric.
 normL1trace <- function(m){ 
   ess <- eigen(m)
