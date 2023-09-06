@@ -8,7 +8,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
   
   # means and eigenspaces used in multiple parts, so calculate first here:
   mns <- lapply(x, mmean)
-  ess <- lapply(mns, eigen)
+  ess <- lapply(mns, eigen_desc)
   evalsav <- lapply(ess, "[[", "values")
     rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
   
@@ -26,7 +26,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
                    Delta = Deltas,
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
-    d0 <- eigen(mat)$vectors[, ncol(mat)]
+    d0 <- eigen_desc(mat)$vectors[, ncol(mat)]
     # make d0 DOT evalsav have as much positive sign as possible
     dotprds <- vapply(evalsav, function(v){v %*% d0}, FUN.VALUE = 0.1)
     avsign <- mean(sign(dotprds))
@@ -131,7 +131,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25, sc = TRUE){
 hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
   if (inherits(x, "mst")){x <- unlist(x, recursive = FALSE)}
-  ss <- vapply(x, function(y){sum(eigen(y)$values^2)}, FUN.VALUE = 1.64)
+  ss <- vapply(x, function(y){sum(eigen_desc(y)$values^2)}, FUN.VALUE = 1.64)
   isTRUE(all.equal(ss, rep(1, length(ss)), tolerance = tolerance))
 }
 
@@ -144,7 +144,7 @@ hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
 # @param evecs The eigenvectors of the average of `ms`. If omitted then computed from the average of `ms` directly (include to save computation time).
 elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
   if (is.null(av)){av <- mmean(ms)}
-  if (is.null(evecs)){evecs <- eigen(av)$vectors}
+  if (is.null(evecs)){evecs <- eigen_desc(av)$vectors}
   nullmean <- evecs %*% diag(d0) %*% t(evecs)
   if (getcbound){# bounds for cj
     diags <- lapply(ms, function(m){diag(t(evecs) %*% m %*% evecs)})
@@ -210,7 +210,7 @@ opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
 #' Eigenvalues divided to have sum 1 
 #' m A symmetric matric.
 normL2evals <- function(m){ 
-  ess <- eigen(m)
+  ess <- eigen_desc(m)
   vec <- ess$values
   newvec <- vec / sqrt(sum(vec^2))
   newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)

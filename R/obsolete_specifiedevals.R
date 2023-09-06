@@ -13,7 +13,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
   n <- length(ms)
   av <- mmean(ms)
   if (is.null(evecs)){
-    av_eigenspace <- eigen(av, symmetric = TRUE)
+    av_eigenspace <- eigen_desc(av, symmetric = TRUE)
     d1 <- av_eigenspace$values
     evecs <- av_eigenspace$vectors
   } else {

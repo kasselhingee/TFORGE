@@ -26,7 +26,7 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE){
   }
   stopifnot(all(mult > 0))
   stopifnot(any(mult != 1))
-  es <- eigen(av)
+  es <- eigen_desc(av)
 
   #indices
   cmult <- cumsum(mult)
@@ -113,7 +113,7 @@ standardise_multiplicity <- function(ms, mult){
   stopifnot(sum(mult) == ncol(av))
   stopifnot(all(mult > 0))
   stopifnot(any(mult != 1))
-  es <- eigen(av, symmetric = TRUE)
+  es <- eigen_desc(av, symmetric = TRUE)
 
   #indices
   cmult <- cumsum(mult)

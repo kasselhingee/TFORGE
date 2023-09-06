@@ -15,7 +15,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
                  -1, 0, 1,
                   1,-1, 0), ncol = 3, nrow = 3, byrow = TRUE)
   av <- lapply(x, mmean)
-  ess <- lapply(av, eigen)
+  ess <- lapply(av, eigen_desc)
   naveval <- lapply(ess, function(a){a$values/sqrt(sum(a$values^2))})
     rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
   
@@ -41,7 +41,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
       Omega = Omegas,
       SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
-    eigenmat <- eigen(mat)
+    eigenmat <- eigen_desc(mat)
     idx <- max(which(eigenmat$values > 0)) 
     rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
     #zero eigenvalue corresponds to the 1,1,1 eigenvector so skip if the scalar product is anything like 1

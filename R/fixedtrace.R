@@ -25,7 +25,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
 
   H <- helmertsub(ncol(mss[[1]][[1]]))
-  ess <- lapply(mss, function(ms){eigen(mmean(ms))})
+  ess <- lapply(mss, function(ms){eigen_desc(mmean(ms))})
   ns <- lapply(mss, length)
   
   #first get all eval precision matrices
@@ -91,7 +91,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   # compute means that satisfy the NULL hypothesis (eigenvalues equal to estevals)
   nullmeans <- lapply(x, function(ms){
     av <- mmean(ms)
-    evecs <- eigen(av)$vectors
+    evecs <- eigen_desc(av)$vectors
     evecs %*% diag(estevals) %*% t(evecs)
   })
   
@@ -144,7 +144,7 @@ projtrace <- function(m){ #project to have trace 0
 #' Eigenvalues divided to have sum 1. This method is sensitive to traces of zero. Note this normalisation moves the eigenvalue vector towards/away from the origin which will usually break the symmetry of the eigenvalues about their mean. The projection method above projtrace() preserves the symmetry.
 #' m A symmetric matric.
 normL1trace <- function(m){ 
-  ess <- eigen(m)
+  ess <- eigen_desc(m)
   vec <- ess$values
   newvec <- vec / sum(vec)
   newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)

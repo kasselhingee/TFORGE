@@ -10,8 +10,7 @@ cov_evals <- function(ms, evecs = NULL, av = NULL){
   stopifnot(inherits(ms, "sst"))
   if (is.null(av)){av <- mmean(ms)}
   if (is.null(evecs)){
-    evecs <- eigen(av, symmetric = TRUE)$vectors
-    rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
+    evecs <- eigen_desc(av, symmetric = TRUE)$vectors
   }
   V <- cov_eval1_eval0(evecs, mcovar(merr(ms, mean = av)))
   return(V)

@@ -73,9 +73,9 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
   # cov2 <- S_mcovar(merr(ms2))
   Sigma <- blockdiag(C1/n1, C2/n2)
   
-  es1 <- eigen(M1)
+  es1 <- base::eigen(M1)
   if (is.complex(es1$values)){stop("Matrix M1 has complex eigenvalues.")}
-  es2 <- eigen(M2)
+  es2 <- base::eigen(M2)
   if (is.complex(es2$values)){stop("Matrix M2 has complex eigenvalues.")}
   Omega <- Omega_eval(n1, n2, es1$vectors, es2$vectors)
   
@@ -101,9 +101,9 @@ stat_schwartzmann_eval <- function(ms1, ms2){
   n2 <- length(ms2)
   M1 <- mmean(ms1)
   M2 <- mmean(ms2)
-  L1 <- eigen(M1)$values
+  L1 <- base::eigen(M1)$values
     warning("need to sort values in case of negative evals?")
-  L2 <- eigen(mmean(ms2))$values
+  L2 <- base::eigen(mmean(ms2))$values
     warning("need to sort values in case of negative evals?")
   Tstat <- sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
 
@@ -128,8 +128,8 @@ stat_schwartzmann_eval <- function(ms1, ms2){
 statstar_schwartzmann_eval <- function(ms1, ms2, M1, M2){
   Z1 <- mmean(ms1) - M1
   Z2 <- mmean(ms2) - M2
-  U1 <- eigen(M1)$vectors
-  U2 <- eigen(M2)$vectors
+  U1 <- base::eigen(M1)$vectors
+  U2 <- base::eigen(M2)$vectors
   Omega <- Omega_eval(length(ms1), length(ms2), U1, U2)
   Tstatstar <- t(c(vecd(Z1), vecd(Z2))) %*% Omega %*% c(vecd(Z1), vecd(Z2))
   return(drop(Tstatstar))

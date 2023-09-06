@@ -14,7 +14,7 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   if (!is.null(evecs) && (length(x) > 1)){warning("evecs supplied to multisample, but stat_unconstrained() does not support providing evecs for a multisample")}
 
   avs <- lapply(x, mmean)
-  ess <- lapply(avs, eigen)
+  ess <- lapply(avs, eigen_desc)
   
   # null evals
   if (is.null(evals)){
@@ -82,7 +82,7 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
 est_commonevals <- function(mss, evecs = NULL, NAonerror = FALSE){
   avs <- lapply(mss, mmean)
   if (is.null(evecs)){
-    ess <- lapply(avs, eigen)
+    ess <- lapply(avs, eigen_desc)
     evecs <- lapply(ess, "[[", "vectors")
     evals <- lapply(ess, "[[", "values")
     rlang::warn("need to sort values in case of negative evals", .frequency = "once", .frequency_id = "devels")
@@ -110,7 +110,7 @@ standardise_specifiedevals <- function(ms, evals){
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(ms)
   errs <- merr(ms, mean = av)
-  av_eigenspace <- eigen(av, symmetric = TRUE)
+  av_eigenspace <- eigen_desc(av, symmetric = TRUE)
   av_evecs <- av_eigenspace$vectors
   cen <- av_evecs %*% diag(evals) %*% t(av_evecs)
   newms <- lapply(errs, function(m) cen + m)
