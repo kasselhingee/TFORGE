@@ -102,9 +102,7 @@ stat_schwartzmann_eval <- function(ms1, ms2){
   M1 <- mmean(ms1)
   M2 <- mmean(ms2)
   L1 <- base::eigen(M1)$values
-    warning("need to sort values in case of negative evals?")
   L2 <- base::eigen(mmean(ms2))$values
-    warning("need to sort values in case of negative evals?")
   Tstat <- sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
 
   #now for the distribution
