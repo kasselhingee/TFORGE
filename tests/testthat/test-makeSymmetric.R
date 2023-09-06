@@ -4,7 +4,7 @@ test_that("makeSymmetric gives symmetric matrix for high dimension", {
   magain <- makeSymmetric(m)
   expect_equal(m, magain)
   
-  ess <- eigen(m)
+  ess <- eigen_desc(m)
   expect_equal(m, makeSymmetric(ess$vectors %*% diag(ess$values) %*% t(ess$vectors)))
   
   m <- invvec(rnorm(7*7), nrow = 7)

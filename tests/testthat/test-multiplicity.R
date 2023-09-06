@@ -2,12 +2,12 @@ test_that("stat is zero for standarised sample", {
   set.seed(13131)
   Ysample <- rsymm(50, mean = diag(c(3,2,1)))
   av <- mmean(Ysample)
-  es <- eigen(av)
+  es <- eigen_desc(av)
   Ystdsample <- standardise_multiplicity(Ysample, mult = c(2, 1))
 
   #check new average has correct properties
   newav <- mmean(Ystdsample)
-  newes <- eigen(newav)
+  newes <- eigen_desc(newav)
   expect_equal(newes$values[1], newes$values[2])
   expect_equal(newes$values[1], 2.5, tolerance = 0.3)
   expect_equal(newes$values[3], es$values[3])
@@ -21,12 +21,12 @@ test_that("stat is zero for standarised sample, dim 7", {
   set.seed(13131)
   Ysample <- rsymm(50, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
   av <- mmean(Ysample)
-  es <- eigen(av)
+  es <- eigen_desc(av)
   Ystdsample <- standardise_multiplicity(Ysample, mult = c(3, 2, 1, 1))
 
   #check new average has correct properties
   newav <- mmean(Ystdsample)
-  newes <- eigen(newav)
+  newes <- eigen_desc(newav)
   expect_equal(newes$values[1:3], rep(3, 3), tolerance = 0.1)
   expect_equal(newes$values[4:5], rep(2, 2), tolerance = 0.1)
   expect_equal(newes$values[6], es$values[6])
@@ -100,7 +100,7 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   simxi <- function(n, mn, sigma, mult, idxs, evecs = NULL){
     Ysample <- rsymm(n, mn, sigma)
     Ybar <- mmean(Ysample)
-    if (is.null(evecs)){evals <- eigen(Ybar)$values} 
+    if (is.null(evecs)){evals <- eigen_desc(Ybar)$values} 
     else {evals <- diag(t(evecs) %*% Ybar %*% evecs)} #use the true eigenvectors
     xi <- xiget(evals, mult, idxs)
     return(xi)
@@ -116,12 +116,12 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   mn <- mn_U %*% diag(c(3, 3, 3, 2, 2)) %*% t(mn_U)
   
   # theoretical covariance
-  thecov <- xicovar(mult, idxs, eigen(mn)$vectors, C0/n)
+  thecov <- xicovar(mult, idxs, eigen_desc(mn)$vectors, C0/n)
  
   set.seed(35468) 
   # semi-plugged in xi
   emcov <- replicate(100,
-   simxi(n, mn = mn, sigma = C0, mult, idxs, eigen(mn)$vectors)) |>
+   simxi(n, mn = mn, sigma = C0, mult, idxs, eigen_desc(mn)$vectors)) |>
     t() |>
     cov()
   expect_equal(emcov, thecov, tolerance = 0.05)
