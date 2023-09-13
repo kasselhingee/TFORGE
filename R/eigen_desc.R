@@ -1,6 +1,10 @@
-# a wrapper around eigen that sorts eigenvalues according to descending order, positive to negative
-eigen_desc <- function(x, ...){
-  raw <- base::eigen(x, ...)
+#' A wrapper around eigen() that sorts eigenvalues according to decreasing order
+#' @description `base` `eigen()` orders eigenvalues by absolute size. This wrapper sorts the results in decreasing order, positive to negative.
+#' @param ... Passed to [`base::eigen()`].
+#' @return Same as [`base::eigen()`], but eigenvalues sorted in decreasing.
+#' @export
+eigen_desc <- function(...){
+  raw <- base::eigen(...)
   ord <- order(raw$values, decreasing = TRUE)
   raw$values <- raw$values[ord]
   if (!is.null(raw$vectors)){
