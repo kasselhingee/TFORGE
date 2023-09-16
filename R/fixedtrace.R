@@ -29,7 +29,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   ns <- lapply(mss, length)
   
   #first get all eval precision matrices
-  precisions <- lapply(mss, function(ms){solve_NAonerror(H %*% cov_evals(ms) %*% t(H), NAonerror = TRUE)})
+  precisions <- lapply(mss, function(ms){solve_NAonerror(H %*% cov_evals(ms) %*% t(H), NAonerror = NAonerror)})
   
   d1s <- lapply(ess, "[[", "values")
   
@@ -40,8 +40,8 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
     d0proj <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
     d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
-    if (!all(order(d0) == length(d0):1)){
-      d0 <- sort(d0)
+    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
+      d0 <- sort(d0, na.last = TRUE)
       warning("Estimated common eigenvalues are not in descending order and has been reordered.")
     }
   } else {
