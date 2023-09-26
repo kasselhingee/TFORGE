@@ -15,7 +15,7 @@ test_that("stat single sample has WRONG NULL distribution for normtrace", {
   set.seed(6514)
   vals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = 0.05 * diag(1, 3*2))
-    Y <- lapply(Y, normtrace) #this method of getting the correct trace seems to create narrower distributions than the normalising method
+    Y <- lapply(Y, normtrace) 
     stat_fixedtrace(Y, c(3,2,1)/6)
   })
   
