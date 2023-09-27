@@ -18,17 +18,34 @@ test_multiplicity <- function(ms, mult, B){
 }
 
 #' @describeIn multiplicity Test statistic
+#' @param evecs For debugging only. Supply eigenvectors of population mean.
+#' @param sortevecs For debugging only. When `evecs` supplied, should they be sorted to give estimates of eigenvalues that are descending
 #' @export
-stat_multiplicity <- function(ms, mult, NAonerror = FALSE){
+stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL, sortevecs = FALSE){
   av <- mmean(ms)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
   }
   stopifnot(all(mult > 0))
   stopifnot(any(mult != 1))
-  es <- eigen_desc(av)
+  if (!is.null(evecs)){
+    warning("evecs should only be supplied for debugging")
+    es <- list()
+    es$values <- diag(t(evecs) %*% av %*% evecs)
+    es$vectors <- evecs
+    if (!all(order(es$values, decreasing = TRUE) == 1:length(es$values))){
+      warning("Eigenvalues given by evecs are NOT decreasing.")
+    }
+    if (sortevecs){
+      ord <- order(es$values, decreasing = TRUE)
+      es$values <- es$values[ord]
+      es$vectors <- es$vectors[, ord]
+    }
+  } else {
+    es <- eigen_desc(av)
+  }
 
-  #indices
+  #indices of multiplicity
   cmult <- cumsum(mult)
   esvalstart <- c(0, cmult[-length(cmult)]) + 1
   idxs <- lapply(1:length(mult), function(i){
@@ -37,9 +54,6 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE){
 
   #prod w evecs - should be equal to evals since vectors calculated from av
   evals <- es$values
-  #vapply(1:ncol(es$vectors), function(i){
-  #  t(es$vectors[, i]) %*% av %*% es$vectors[, i]
-  #}, FUN.VALUE = 1.1)
 
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
   xi <- xiget(evals, mult, idxs)
@@ -58,6 +72,7 @@ evalsvs111 <- function(evals){
 }
 
 # the random variables xi in sets per multiplicity because the weight matrix is different in each one
+# @param idxs gives the locations in the full eigenvalue vector of the eigenvalues corresponding to each multiplicity 
 xiget <- function(evals, mult, idxs){
   xi <- lapply(1:length(mult), function(j){
     evals <- evals[ idxs[[j]] ]

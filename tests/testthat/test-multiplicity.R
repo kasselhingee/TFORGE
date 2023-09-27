@@ -38,6 +38,31 @@ test_that("stat is zero for standarised sample, dim 7", {
   expect_error(expect_equal(stat_multiplicity(Ysample, mult = c(3, 2, 1, 1)), 0))
 })
 
+test_that("debugging stat with true evecs is same regardless of sortevecs", {
+  set.seed(1332)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  Ysample <- rsymm_norm(30, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+  unsort <- suppressWarnings(stat_multiplicity(Ysample, mult = mult, evecs = diag(sum(mult)), sortevecs = FALSE))
+  sort <- suppressWarnings(stat_multiplicity(Ysample, mult = mult, evecs = diag(sum(mult)), sortevecs = TRUE))
+  
+  expect_equal(sort, unsort)  
+})
+
+test_that("debugging stat with true evecs has correct null distribution", {
+  set.seed(1332)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  vals <- pbapply::pbreplicate(1000, {
+    Ysample <- rsymm_norm(200, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    stat_multiplicity(Ysample, mult = mult, evecs = diag(sum(mult)))
+  }, cl = 2)
+  
+  # qqplot(vals, y = rchisq(1000, df = sum(mult-1))) 
+  res <- ks.test(vals, "pchisq", df = sum(mult-1))
+  expect_gt(res$p.value, 0.2)
+})
+
 test_that("stat has correct null distribution", {
   set.seed(1331)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
@@ -47,14 +72,14 @@ test_that("stat has correct null distribution", {
     stat_multiplicity(Ysample, mult = mult)
   })
   
-  # qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
+  # qqplot(vals, y = rchisq(1000, df = sum(mult-1))) #looks more like df=5
   res <- ks.test(vals, "pchisq", df = sum(mult-1))
   expect_gt(res$p.value, 0.2)
 })
 
 
 test_that("test has uniform distribution", {
-  skiponcran() #test very slow
+  skip_on_cran() #test very slow
   set.seed(1331)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
@@ -113,11 +138,18 @@ test_that("xicovar() gives the same covariance as sample covariance", {
     esvalstart[i] : cmult[i]
   })
   
-  simxi <- function(n, mn, sigma, mult, idxs, evecs = NULL){
+  #if evecs supplied, should they be sorted so that the calculated approximate eigenvalues are descending?
+  simxi <- function(n, mn, sigma, mult, idxs, evecs = NULL, sortevecs = FALSE){
     Ysample <- rsymm(n, mn, sigma)
     Ybar <- mmean(Ysample)
     if (is.null(evecs)){evals <- eigen_desc(Ybar)$values} 
-    else {evals <- diag(t(evecs) %*% Ybar %*% evecs)} #use the true eigenvectors
+    else {
+      evals <- diag(t(evecs) %*% Ybar %*% evecs) #use the true eigenvectors
+      if (sortevecs){
+        ord <- order(evals, decreasing = TRUE)
+        evals <- evals[ord]
+      }
+    }
     xi <- xiget(evals, mult, idxs)
     return(xi)
   }
@@ -136,20 +168,32 @@ test_that("xicovar() gives the same covariance as sample covariance", {
  
   set.seed(35468) 
   # semi-plugged in xi
-  emcov <- replicate(100,
+  emcov_semi <- replicate(1000,
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen_desc(mn)$vectors)) |>
     t() |>
     cov()
-  expect_equal(emcov, thecov, tolerance = 0.05)
+  expect_equal(emcov_semi, thecov, tolerance = 0.01)
   
-  skip("Empirical covariance of xi using estimated evecs is a poor estimate for the actual covariance of xi, so skipping test.")
-  set.seed(3541) 
+  # semi-plugged in xi with sorting: covariance changes a lot
+  set.seed(35468) 
+  emcov_sort <- replicate(1000,
+    simxi(n, mn = mn, sigma = C0, mult, idxs, evecs = eigen_desc(mn)$vectors, sortevecs = TRUE)) |>
+    t() |>
+    cov()
+  expect_equal(emcov_sort, thecov, tolerance = 0.01)
+  
+  set.seed(35468) 
   # fully empirical (plugged in) xi
-  emcov <- replicate(100,
+  emcov <- replicate(1000,
     simxi(n, mn = mn, sigma = C0, mult, idxs)) |>
     t() |>
     cov()
-  expect_equal(emcov / thecov, matrix(1, 3, 3), tolerance = 0.5)
+  expect_equal(emcov, emcov_sort, tolerance = 0.01)
+  expect_equal(emcov, thecov, tolerance = 0.01) # currently failing.
+  # That is the covariance of fully empirical \hat\xi is similar to that of \xi with sorting
+  # but vastly different to the covariance of \xi without sorting.
+  # skip("Empirical covariance of xi using estimated evecs is very different to xi using population-mean evecs.")
+  # expect_equal(emcov / thecov, matrix(1, 3, 3), tolerance = 0.5)
   #Empirical covariance here stable up to 100000 replicates, suggests the empirical xi (eigenvectors from the sample mean) has a very different distribution to the exact xi for n = 10, 100. Asymptotically, I'd expect it to be good though.
   #I wonder if changes in order of vectors are washing things out! But how to avoid that??
 })
