@@ -74,10 +74,10 @@ test_that("test has uniform distribution", {
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(1000, {
     Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
-    test_multiplicity(Ysample, mult = mult, B = 100)$pval
-  }, cl = 2)
+    test_multiplicity(Ysample, mult = mult, B = 200)$pval
+  })
   
-  # qqplot(vals, y = runif(1000))
+  qqplot(vals, y = runif(1000))
   res <- suppressWarnings(ks.test(vals, "punif"))
   expect_gt(res$p.value, 0.2)
 })
@@ -201,7 +201,11 @@ test_that("fixed trace from projection preserved by standardisation and ignored 
   std_n <- standardise_multiplicity(Ysample_n, mult)
   expect_true(all.equal(lapply(std, projtrace), std_n, check.attributes = FALSE))
   
-  expect_equal(stat_multiplicity(Ysample, mult = mult), stat_multiplicity(Ysample_n, mult = mult))
+  set.seed(123)
+  stat_orig <- stat_multiplicity(Ysample, mult = mult)
+  set.seed(123)
+  stat_n <- stat_multiplicity(Ysample_n, mult = mult)
+  expect_equal(stat_orig, stat_n)
 })
 
 test_that("runifortho produces orthogonal matrices", {

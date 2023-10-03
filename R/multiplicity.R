@@ -1,5 +1,7 @@
 #' @name multiplicity
 #' @title Tools for testing a specified multiplicity for a single sample
+#' @details
+#' Due to the random rotation of the eigenvectors, use [`set.seed()`] before `stat_multiplicity()` if you want the answer to be fixed.
 #' @param ms Sample of matrices
 #' @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
 NULL
