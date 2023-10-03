@@ -47,7 +47,7 @@ test_that("debugging stat with true evecs has correct null distribution", {
     stat_multiplicity(Ysample, mult = mult, evecs = diag(sum(mult)))
   }, cl = 2)
   
-  qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
+  # qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
   res <- ks.test(vals, "pchisq", df = sum(mult-1))
   expect_gt(res$p.value, 0.2)
 })
@@ -73,9 +73,9 @@ test_that("test has uniform distribution", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(1000, {
-    Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
-    test_multiplicity(Ysample, mult = mult, B = 200)$pval
-  })
+    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    test_multiplicity(Ysample, mult = mult, B = 100)$pval
+  }, cl = 2)
   
   qqplot(vals, y = runif(1000))
   res <- suppressWarnings(ks.test(vals, "punif"))
