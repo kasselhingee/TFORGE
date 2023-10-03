@@ -17,11 +17,10 @@ test_multiplicity <- function(ms, mult, B){
   return(res)
 }
 
-#' @describeIn multiplicity Test statistic
+#' @describeIn multiplicity Test statistic (including uniformly random rotation of eigenvectors associated with each eigenvalue)
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
-#' @param sortevecs For debugging only. When `evecs` supplied, should they be sorted to give estimates of eigenvalues that are descending
 #' @export
-stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL, sortevecs = FALSE){
+stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL){
   av <- mmean(ms)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
@@ -31,16 +30,7 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL, sorteve
   if (!is.null(evecs)){
     warning("evecs should only be supplied for debugging")
     es <- list()
-    es$values <- diag(t(evecs) %*% av %*% evecs)
     es$vectors <- evecs
-    if (!all(order(es$values, decreasing = TRUE) == 1:length(es$values))){
-      warning("Eigenvalues given by evecs are NOT decreasing.")
-    }
-    if (sortevecs){
-      ord <- order(es$values, decreasing = TRUE)
-      es$values <- es$values[ord]
-      es$vectors <- es$vectors[, ord]
-    }
   } else {
     es <- eigen_desc(av)
   }
