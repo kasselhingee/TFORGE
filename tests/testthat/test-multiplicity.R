@@ -235,3 +235,27 @@ test_that("fixed trace from projection preserved by standardisation and ignored 
   
   expect_equal(stat_multiplicity(Ysample, mult = mult), stat_multiplicity(Ysample_n, mult = mult))
 })
+
+test_that("runifortho produces orthogonal matrices", {
+  set.seed(354)
+  rot <- runifortho(3)
+  expect_equal(rot %*% t(rot), diag(3))
+  set.seed(354796)
+  rot <- runifortho(6)
+  expect_equal(rot %*% t(rot), diag(6))
+})
+
+test_that("runifortho density is invariant to rotations", {
+  set.seed(354)
+  rot <- runifortho(3)
+  set.seed(3514)
+  mats <- replicate(1E3, runifortho(3))
+  # mats <- replicate(1E3, rstiefel::rustiefel(3, 3))
+  
+  #get number of mats that have last column within certain amount of e1=c(1,0,0)
+  norig <- sum(mats[1,3,] < pi/16)
+  
+  rotmats <- simplify2array(apply(mats, 3, FUN = '%*%', rot, simplify = FALSE))
+  nrot <- sum(rotmats[1,3,]  < pi/16)
+  expect_equal(norig, nrot, tolerance = 0.1)
+})

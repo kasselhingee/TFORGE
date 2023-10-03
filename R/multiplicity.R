@@ -52,6 +52,11 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL, sorteve
     esvalstart[i] : cmult[i]
   })
 
+  # Get evals
+  # To uniformly randomly rotate them in each block, need uniform rotation matrices
+  # these can be found by uniform simulation within the basis of the given eigenvectors
+
+  # I can represent the existing basis as e1,e2,e3 etc, and create a new basis by using the random matrix to project e1,e2,e3 onto new directions of e1,e2,e3.
   #prod w evecs - should be equal to evals since vectors calculated from av
   evals <- es$values
 
@@ -154,3 +159,15 @@ standardise_multiplicity <- function(ms, mult){
   return(out)
 }
 
+# random matrices in the uniform distribution on the Steifel manifold can be obtained as the Q in the QR decomposition a random Normal matrix (elements multivariate normal). P67-68 Gupta and Nagar 1999.
+# But I've misunderstood something because the result *IS* sensitive to rotations.
+# For now using rstiefel
+# @param p the nrows and columns
+runifortho <- function(p){
+  rstiefel::rustiefel(p,p)
+  # m <- matrix(rnorm(p * p),
+  #        nrow = p,
+  #        ncol = p)
+  # out <- qr.Q(qr(m))
+  # return(out)
+}
