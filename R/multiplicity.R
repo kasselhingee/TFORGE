@@ -149,17 +149,22 @@ standardise_multiplicity <- function(ms, mult){
   return(out)
 }
 
-# random matrices in the uniform distribution on the Steifel manifold can be obtained as the Q in the QR decomposition a random Normal matrix (elements multivariate normal). P67-68 Gupta and Nagar 1999.
-# But I've misunderstood something because the result *IS* sensitive to rotations.
-# For now using rstiefel
+# random matrices in the uniform distribution on the Stiefel manifold can be obtained as the L in X = TL decomposition of a random Normal matrix (elements iid normal), where
+# T is lower triangular (and square) and L is unitary (not necessarily square).
+#[ P67-68 Gupta and Nagar 1999]
+# This is not quite the QR decomposition in LINPACK which is X = QR such that Q is orthonormal (square matrix) and R is upper triangular.
+# t(X) = QR => X = R^T Q^T.
+# R^T is lower triangular ==> T
+# Q^T is orthonormal ==> L.
+# So when X if square the Q of the QR decomposition of t(X) is the transpose of a uniformly random matrix on the Stiefel manifold.
 # @param p the nrows and columns
 runifortho <- function(p){
-  rstiefel::rustiefel(p,p)
-  # m <- matrix(rnorm(p * p),
-  #        nrow = p,
-  #        ncol = p)
-  # out <- qr.Q(qr(m, LAPACK = TRUE))
-  # return(t(out))
+  # rstiefel::rustiefel(p,p)
+  m <- matrix(rnorm(p * p),
+         nrow = p,
+         ncol = p)
+  out <- qr.Q(qr(t(m), LAPACK = TRUE))
+  return(t(out))
 }
 
 # randomly rotate eigenvectors for each eigenspace

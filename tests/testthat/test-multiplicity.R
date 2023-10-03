@@ -228,13 +228,22 @@ test_that("runifortho density is invariant to rotations", {
   set.seed(354)
   rot <- runifortho(3)
   set.seed(3514)
-  mats <- replicate(1E3, runifortho(3))
-  # mats <- replicate(1E3, rstiefel::rustiefel(3, 3))
+  mats1 <- replicate(1E3, runifortho(3))
+  mats2 <- replicate(1E3, runifortho(3)) #for full independencs
+  # mats <- replicate(1E3, rstiefel::rustiefel(3,3))
   
   #get number of mats that have last column within certain amount of e1=c(1,0,0)
-  norig <- sum(mats[1,3,] < pi/16)
+  orig_in <- mats1[1,3,] < pi/16
+  origest <- list(
+    mean = mean(orig_in),
+    se = sd(orig_in)/sqrt(length(orig_in))
+  )
   
-  rotmats <- simplify2array(apply(mats, 3, FUN = '%*%', rot, simplify = FALSE))
-  nrot <- sum(rotmats[1,3,]  < pi/16)
-  expect_equal(norig, nrot, tolerance = 0.1)
+  rotmats <- simplify2array(apply(mats2, 3, FUN = '%*%', rot, simplify = FALSE))
+  rot_in <- rotmats[1,3,]  < pi/16
+  rotest <- list(
+    mean = mean(rot_in),
+    se = sd(rot_in)/sqrt(length(rot_in))
+  )
+  expect_lt(abs(rotest$mean - origest$mean), 2 * sqrt(rotest$se^2 + origest$se^2))
 })
