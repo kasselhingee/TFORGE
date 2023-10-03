@@ -156,8 +156,8 @@ runifortho <- function(p){
   # m <- matrix(rnorm(p * p),
   #        nrow = p,
   #        ncol = p)
-  # out <- qr.Q(qr(m))
-  # return(out)
+  # out <- qr.Q(qr(m, LAPACK = TRUE))
+  # return(t(out))
 }
 
 # randomly rotate eigenvectors for each eigenspace
