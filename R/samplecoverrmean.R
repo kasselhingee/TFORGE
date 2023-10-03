@@ -1,6 +1,5 @@
 #' @title The sample mean, difference to the mean and covariance of elements for a set of matrices.
 #' @param ms Set of matrices as a list or a 3-array.
-#' @details Uses [`abind::abind()`] which can be very slow for large numbers of matrices as it tries to store them all in memory.
 mmean <- function(ms){
   return(msum(ms)/length(ms))
 }
