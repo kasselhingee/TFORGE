@@ -68,11 +68,11 @@ test_that("stat has correct null distribution", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(1000, {
-    Ysample <- rsymm_norm(1000, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     stat_multiplicity(Ysample, mult = mult)
   })
   
-  # qqplot(vals, y = rchisq(1000, df = sum(mult-1))) #looks more like df=5
+  qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
   res <- ks.test(vals, "pchisq", df = sum(mult-1))
   expect_gt(res$p.value, 0.2)
 })
@@ -127,7 +127,7 @@ test_that("xiget() behaves properly", {
   expect_equal(xiget(c(3.0, 2.9, 3.1, 2, 2.1), mult, idxs)==0, c(FALSE, FALSE, FALSE))
 })
 
-test_that("xicovar() gives the same covariance as sample covariance", {
+test_that("xicovar() gives the same as sample covariance of xi", {
   p = 5
   n = 100
   mult <- c(3, 2)
@@ -167,8 +167,8 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   thecov <- xicovar(mult, idxs, eigen_desc(mn)$vectors, C0/n)
  
   set.seed(35468) 
-  # semi-plugged in xi
-  emcov_semi <- replicate(1000,
+  # semi-empirical xi
+  emcov_semi <- pbapply::pbreplicate(1E4,
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen_desc(mn)$vectors)) |>
     t() |>
     cov()
@@ -184,7 +184,7 @@ test_that("xicovar() gives the same covariance as sample covariance", {
   
   set.seed(35468) 
   # fully empirical (plugged in) xi
-  emcov <- replicate(1000,
+  emcov <- replicate(1E4,
     simxi(n, mn = mn, sigma = C0, mult, idxs)) |>
     t() |>
     cov()

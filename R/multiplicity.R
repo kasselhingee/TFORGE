@@ -51,17 +51,15 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL, sorteve
   idxs <- lapply(1:length(mult), function(i){
     esvalstart[i] : cmult[i]
   })
-
-  # Get evals
+  # Get evals after random rotations of the eigenvectors for each eigenvalue
   # To uniformly randomly rotate them in each block, need uniform rotation matrices
   # these can be found by uniform simulation within the basis of the given eigenvectors
-
   # I can represent the existing basis as e1,e2,e3 etc, and create a new basis by using the random matrix to project e1,e2,e3 onto new directions of e1,e2,e3.
-  #prod w evecs - should be equal to evals since vectors calculated from av
-  evals <- es$values
-
+  es$vectors <- rotevecs(es$vectors, idxs)
+  es$values <- diag(t(es$vectors) %*% av %*% es$vectors)
+  
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
-  xi <- xiget(evals, mult, idxs)
+  xi <- xiget(es$values, mult, idxs)
 
   C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
   covar <- xicovar(mult, idxs, es$vectors, C0/length(ms))
@@ -77,7 +75,7 @@ evalsvs111 <- function(evals){
 }
 
 # the random variables xi in sets per multiplicity because the weight matrix is different in each one
-# @param idxs gives the locations in the full eigenvalue vector of the eigenvalues corresponding to each multiplicity 
+# @param idxs gives the locations in the full eigenvalue vector of the eigenvalues corresponding to each multiplicity
 xiget <- function(evals, mult, idxs){
   xi <- lapply(1:length(mult), function(j){
     evals <- evals[ idxs[[j]] ]
@@ -170,4 +168,14 @@ runifortho <- function(p){
   #        ncol = p)
   # out <- qr.Q(qr(m))
   # return(out)
+}
+
+# randomly rotate eigenvectors for each eigenspace
+rotevecs <- function(evecs, idxs){
+  rotevecs <- lapply(idxs, function(idxforeval){
+    if (length(idxforeval) == 1){return(evecs[, idxforeval, drop = FALSE])}
+    rot <- runifortho(length(idxforeval))
+    t(rot %*% t(evecs[, idxforeval]))
+  })
+  do.call(cbind, rotevecs)
 }
