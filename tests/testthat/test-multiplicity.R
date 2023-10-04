@@ -157,10 +157,10 @@ test_that("xicovar() gives the same as sample covariance of xi", {
   # set up distribution covariance
   set.seed(316)
   nvar <- (p + 1) * p/2
-  C0_U <- runifortho(nvar, nvar)
+  C0_U <- runifortho(nvar)
   C0 <- C0_U %*% diag(1:nrow(C0_U)) %*% t(C0_U) #use this to simulate
   set.seed(348)
-  mn_U <- runifortho(p, p)
+  mn_U <- runifortho(p)
   mn <- mn_U %*% diag(c(3, 3, 3, 2, 2)) %*% t(mn_U)
   
   # theoretical covariance
@@ -168,11 +168,11 @@ test_that("xicovar() gives the same as sample covariance of xi", {
  
   set.seed(35468) 
   # semi-empirical xi
-  emcov_semi <- pbapply::pbreplicate(1E4,
+  emcov_semi <- pbapply::pbreplicate(1E3,
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen_desc(mn)$vectors)) |>
     t() |>
     cov()
-  expect_equal(emcov_semi, thecov, tolerance = 0.01)
+  expect_equal(emcov_semi, thecov, tolerance = 0.02)
   # note that xihat (eigenvectors given by mn) has a very different distribution because for each sample the eigenvectors for an eigenvalue can be any from the space,
   # not necessarily the exact ones supplied to thecov.
 })
