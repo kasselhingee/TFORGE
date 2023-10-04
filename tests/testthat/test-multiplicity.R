@@ -43,8 +43,8 @@ test_that("debugging stat with true evecs has correct null distribution", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(1000, {
-    Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
-    stat_multiplicity(Ysample, mult = mult, evecs = diag(sum(mult)))
+    Ysample <- rsymm_norm(200, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    suppressWarnings(stat_multiplicity(Ysample, mult = mult, evecs = diag(sum(mult))))
   })
   
   # qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
@@ -82,14 +82,17 @@ test_that("test has uniform distribution", {
   expect_gt(res$p.value, 0.15) #above 0.2 if above two thoroughness measures taken
 })
 
-test_that("test_multiplicity() doesn't reject for simulation of single sample from null, and rejects otherwise", {
+test_that("test rejects some incorrect hypotheses", {
   set.seed(13321)
-  Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
+  Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
+                   sigma = 0.1 * diag(7 * (7 + 1)/2))
   set.seed(3654)
   res <- test_multiplicity(Ysample, mult = c(3,2,1,1), 100)
   expect_gt(res$pval, 0.1)
- 
-  set.seed(3542) 
+
+  # set.seed(3542)
+  # pvals_2311 <- pbapply::pbreplicate(100, test_multiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, cl = 3)
+  set.seed(3542)
   expect_lt(test_multiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, 0.05)
   set.seed(35423) 
   expect_lt(test_multiplicity(Ysample, mult = c(2,2,2,1), 100)$pval, 0.05)
@@ -100,11 +103,11 @@ test_that("test_multiplicity() doesn't reject for simulation of single sample fr
   set.seed(35426) 
   expect_lt(test_multiplicity(Ysample, mult = c(3,3,1), 100)$pval, 0.05)
   
-  # but power varies  
   set.seed(35427) 
-  expect_gt(test_multiplicity(Ysample, mult = c(2,3,2), 100)$pval, 0.15)
+  expect_lt(test_multiplicity(Ysample, mult = c(2,3,2), 100)$pval, 0.05)
   set.seed(3541) 
-  expect_gt(test_multiplicity(Ysample, mult = c(3,2,2), 100)$pval, 0.1)
+  expect_lt(test_multiplicity(Ysample, mult = c(3,2,2), 100)$pval, 0.05)
+  # note that at B=100 there is still a lot a randomness in the output pvalue
 })
 
 test_that("xiget() behaves properly", {
@@ -154,10 +157,10 @@ test_that("xicovar() gives the same as sample covariance of xi", {
   # set up distribution covariance
   set.seed(316)
   nvar <- (p + 1) * p/2
-  C0_U <- mclust::randomOrthogonalMatrix(nvar, nvar)
+  C0_U <- runifortho(nvar, nvar)
   C0 <- C0_U %*% diag(1:nrow(C0_U)) %*% t(C0_U) #use this to simulate
   set.seed(348)
-  mn_U <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U <- runifortho(p, p)
   mn <- mn_U %*% diag(c(3, 3, 3, 2, 2)) %*% t(mn_U)
   
   # theoretical covariance
