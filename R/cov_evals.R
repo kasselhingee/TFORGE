@@ -12,22 +12,19 @@ cov_evals <- function(ms, evecs = NULL, av = NULL){
   if (is.null(evecs)){
     evecs <- eigen_desc(av, symmetric = TRUE)$vectors
   }
-  V <- cov_eval1_eval0(evecs, mcovar(merr(ms, mean = av)))
+  mcov <- mcovar(merr(ms, mean = av))
+
+  # the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
+  indx <- expand.grid(1:nrow(evecs), 1:nrow(evecs))
+  dupmat <- dup(nrow(evecs))
+  vals <- mapply(cov_evals_inside, indx[,1], indx[,2],
+                 MoreArgs = list(evecs = evecs, dupmat = dupmat, mcov = mcov))
+  V <- matrix(NA, nrow = nrow(evecs), ncol = ncol(evecs))
+  V[as.matrix(indx)] <- vals
   return(V)
 }
 
-# the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
-cov_eval1_eval0 <- function(evecs, mcov){
-  indx <- expand.grid(1:nrow(evecs), 1:nrow(evecs))
-  dupmat <- dup(nrow(evecs))
-  vals <- mapply(cov_eval1_eval0_inside, indx[,1], indx[,2],
-    MoreArgs = list(evecs = evecs, dupmat = dupmat, mcov = mcov))
-  out <- matrix(NA, nrow = nrow(evecs), ncol = ncol(evecs))
-  out[as.matrix(indx)] <- vals
-  return(out)
-}
-
-cov_eval1_eval0_inside <- function(j, k, evecs, dupmat, mcov){
+cov_evals_inside <- function(j, k, evecs, dupmat, mcov){
   tmp <- evecs[, j] %*% t(evecs[, k])
   sum(diag(t(dupmat) %*% kronecker(tmp, tmp) %*% dupmat %*% mcov))
 }
