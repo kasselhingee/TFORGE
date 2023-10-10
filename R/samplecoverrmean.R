@@ -23,6 +23,6 @@ mcovar <- function(merr){
 }
 
 msum <- function(ms){
-  stopifnot(inherits(ms, "sst"))
-  invvech(colSums(ms))
+  if (inherits(ms, "sst")){return(invvech(colSums(ms)))}
+  else{return(purrr::reduce(ms, `+`))}
 }
