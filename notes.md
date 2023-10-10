@@ -1,3 +1,5 @@
++ the NAonerror passing would be much better implemented using with calling handlers and a use_value function ala http://adv-r.had.co.nz/beyond-exception-handling.html
+
 There are the following types of functions
 
 + statistics: usually z^2 values that are asymptotically chi-sq
