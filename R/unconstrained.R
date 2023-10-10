@@ -110,9 +110,7 @@ standardise_specifiedevals <- function(ms, evals){
   errs <- merr(ms, mean = av)
   av_eigenspace <- eigen_desc(av, symmetric = TRUE)
   av_evecs <- av_eigenspace$vectors
-  cen <- av_evecs %*% diag(evals) %*% t(av_evecs)
-  newms <- lapply(errs, function(m) cen + m)
-  newms <- lapply(newms, makeSymmetric) #to remove machine differences
-  class(newms) <- c("sst", class(newms))
+  cen <- vech(av_evecs %*% diag(evals) %*% t(av_evecs))
+  newms <- t(t(errs) + cen)
   return(newms)
 }
