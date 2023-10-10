@@ -6,14 +6,14 @@ test_that("mmean is zero for simulated data", {
 
 test_that("merr returns input when input centred", {
   Ysample <- rsymm(10, matrix(0, 5, 5))
-  Ysample <- lapply(Ysample, function(y) y - mmean(Ysample))
-  expect_equal(mmean(Ysample), matrix(0, nrow = 5, ncol = 5))
-  expect_equal(merr(Ysample), Ysample)
+  Ysample <- lapply(Ysample, function(y) y - mmean(as.sst(Ysample)))
+  expect_equal(mmean(as.sst(Ysample)), matrix(0, nrow = 5, ncol = 5))
+  expect_equal(merr(as.sst(Ysample)), as.sst(Ysample))
 })
 
 test_that("mcovar gets close to true", {
   skip("slow")
-  Ysample <- rsymm(100000, matrix(0, 3, 3), sigma = diag( 3 * (3+1)/2))
+  Ysample <- as.sst(rsymm(100000, matrix(0, 3, 3), sigma = diag( 3 * (3+1)/2)))
   expect_silent(c0 <- mcovar(merr(Ysample)))
   expect_equal(c0, diag( 3 * (3+1)/2), tolerance = 0.06)
 })
