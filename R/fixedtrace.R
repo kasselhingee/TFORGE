@@ -38,11 +38,12 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
     sum_precisions <- purrr::reduce(precisions, `+`)
     precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
-    d0proj <- drop(solve(sum_precisions) %*% sum_precisionsbyevals)
+    d0proj <- drop(solve_NAonerror(sum_precisions, NAonerror = TRUE) %*% sum_precisionsbyevals)
     d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
     if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
+      browser()
       d0 <- sort(d0, na.last = TRUE)
-      warning("Estimated common eigenvalues are not in descending order and has been reordered.")
+      warning("Estimated common eigenvalues are not in descending order and have been reordered.")
     }
   } else {
     if (!isTRUE(all.equal(sum(evals), sum(diag(mss[[1]][[1]]))))){stop("Provided evals do not sum to trace of observations.")}
