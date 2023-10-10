@@ -62,4 +62,7 @@ as.sst <- function(x, ...){
   }
 }
 
-
+#' @export
+length.sst <- function(x){
+  nrow(x)
+}

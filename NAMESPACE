@@ -2,6 +2,7 @@
 
 S3method("[",sst)
 S3method("[[",sst)
+S3method(length,sst)
 S3method(print,tensorboot)
 export(as.mstorsst)
 export(bootresampling)
