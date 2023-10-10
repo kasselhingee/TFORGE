@@ -65,7 +65,9 @@ multisample <- function(x, prob = NULL){
 # an internal version of sample that automatically marks the result as an sst
 samplesst <- function(x, prob = NULL, replace = TRUE){
   stopifnot(inherits(x, "sst"))
-  out <- sample(x, prob = prob, replace = replace)
+  idx <- sample.int(nrow(x), prob = prob, replace = replace)
+  class(x) <- "matrix"
+  out <- x[idx, ]
   class(out) <- c("sst", class(out))
   return(out)
 }
