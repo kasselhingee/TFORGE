@@ -13,15 +13,11 @@ invvecd <- function(x){
 
 # Special sample covariance that uses Schwartzman's vecd
 S_mcovar <- function(merr){
-  if(is.array(merr)){if (length(dim(merr))==3){
-    merr <- lapply(1:dim(merr)[3], function(i) merr[,,i])
-  }}
-  mcovarls <- lapply(merr, function(m){
-    x <- vecd(m)
-    x %*% t(x)
-  })
-  n <- length(merr)
-  mmean(mcovarls) * n / (n-1)
+  merr_vecd <- apply(merr, 1, function(m){
+    vecd(invvech(m))
+  }, simplify = FALSE)
+  merr_vecd <- do.call(rbind, merr_vecd)
+  cov(merr_vecd)
 }
 
 # i is the index that correponds to 1, p is the number of rows/columns
@@ -97,12 +93,14 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param ms2 Sample of matrices.
 #' @export
 stat_schwartzman_eval <- function(ms1, ms2){
-  n1 <- length(ms1)
-  n2 <- length(ms2)
+  ms1 <- as.sst(ms1)
+  ms2 <- as.sst(ms2)
+  n1 <- nrow(ms1)
+  n2 <- nrow(ms2)
   M1 <- mmean(ms1)
   M2 <- mmean(ms2)
   L1 <- eigen_desc(M1)$values
-  L2 <- eigen_desc(mmean(ms2))$values
+  L2 <- eigen_desc(M2)$values
   Tstat <- sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
 
   #now for the distribution
