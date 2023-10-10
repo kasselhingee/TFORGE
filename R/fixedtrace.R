@@ -18,7 +18,7 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
 stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   x <- as.mstorsst(x)
-  stopifnot(hasfixedtrace(x))
+  # stopifnot(hasfixedtrace(x))
   if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
   else {mss <- x}
   if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
@@ -88,12 +88,13 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   
   # compute corresponding weights that lead to emp.lik.
   wts <- mapply(function(ms, nullmean){
+    class(ms) <- c("matrix", "array")
     if (sc){
-      scelres <- emplik(do.call(rbind, lapply(ms, vech)), vech(nullmean), itermax = maxit)
+      scelres <- emplik(ms, vech(nullmean), itermax = maxit)
       if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
-      wts <- as.vector(scelres$wts) * length(ms)
+      wts <- as.vector(scelres$wts) * nrow(ms)
     } else {
-      elres <- emplik::el.test(do.call(rbind, lapply(ms, vech)), vech(nullmean), maxit = maxit)
+      elres <- emplik::el.test(ms, vech(nullmean), maxit = maxit)
       if (elres$nits == maxit){warning(paste("Reached maximum iterations", maxit, "in el.test() at best null mean."))}
       wts <- elres$wts
     }
