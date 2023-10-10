@@ -34,7 +34,19 @@ as.sst <- function(x, ...){
   if (length(unique(dims[,2])) != 1){stop("Some matrices are different sizes.")}
   if (length(unique(dims[,2])) != 1){stop("Some matrices are different sizes.")}
   if (!all(vapply(x, isSymmetric, FUN.VALUE = FALSE, ...))){stop("Some matrices are not symmetric according to default limits in isSymmetric().")}
-  class(x) <- c(class(x), "sst")
+  x <- simplify2array(x)
+  class(x) <- c("sst", class(x))
   return(x)
 }
+
+`[.sst` <- function(x, i, j, ...){
+  class(x) <- "array" #so it uses the default array indexing
+  x[,,i,...]
+}
+
+`[[.sst` <- function(x, i, j, ...){
+  class(x) <- "array" #so it uses the default array indexing
+  x[,,i,...]
+}
+
 

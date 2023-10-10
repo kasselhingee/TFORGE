@@ -10,3 +10,12 @@ test_that("as.mstorsst()",{
   expect_error(as.sst(Ysamples))
   expect_error(as.sst(matrix(1, 2, 3)))
 })
+
+test_that("new generics work for sst", {
+  set.seed(134)
+  Ysample <- rsymm_norm(50, diag(c(3,2,1)))
+  Ysample_sst <- as.sst(Ysample)
+  expect_equal(Ysample_sst[[1]], Ysample[[1]])
+  expect_equal(Ysample_sst[1], Ysample[[1]])
+  
+})
