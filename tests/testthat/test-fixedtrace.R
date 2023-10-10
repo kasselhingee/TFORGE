@@ -40,6 +40,22 @@ test_that("stat on multi sample has correct NULL distribution", {
   expect_gt(res$p.value, 0.2)
 })
 
+test_that("stat on normed multi sample has correct NULL distribution", {
+  set.seed(65141)
+  vals <- replicate(100, {
+    Ysamples <- replicate(5, {
+      Y <- rsymm_norm(50, diag(c(3,2,1)))
+      Y <- lapply(Y, normtrace)
+      Y
+    }, simplify = FALSE)
+    stat_fixedtrace(Ysamples)
+  })
+  
+  # qqplot(vals, y = rchisq(1000, df = (5-1)*2))
+  res <- ks.test(vals, "pchisq", df = (5-1)*2)
+  expect_gt(res$p.value, 0.2)
+})
+
 
 test_that("test of NULL has uniform p values for sst", {
   set.seed(1333)
