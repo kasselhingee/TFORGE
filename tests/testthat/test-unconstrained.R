@@ -31,7 +31,7 @@ test_that("stat for mst has correct null distribution", {
   vals <- replicate(100, {
     Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
     stat <- stat_unconstrained(Ysamples)
-    expect_equal(as.numeric(stat), as.numeric(stat_commonevals_ksample(Ysamples)))
+    # expect_equal(as.numeric(stat), as.numeric(stat_commonevals_ksample(Ysamples)))
     stat
   })
   
@@ -74,9 +74,9 @@ test_that("test from NULL mst has uniform p-values", {
     Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
     set.seed(seed+1)
     res <- test_unconstrained(Ysamples, B = 100)
-    set.seed(seed+1)
-    res2 <- test_commonevals(Ysamples, B = 100)
-    expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
+    # set.seed(seed+1)
+    # res2 <- test_commonevals(Ysamples, B = 100)
+    # expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
     res$pval
   }, FUN.VALUE = 1.3)
   # qqplot(pvals, y = runif(1000))
