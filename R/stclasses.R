@@ -34,19 +34,26 @@ as.sst <- function(x, ...){
   if (length(unique(dims[,2])) != 1){stop("Some matrices are different sizes.")}
   if (length(unique(dims[,2])) != 1){stop("Some matrices are different sizes.")}
   if (!all(vapply(x, isSymmetric, FUN.VALUE = FALSE, ...))){stop("Some matrices are not symmetric according to default limits in isSymmetric().")}
-  x <- simplify2array(x)
-  class(x) <- c("sst", class(x))
-  return(x)
+  xvec <- lapply(x, vech)
+  xmat <- do.call(rbind, xvec)
+  class(xmat) <- c("sst", class(xmat))
+  return(xmat)
 }
 
 `[.sst` <- function(x, i, j, ...){
-  class(x) <- "array" #so it uses the default array indexing
-  x[,,i,...]
+  class(x) <- "matrix" #so it uses the default array indexing
+  apply(x[i, , drop = FALSE], 1, invvech, simplify = FALSE)
 }
 
 `[[.sst` <- function(x, i, j, ...){
-  class(x) <- "array" #so it uses the default array indexing
-  x[,,i,...]
+  stopifnot(is.vector(i))
+  class(x) <- "matrix" #so it uses the default array indexing
+  if (length(i) == 2){
+    return(invvech(x[i[[1]], ])[ i[[2]] ])
+  }
+  if (length(i) == 1){
+    return(invvech(x[i, ]))
+  }
 }
 
 
