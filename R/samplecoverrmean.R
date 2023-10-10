@@ -20,7 +20,11 @@ mcovar <- function(merr){
     x %*% t(x)
   })
   n <- length(merr)
-  mmean(mcovarls) * n / (n-1)
+  out <- mmean(mcovarls) * n / (n-1)
+  indx <- which(lower.tri(merr[[1]], diag = TRUE), arr.ind = TRUE)
+  nam <- paste0("e", indx[, "row"], indx[, "col"])
+  colnames(out) <- rownames(out) <- nam
+  return(out)
 }
 
 msum <- function(ms){
