@@ -11,6 +11,10 @@ as.mstorsst <- function(x, ...){
   if (inherits(x, "mst")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (inherits(x, "sst")){return(x)}
   if (inherits(x, "list")){
+    if (all(vapply(x, inherits, "sst", FUN.VALUE = FALSE))){ #sst objects already :)
+      class(x) <- c(class(x), "mst")
+      return(x)
+      }
     if (all(vapply(x, inherits, "list", FUN.VALUE = FALSE))){ #a list of lists: possible multisample
       x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
       dims <- do.call(rbind, lapply(x, function(y){dim(y[[1]])}))
@@ -26,8 +30,8 @@ as.mstorsst <- function(x, ...){
 }
 
 as.sst <- function(x, ...){
-  if (inherits(x, "matrix")){stop("x is a single matrix")}
   if (inherits(x, "sst")){return(x)}
+  if (inherits(x, "matrix")){stop("x is a single matrix")}
   if (!all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){stop("Some elements are not matrices")}
   dims <- do.call(rbind, lapply(x, dim))
   if (dims[1,2] != dims[1,2]){stop("Matrices are not square.")}
@@ -40,11 +44,13 @@ as.sst <- function(x, ...){
   return(xmat)
 }
 
+#' @export
 `[.sst` <- function(x, i, j, ...){
   class(x) <- "matrix" #so it uses the default array indexing
   apply(x[i, , drop = FALSE], 1, invvech, simplify = FALSE)
 }
 
+#' @export
 `[[.sst` <- function(x, i, j, ...){
   stopifnot(is.vector(i))
   class(x) <- "matrix" #so it uses the default array indexing

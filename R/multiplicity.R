@@ -145,7 +145,7 @@ standardise_multiplicity <- function(ms, mult){
 
   # make new sample out of newM and errors
   out <- lapply(merr(ms, mean = av), '+', newM)
-  class(out) <- c(class(out), "sst")
+  class(out) <- c("sst", class(out))
   return(out)
 }
 

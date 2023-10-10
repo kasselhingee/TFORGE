@@ -1,26 +1,21 @@
 #' @title The sample mean, difference to the mean and covariance of elements for a set of matrices.
 #' @param ms Set of matrices as a list or a 3-array.
 mmean <- function(ms){
-  return(msum(ms)/length(ms))
+  stopifnot(inherits(ms, "sst"))
+  invvech(colMeans(ms))
 }
 
 merr <- function(ms, mean = mmean(ms)){
-  if(is.array(ms)){if (length(dim(ms))==3){
-    ms <- lapply(1:dim(ms)[3], function(i) ms[,,i])
-  }}
-  lapply(ms, function(m){m - mean})
+  stopifnot(inherits(ms, "sst"))
+  mean = vech(mean)
+  out <- t(t(ms) - mean)
+  class(out) <- c("sst", class(out))
+  return(out)
 }
 
 mcovar <- function(merr){
-  if(is.array(merr)){if (length(dim(merr))==3){
-    merr <- lapply(1:dim(merr)[3], function(i) merr[,,i])
-  }}
-  mcovarls <- lapply(merr, function(m){
-    x <- vech(m)
-    x %*% t(x)
-  })
-  n <- length(merr)
-  out <- mmean(mcovarls) * n / (n-1)
+  stopifnot(inherits(merr, "sst"))
+  out <- cov(merr)
   indx <- which(lower.tri(merr[[1]], diag = TRUE), arr.ind = TRUE)
   nam <- paste0("e", indx[, "row"], indx[, "col"])
   colnames(out) <- rownames(out) <- nam
@@ -28,8 +23,6 @@ mcovar <- function(merr){
 }
 
 msum <- function(ms){
-  if(is.array(ms)){if (length(dim(ms))==3){
-    ms <- lapply(1:dim(ms)[3], function(i) ms[,,i])
-  }}
-  return(purrr::reduce(ms, `+`))
+  stopifnot(inherits(ms, "sst"))
+  invvech(colSums(ms))
 }

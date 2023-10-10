@@ -66,7 +66,7 @@ multisample <- function(x, prob = NULL){
 samplesst <- function(x, prob = NULL, replace = TRUE){
   stopifnot(inherits(x, "sst"))
   out <- sample(x, prob = prob, replace = replace)
-  class(out) <- c(class(out), "sst")
+  class(out) <- c("sst", class(out))
   return(out)
 }
 

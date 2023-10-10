@@ -113,6 +113,6 @@ standardise_specifiedevals <- function(ms, evals){
   cen <- av_evecs %*% diag(evals) %*% t(av_evecs)
   newms <- lapply(errs, function(m) cen + m)
   newms <- lapply(newms, makeSymmetric) #to remove machine differences
-  class(newms) <- c(class(newms), "sst")
+  class(newms) <- c("sst", class(newms))
   return(newms)
 }
