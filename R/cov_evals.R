@@ -15,19 +15,40 @@ cov_evals <- function(ms, evecs = NULL, av = NULL){
   mcov <- mcovar(merr(ms, mean = av))
 
   # the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
-  indx <- expand.grid(1:nrow(evecs), 1:nrow(evecs))
-  dupmat <- dup(nrow(evecs))
-  vals <- mapply(cov_evals_inside, indx[,1], indx[,2],
-                 MoreArgs = list(evecs = evecs, dupmat = dupmat, mcov = mcov))
+  indx <- rbind(t(combn(1:nrow(evecs), 2)), #this avoids repeating elements that are symmetric
+                cbind(1:nrow(evecs), 1:nrow(evecs)))
+  dupmat <- dup(nrow(evecs)) # is sparse so could be even faster
+  vals <- mapply(cov_evals_inside_cpp, 
+                 lapply(indx[,1], function(i) {evecs[, i]}),
+                 lapply(indx[,2], function(i) {evecs[, i]}),
+                 MoreArgs = list(dupmat = dupmat, mcov = mcov))
   V <- matrix(NA, nrow = nrow(evecs), ncol = ncol(evecs))
   V[as.matrix(indx)] <- vals
+  V[lower.tri(V)] <- t(V)[lower.tri(V)]
   return(V)
 }
 
-cov_evals_inside <- function(j, k, evecs, dupmat, mcov){
-  tmp <- evecs[, j] %*% t(evecs[, k])
+cov_evals_inside <- function(vecj, veck, dupmat, mcov){
+  tmp <- vecj %*% t(veck)
   sum(diag(t(dupmat) %*% kronecker(tmp, tmp) %*% dupmat %*% mcov))
 }
+
+cov_evals_inside_cpp <- inline::cxxfunction(
+  sig = c(vecj = "integer", veck = "integer",
+          dupmat = "numeric",
+          mcov = "numeric"),
+  plugin = "RcppArmadillo",
+  body = '
+  arma::vec vj = Rcpp::as<arma::vec>(vecj);
+  arma::vec vk = Rcpp::as<arma::vec>(veck);
+  arma::mat dup_ = Rcpp::as<arma::mat>(dupmat);
+  arma::mat mcov_ = Rcpp::as<arma::mat>(mcov);
+  
+  arma::mat tmp = vj * vk.t();
+  arma::mat tmp2 = dup_.t() * kron(tmp, tmp) * dup_ * mcov_;
+  double out = trace(tmp2);
+  return wrap(out);
+')
 
 
 
