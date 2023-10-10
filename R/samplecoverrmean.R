@@ -9,7 +9,7 @@ merr <- function(ms, mean = mmean(ms)){
   stopifnot(inherits(ms, "sst"))
   mean = vech(mean)
   out <- t(t(ms) - mean)
-  class(out) <- c("sst", class(out))
+  # class(out) <- c("sst", class(out))
   return(out)
 }
 
