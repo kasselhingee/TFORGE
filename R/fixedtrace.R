@@ -8,17 +8,18 @@
 #' @return `TRUE` or `FALSE`
 hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
-  if (inherits(x, "mst")){x <- unlist(x, recursive = FALSE)}
-  traces <- vapply(x, function(y){sum(diag(y))}, FUN.VALUE = 1.64)
+  if (inherits(x, "mst")){x <- do.call(rbind, x)}
+  mats <- aoply(x, 1, invvech, simplify = FALSE)
+  traces <- vapply(mats, function(y){sum(diag(y))}, FUN.VALUE = 1.64)
   tracerange <- range(traces)
   isTRUE(all.equal(tracerange[1], tracerange[2], tolerance = tolerance))
 }
+
 #' @title Test for eigenvalues when trace is fixed.
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 #' @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
 stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   x <- as.mstorsst(x)
-  # stopifnot(hasfixedtrace(x))
   if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
   else {mss <- x}
   if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
@@ -72,6 +73,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
 #' @export
 test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   x <- as.mstorsst(x)
+  stopifnot(hasfixedtrace(x))
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
