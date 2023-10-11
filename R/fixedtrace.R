@@ -140,7 +140,8 @@ projtrace_sst <- function(ms){
     m <- invvech(v)
     vech(projtrace(m))
   }, simplify = FALSE)
-  do.call(rbind, out)
+  out <- do.call(rbind, out)
+  class(out) <- c("sst", class(out))
 }
 
 #' Whole matrix is divided by trace.
