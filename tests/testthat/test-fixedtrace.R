@@ -117,11 +117,16 @@ test_that("hasfixedtrace() gives TRUE or FALSE values", {
   const <- 1.45
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
-    Y <- lapply(Y, function(m) {const * m/sum(diag(m))})
+    Y <- apply(Y, 1, 
+               function(vec) {m <- invvech(vec); const * m/sum(diag(m))},
+               simplify = FALSE)
     Y
     }, simplify = FALSE)
+  
+  expect_equal(sum(diag(Ysamples[[1]][[1]])), const)
+  as.mstorsst(Ysamples)[[1]][[1]]
 
-  expect_true(hasfixedtrace(Ysamples))
+  expect_true(hasfixedtrace(as.mstorsst(Ysamples)))
   expect_true(hasfixedtrace(Ysamples[[1]]))
   
   set.seed(134)
