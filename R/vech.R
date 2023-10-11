@@ -30,3 +30,11 @@ invvech <- function(x,...){
   return(m)
 }
 
+#for a vector created by vech, get the elements that come from the diagonal
+isondiag_vech <- function(vec){
+  mat <- invvech(vec)
+  mat[] <- FALSE;
+  diag(mat) <- TRUE
+  diagels <- vech(mat) > 0.5
+  return(diagels)
+}

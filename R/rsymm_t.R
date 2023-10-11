@@ -13,5 +13,6 @@
 rsymm_t <- function(n, delta, df = 1, sigma = diag(length(vech(delta)))){
   stopifnot(isSymmetric(delta))
   tmp <- mvtnorm::rmvt(n, delta = vech(delta), df = df, sigma = sigma)
-  return(apply(tmp, MARGIN = 1, invvech, simplify = FALSE))
+  class(tmp) <- c("sst", class(tmp))
+  return(tmp)
 }

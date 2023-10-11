@@ -12,7 +12,8 @@
 rsymm_norm <- function(n, mean, sigma = diag(length(vech(mean)))){
   stopifnot(isSymmetric(mean))
   tmp <- mvtnorm::rmvnorm(n, mean = vech(mean), sigma = sigma)
-  return(apply(tmp, MARGIN = 1, invvech, simplify = FALSE))
+  class(tmp) <- c("sst", class(tmp))
+  return(tmp)
 }
 #' @export
 rsymm <- rsymm_norm
