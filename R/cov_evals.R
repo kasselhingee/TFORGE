@@ -5,6 +5,7 @@
 #' @details Computes equation (11) of `tensors_4` with \eqn{C_0} replaced with the sample analogue. If `evecs` is not provided then the eigenvectors \eqn{q_{0i}} are replaced with the eigenvectors of the average of `ms`.
 #' @return An estimated covariance matrix for the eigenvalues of `ms`.
 #' @useDynLib PivotalBootstrapMatrixData, .registration=TRUE
+#' @importFrom Rcpp evalCpp
 #' @export
 cov_evals <- function(ms, evecs = NULL, av = NULL){
   ms <- as.mstorsst(ms)
