@@ -134,6 +134,13 @@ projtrace <- function(m){ #project to have trace 0
   newm <- makeSymmetric(newm) #remove computational inaccuracies
   return(newm)
 }
+projtrace_sst <- function(ms){
+  out <- apply(ms, 1, function(v){
+    m <- invvech(v)
+    vech(projtrace(m))
+  }, simplify = FALSE)
+  do.call(rbind, out)
+}
 
 #' Whole matrix is divided by trace.
 #' This is how magnetic susceptibility tensors are scaled to examine isotropy in paleomagnetism (Tauxe, 2010 Essentials of Paleomagnetism, p248).

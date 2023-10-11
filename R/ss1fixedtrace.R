@@ -63,7 +63,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   },
   d3 = naveval,
   Omega = Omegas,
-  n = lapply(x, length),
+  n = lapply(x, nrow),
   SIMPLIFY = FALSE
   )
   stat <- drop(purrr::reduce(persamplestat, `+`))

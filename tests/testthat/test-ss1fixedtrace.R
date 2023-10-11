@@ -17,6 +17,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL with fixed evecs is n
       out <- makeSymmetric(out) #to remove machine differences
       out
       }, simplify = FALSE)
+    Y <- as.sst(Y)
     stat_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)))
   })
   # qqplot(vals, y = rchisq(1E6, df = 1))
@@ -28,8 +29,8 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
   set.seed(1311)
   vals <- replicate(1000, {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
-    Y <- lapply(Y, projtrace) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
-    Y <- lapply(Y, normL2evals) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
+    Y <- projtrace_sst(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
+    Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
     # hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps))
     # hasss1(Y)
     stat_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)))
@@ -60,6 +61,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is 
         out <- makeSymmetric(out) #to remove machine differences
         out
       }, simplify = FALSE)
+      Y <- as.sst(Y)
       Y
     }, simplify = FALSE)
     stat_ss1fixedtrace(Ysamples)
@@ -74,8 +76,8 @@ test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq 
     set.seed(seed)
     Ysamples <- replicate(2, {
     Y <- rsymm_norm(300, diag(c(1/sqrt(2), 0, -1/sqrt(2)))) #samples of 300 are big enough, but 200 are not
-    Y <- lapply(Y, projtrace) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
-    Y <- lapply(Y, normL2evals) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
+    Y <- projtrace_sst(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
+    Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
     Y}, simplify = FALSE)
     stat_ss1fixedtrace(Ysamples)
     }, FUN.VALUE = 1.32)
@@ -89,8 +91,8 @@ test_that("test_ss1fixedtrace() uniform pval on NULL sst", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
-    Y <- lapply(Y, projtrace) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
-    Y <- lapply(Y, normL2evals) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
+    Y <- projtrace_sst(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
+    Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
     stopifnot(hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
     stopifnot(hasss1(Y))
     res <- test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = 100, maxit = 1000)
@@ -106,8 +108,8 @@ test_that("test_ss1fixedtrace() uniform pval on NULL mst", {
     set.seed(seed)
     Ysamples <- replicate(2, {
       Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
-      Y <- lapply(Y, projtrace) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
-      Y <- lapply(Y, normL2evals) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
+      Y <- projtrace_sst(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
+      Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
     }, simplify = FALSE)
     res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000)
     res$pval
