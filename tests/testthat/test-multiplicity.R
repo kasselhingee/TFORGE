@@ -1,6 +1,6 @@
 test_that("stat is zero for standarised sample", {
   set.seed(13131)
-  Ysample <- rsymm(50, mean = diag(c(3,2,1)))
+  Ysample <- as.sst(rsymm(50, mean = diag(c(3,2,1))))
   av <- mmean(Ysample)
   es <- eigen_desc(av)
   Ystdsample <- standardise_multiplicity(Ysample, mult = c(2, 1))
@@ -19,7 +19,7 @@ test_that("stat is zero for standarised sample", {
 
 test_that("stat is zero for standarised sample, dim 7", {
   set.seed(13131)
-  Ysample <- rsymm(50, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)))
+  Ysample <- as.sst(rsymm(50, diag(c(rep(3, 3), rep(2, 2), 1, 0.5))))
   av <- mmean(Ysample)
   es <- eigen_desc(av)
   Ystdsample <- standardise_multiplicity(Ysample, mult = c(3, 2, 1, 1))
@@ -43,7 +43,7 @@ test_that("debugging stat with true evecs has correct null distribution", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(1000, {
-    Ysample <- rsymm_norm(200, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    Ysample <- as.sst(rsymm_norm(200, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) ))
     suppressWarnings(stat_multiplicity(Ysample, mult = mult, evecs = diag(sum(mult))))
   })
   
@@ -57,7 +57,7 @@ test_that("stat has correct null distribution", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(1000, {
-    Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    Ysample <- as.sst(rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) ))
     stat_multiplicity(Ysample, mult = mult)
   })
   
@@ -73,7 +73,7 @@ test_that("test has uniform distribution", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(100, { #1000 for more thorough
-    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    Ysample <- as.sst(rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) ))
     test_multiplicity(Ysample, mult = mult, B = 20)$pval #B = 100 for more thorough
   })
   
@@ -84,8 +84,8 @@ test_that("test has uniform distribution", {
 
 test_that("test rejects some incorrect hypotheses", {
   set.seed(13321)
-  Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
-                   sigma = 0.1 * diag(7 * (7 + 1)/2))
+  Ysample <- as.sst(rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
+                   sigma = 0.1 * diag(7 * (7 + 1)/2)))
   set.seed(3654)
   res <- test_multiplicity(Ysample, mult = c(3,2,1,1), 100)
   expect_gt(res$pval, 0.1)
@@ -185,7 +185,7 @@ test_that("test p value resistant to fixed trace by normalisation", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   Ysample <- rsymm_norm(10, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
-  Ysample_n <- lapply(Ysample, normtrace)
+  Ysample_n <- as.sst(lapply(Ysample, normtrace))
   
   set.seed(34641)
   pval <- test_multiplicity(Ysample, mult = mult, 1000)$pval
@@ -200,7 +200,7 @@ test_that("fixed trace from projection preserved by standardisation and ignored 
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   Ysample <- rsymm_norm(1000, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
-  Ysample_n <- lapply(Ysample, projtrace)
+  Ysample_n <- as.sst(lapply(Ysample, projtrace))
   
   # check that only first element of Hevals  is changed by trace fix
   evals <- eigen_desc(mmean(Ysample))$values
