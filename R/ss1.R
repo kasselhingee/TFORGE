@@ -44,7 +44,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
   d2 = evalsav, #not yet normalised as in (32)
   Delta = Deltas,
   Omega = Omega2s,
-  n = lapply(x, length),
+  n = lapply(x, nrow),
   SIMPLIFY = FALSE
   )
   stat <- drop(purrr::reduce(persamplestat, `+`))
@@ -129,8 +129,11 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25, sc = TRUE){
 #' @return `TRUE` or `FALSE`
 hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
-  if (inherits(x, "mst")){x <- unlist(x, recursive = FALSE)}
-  ss <- vapply(x, function(y){sum(eigen_desc(y)$values^2)}, FUN.VALUE = 1.64)
+  if (inherits(x, "mst")){x <- do.call(rbind, x)}
+  ss <- apply(x, 1, function(v){
+    m <- invvech(v)
+    sum(eigen_desc(m)$values^2)
+  })
   isTRUE(all.equal(ss, rep(1, length(ss)), tolerance = tolerance))
 }
 
@@ -146,7 +149,7 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
   if (is.null(evecs)){evecs <- eigen_desc(av)$vectors}
   nullmean <- evecs %*% diag(d0) %*% t(evecs)
   if (getcbound){# bounds for cj
-    diags <- lapply(ms, function(m){diag(t(evecs) %*% m %*% evecs)})
+    diags <- apply(ms, 1, function(vec){m <- invvech(vec); diag(t(evecs) %*% m %*% evecs)}, simplify = FALSE)
     diags <- do.call(cbind, diags)
     ranges <- t(apply(diags, 1, range))
     colnames(ranges) <- c("min", "max")
@@ -169,22 +172,22 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
 # @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" range gives a range of values of c, passed to `optimize()`
 # @param sc If TRUE use Owen's self-concordant emplik function
 opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
+  class(ms) <- "matrix"
   if (attr(mu, "c_range")[["min"]] > attr(mu, "c_range")[["max"]]){
-    return(rep(0, length(ms))) #no pluasible values of c - avoids error triggered in optimise
+    return(rep(0, nrow(ms))) #no pluasible values of c - avoids error triggered in optimise
   }
-  msarr <- do.call(rbind, lapply(ms, vech))
   if (sc) {
     bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
-      scelres <- emplik(msarr, x*vech(mu), itermax = maxit)
+      scelres <- emplik(ms, x*vech(mu), itermax = maxit)
       return(-scelres$logelr)
     },
     lower = attr(mu, "c_range")[["min"]], 
     upper = attr(mu, "c_range")[["max"]]) 
-    scelres <- emplik(msarr, bestmult$minimum*vech(mu), itermax = maxit)
+    scelres <- emplik(ms, bestmult$minimum*vech(mu), itermax = maxit)
     if (!isTRUE(scelres$converged)){warning("emplik() did not converge")}
-    wts <- as.vector(scelres$wts) * nrow(msarr) #the multiple here is to match the weights put out by emplik::el.test()
+    wts <- as.vector(scelres$wts) * nrow(ms) #the multiple here is to match the weights put out by emplik::el.test()
     # check result with el.test
-    elres <- emplik::el.test(msarr, 
+    elres <- emplik::el.test(ms, 
                              bestmult$minimum*vech(mu), 
                              lam = as.vector(scelres$lam),
                              maxit = maxit)
@@ -193,12 +196,12 @@ opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
     }
   } else {
     bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
-            elres <- emplik::el.test(msarr, x*vech(mu), maxit = maxit)
+            elres <- emplik::el.test(ms, x*vech(mu), maxit = maxit)
             return(elres[["-2LLR"]])
           },
           lower = attr(mu, "c_range")[["min"]], 
           upper = attr(mu, "c_range")[["max"]]) 
-    elres <- emplik::el.test(msarr, bestmult$minimum*vech(mu), maxit = maxit)
+    elres <- emplik::el.test(ms, bestmult$minimum*vech(mu), maxit = maxit)
     if (elres$nits == maxit){warning("el.test() reached maximum iterations of ", maxit, " at best null mean.")}
     wts <- elres$wts
   }
@@ -207,12 +210,16 @@ opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
 
 
 #' Eigenvalues divided to have sum 1 
-#' m A symmetric matric.
-normL2evals <- function(m){ 
+#' m A symmetric matric
+normL2evals <- function(m){
   ess <- eigen_desc(m)
   vec <- ess$values
   newvec <- vec / sqrt(sum(vec^2))
   newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
   newm <- makeSymmetric(newm) #remove computational inaccuracies
   return(newm)
+}
+# ms is an sst
+normL2evals_sst <- function(ms){
+  as.sst(apply(ms, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
 }
