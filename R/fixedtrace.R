@@ -9,8 +9,8 @@
 hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
   if (inherits(x, "mst")){x <- do.call(rbind, x)}
-  mats <- aoply(x, 1, invvech, simplify = FALSE)
-  traces <- vapply(mats, function(y){sum(diag(y))}, FUN.VALUE = 1.64)
+  diagels <- isondiag_vech(x[1, ])
+  traces <- rowSums(x[, diagels])
   tracerange <- range(traces)
   isTRUE(all.equal(tracerange[1], tracerange[2], tolerance = tolerance))
 }
@@ -140,8 +140,15 @@ projtrace <- function(m){ #project to have trace 0
 #' The method is sensitive to traces of zero and I think will usually break the symmetry of the eigenvalues about their mean.
 #' The projection method above projtrace() preserves the symmetry.
 #' m A symmetric matric.
-normtrace <- function(m){ 
-  tr <- sum(diag(m))
-  newm <- m/tr
+normtrace <- function(m){
+  if (inherits(m, "sst")){
+    class(m) <- "matrix"
+    diagels <- isondiag_vech(m[1, ])
+    newm <- m / rowSums(m[, diagels])
+    class(newm) <- c("sst", class(m))
+  } else {
+    tr <- sum(diag(m))
+    newm <- m/tr
+  }
   return(newm)
 }
