@@ -4,6 +4,7 @@
 #' @param av To save computation, `av` can be passed if it is already computed.
 #' @details Computes equation (11) of `tensors_4` with \eqn{C_0} replaced with the sample analogue. If `evecs` is not provided then the eigenvectors \eqn{q_{0i}} are replaced with the eigenvectors of the average of `ms`.
 #' @return An estimated covariance matrix for the eigenvalues of `ms`.
+#' @useDynLib PivotalBootstrapMatrixData, .registration=TRUE
 #' @export
 cov_evals <- function(ms, evecs = NULL, av = NULL){
   ms <- as.mstorsst(ms)
@@ -32,23 +33,5 @@ cov_evals_inside <- function(vecj, veck, dupmat, mcov){
   tmp <- vecj %*% t(veck)
   sum(diag(t(dupmat) %*% kronecker(tmp, tmp) %*% dupmat %*% mcov))
 }
-
-cov_evals_inside_cpp <- inline::cxxfunction(
-  sig = c(vecj = "integer", veck = "integer",
-          dupmat = "numeric",
-          mcov = "numeric"),
-  plugin = "RcppArmadillo",
-  body = '
-  arma::vec vj = Rcpp::as<arma::vec>(vecj);
-  arma::vec vk = Rcpp::as<arma::vec>(veck);
-  arma::mat dup_ = Rcpp::as<arma::mat>(dupmat);
-  arma::mat mcov_ = Rcpp::as<arma::mat>(mcov);
-  
-  arma::mat tmp = vj * vk.t();
-  arma::mat tmp2 = dup_.t() * kron(tmp, tmp) * dup_ * mcov_;
-  double out = trace(tmp2);
-  return wrap(out);
-')
-
 
 
