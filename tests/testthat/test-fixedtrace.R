@@ -1,10 +1,10 @@
 test_that("descending order error can be handled", {
-  expect_output(out <- withCallingHandlers(
+  expect_output({out <- withCallingHandlers(
     descendingordererror(c(3,1,2)),
     est_evals_not_descending = function(e) {
-      print(e)
+      print(e$message)
       invokeRestart("use_NA")}
-  ), "3 1 2")
+  )}, "3 1 2")
   expect_equal(out, expected = rep(NA_real_, 3))
   
   expect_silent(out2 <- withCallingHandlers(
@@ -30,6 +30,20 @@ test_that("descending order error can be handled", {
   expect_equal(out, expected = "hello")
   
   expect_error(descendingordererror(c(3,1,2)))
+})
+
+test_that("descending order error activates", {
+  #based on finding a situation in simstudy31
+  set.seed(224)
+  allsim <- list(
+    rsymm_norm(15, mean = diag(c(4,2,1))),
+    rsymm_norm(15, mean = diag(c(4,2,1)))
+  )
+  allsim <- lapply(allsim, normtrace)
+  expect_warning(
+    expect_message(test_fixedtrace(allsim, B = 10),
+                 "descending"),
+    "1 bootstrap")
 })
 
 test_that("stat single sample has correct NULL distribution for projected trace", {

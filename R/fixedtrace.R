@@ -42,7 +42,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
     d0proj <- drop(solve_NAonerror(sum_precisions, NAonerror = TRUE) %*% sum_precisionsbyevals)
     d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
-    if (runif(1) > 0.2 | !all(order(d0, decreasing = TRUE) == 1:length(d0))){
+    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
       d0 <- descendingordererror(d0)
     }
   } else {
@@ -116,13 +116,13 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   }
   
   res <- withCallingHandlers(
-    est_evals_not_descending = function(e) {
-      print(e)
-      invokeRestart("use_NA")},
     {bootresampling(x, wts, 
                         stat = stat_fixedtrace,
                         B = B,
-                        evals = evals)})
+                        evals = evals)},
+    est_evals_not_descending = function(e) {
+      message(paste("Resample ignored: ", e$message))
+      invokeRestart("use_NA")})
   return(res)
 }
 
