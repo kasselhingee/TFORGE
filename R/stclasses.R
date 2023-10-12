@@ -10,6 +10,7 @@
 as.mstorsst <- function(x, ...){
   if (inherits(x, "mst")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (inherits(x, "sst")){return(x)}
+  if (inherits(x, "matrix")){return(as.sst(x))}
   if (inherits(x, "list")){
     if (all(vapply(x, inherits, "sst", FUN.VALUE = FALSE))){ #sst objects already :)
       class(x) <- c(class(x), "mst")
@@ -23,15 +24,20 @@ as.mstorsst <- function(x, ...){
       class(x) <- c(class(x), "mst")
       return(x)
     }
-    # if not a list of lists, then assume a list of matrices (i.e. a single sample)
-    if (all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){return(as.sst(x, ...))}
+    # if not a list of lists, then assume a list of matrices
+    if (all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){
+      out <- lapply(x, as.sst)
+      class(out) <- c(class(out), "mst")
+      return(out)}
   }
   stop("Could not convert to mst or sst.")
 }
 
 as.sst <- function(x, ...){
   if (inherits(x, "sst")){return(x)}
-  if (inherits(x, "matrix")){stop("x is a single matrix")}
+  if (inherits(x, "matrix")){
+    class(x) <- c("sst", class(x))
+    return(x)}
   if (!all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){stop("Some elements are not matrices")}
   dims <- do.call(rbind, lapply(x, dim))
   if (dims[1,2] != dims[1,2]){stop("Matrices are not square.")}
