@@ -42,10 +42,8 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
     d0proj <- drop(solve_NAonerror(sum_precisions, NAonerror = TRUE) %*% sum_precisionsbyevals)
     d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
-    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
-      browser()
-      d0 <- sort(d0, na.last = TRUE)
-      warning("Estimated common eigenvalues are not in descending order and have been reordered.")
+    if (runif(1) > 0.2 | !all(order(d0, decreasing = TRUE) == 1:length(d0))){
+      d0 <- descendingordererror(d0)
     }
   } else {
     if (!isTRUE(all.equal(sum(evals), sum(diag(mss[[1]][[1]]))))){stop("Provided evals do not sum to trace of observations.")}
@@ -117,10 +115,14 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
     ))
   }
   
-  res <- bootresampling(x, wts, 
+  res <- withCallingHandlers(
+    est_evals_not_descending = function(e) {
+      print(e)
+      invokeRestart("use_NA")},
+    {bootresampling(x, wts, 
                         stat = stat_fixedtrace,
                         B = B,
-                        evals = evals)
+                        evals = evals)})
   return(res)
 }
 
@@ -161,4 +163,19 @@ normtrace <- function(m){
     newm <- m/tr
   }
   return(newm)
+}
+
+descendingordererror <- function(d0){
+  # good help on withRestarts and related here: http://adv-r.had.co.nz/beyond-exception-handling.html
+  withRestarts(
+    stop(structure(
+      class = c("est_evals_not_descending", "error", "condition"),
+      list(message = paste("Estimated common eigenvalues are not in descending order:", paste(d0, collapse = " ")),
+           call = sys.call(-1))
+    )),
+    ignore = function() d0,
+    sort = function() sort(d0, decreasing = TRUE, na.last = TRUE),
+    use_NA = function() NA * d0,
+    use_value = function(xx) xx
+  )
 }

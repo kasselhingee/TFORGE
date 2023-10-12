@@ -1,3 +1,37 @@
+test_that("descending order error can be handled", {
+  expect_output(out <- withCallingHandlers(
+    descendingordererror(c(3,1,2)),
+    est_evals_not_descending = function(e) {
+      print(e)
+      invokeRestart("use_NA")}
+  ), "3 1 2")
+  expect_equal(out, expected = rep(NA_real_, 3))
+  
+  expect_silent(out2 <- withCallingHandlers(
+    descendingordererror(c(3,1,2)),
+    est_evals_not_descending = function(e) {
+      invokeRestart("use_NA")}
+  ))
+  expect_equal(out2, expected = rep(NA_real_, 3))
+  
+  out <- withCallingHandlers(
+    descendingordererror(c(3,1,2)),
+    est_evals_not_descending = function(e) {invokeRestart("ignore")})
+  expect_equal(out, expected = c(3,1,2))
+  
+  out <- withCallingHandlers(
+    descendingordererror(c(3,1,2)),
+    est_evals_not_descending = function(e) {invokeRestart("sort")})
+  expect_equal(out, expected = c(3,2,1))
+  
+  out <- withCallingHandlers(
+    descendingordererror(c(3,1,2)),
+    est_evals_not_descending = function(e) {invokeRestart("use_value", "hello")})
+  expect_equal(out, expected = "hello")
+  
+  expect_error(descendingordererror(c(3,1,2)))
+})
+
 test_that("stat single sample has correct NULL distribution for projected trace", {
   set.seed(6514)
   vals <- replicate(100, {
