@@ -142,6 +142,7 @@ projtrace_sst <- function(ms){
   }, simplify = FALSE)
   out <- do.call(rbind, out)
   class(out) <- c("sst", class(out))
+  return(out)
 }
 
 #' Whole matrix is divided by trace.
