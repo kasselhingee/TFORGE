@@ -132,7 +132,7 @@ hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
   if (inherits(x, "mst")){x <- do.call(rbind, x)}
   ss <- apply(x, 1, function(v){
     m <- invvech(v)
-    sum(eigen_desc(m)$values^2)
+    sum(diag(m%*%m))
   })
   isTRUE(all.equal(ss, rep(1, length(ss)), tolerance = tolerance))
 }
