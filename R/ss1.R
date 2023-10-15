@@ -209,13 +209,12 @@ opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
 }
 
 
-#' Eigenvalues divided to have sum 1 
+#' Eigenvalues divided to have squared sum 1 
+#' Uses the fact that A*A squares the eigenvalues of A, and the trace of a matrix is the sum of the eigenvalues.
 #' m A symmetric matric
 normL2evals <- function(m){
-  ess <- eigen_desc(m)
-  vec <- ess$values
-  newvec <- vec / sqrt(sum(vec^2))
-  newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
+  ssq <- sum(diag(m %*% m))
+  newm <- m / sqrt(ssq)
   newm <- makeSymmetric(newm) #remove computational inaccuracies
   return(newm)
 }
