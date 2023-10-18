@@ -119,7 +119,26 @@ test_that("S_anv() gives good distribution of Tstat for diagonal covariances", {
   abline(0, 1, lty = "dotted")
 })
 
-test_that("Schwartzman's Statistic (Tstatstar) is well approximated by S_anv() with a chisq", {
+test_that("Schwartzman statistic for iid elements is chisq under H0 and pvals uniform", {
+  set.seed(15)
+  vals <- replicate(1000, {
+    Ysamples <- list(
+      rsymm(50, diag(c(3,2,1))),
+      rsymm(50, diag(c(3,2,1)))
+    )
+    res <- stat_schwartzman_eval(Ysamples[[1]], Ysamples[[2]])
+    res})
+
+  # qqplot(unlist(vals["t", ]), y = rchisq(1000, df = 3))
+  res <- ks.test(unlist(vals["t", ]), "pchisq", df = 3)
+  expect_gt(res$p.value, 0.2)
+  
+  qqplot(unlist(vals["pval", ]), y = runif(1000))
+  res <- ks.test(unlist(vals["t", ]), "punif")
+  expect_gt(res$p.value, 0.2)
+})
+
+test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar is well approximated by S_anv() with a chisq", {
   skip("Schwartzman's distribution approximation using two moments doesn't appear to converge with increasing sample sizes.")
   p <- 3
   C2 <- C1 <- diag(p*(p+1)/2)
@@ -127,10 +146,10 @@ test_that("Schwartzman's Statistic (Tstatstar) is well approximated by S_anv() w
   n2 <- 1000
   # set up distribution means
   set.seed(1354)
-  mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U1 <- runifortho(p)
   mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
   set.seed(135)
-  mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U2 <- runifortho(p)
   mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
   
   # distribution parameters
@@ -147,11 +166,35 @@ test_that("Schwartzman's Statistic (Tstatstar) is well approximated by S_anv() w
     }
   set.seed(31456)
   sims <- replicate(1000, simulateTstatstar(n1, n2))
+  # from Casella and Berger (Statistical Inference) on Satterthwaite's approximation
+  # mean of statstar is sum(lamba_i * 1) = tr(Lambda). statstar/tr(Lambda) has mean of sum(lambda_i/tr(Lambda) * 1) = 1.
+  # Satterthwaite estimated nu as:
+  # hatnu = (sum( lambda_i/tr(Lambda) * Y_i)^2)/sum{ (lambda_i/tr(Lambda))^2 Y_i^2}
+  # where Y_i = z_i^2.
+  # Since we have E(Y_i) = 1 we can back pedal a bit and hatnu is actually
+  # hatnu = 1 * tr(Lambda)^2 / sum{lambda_i^2} = tr(Lambda)^2/tr(Lambda^2)
+  # that means statstar/tr(Lambda) d~d chisq(hatnu)/hatnu
+  # so statstar d~d tr(Lambda)/hatnu * chisq(hatnu)/hatnu
+  # so a = tr(Lambda) * tr(Lambda^2)/tr(Lambda)^2 = tr(Lambda^2)/tr(Lambda). This is exactly what Schwartzman writes.
+  
+  # the mean of sims should be tr(Lambda) * hatnu = anv$a/anv$nu
+  expect_equal(mean(sims), anv$a * anv$v)
+  #similarly for the variacne
+  expect_equal(var(sims), 2*anv$a^2 * anv$v)
   
   qqplot(sims/anv$a,
          qchisq(ppoints(1000), df = anv$v))
   abline(0, 1, lty = "dotted")
   plot(ecdf(pchisq(sims/anv$a, df = anv$v))); abline(0, 1, lty = "dotted")
+})
+
+test_that("Schwartzman's Omega(M) is correct for U1=U2=I", {
+  out <- Omega_eval(1,1,diag(3), diag(3))
+  #c(1,0,0,0,0,0, -1,0,0,0,0,0) %*% t(c(1,0,0,0,0,0, -1,0,0,0,0,0)) = 
+  m <- diag(vecd(diag(3)))
+  target <- 1/2 * rbind(cbind(m, -m),
+                  cbind(-m, m))
+  expect_equal(out, target)
 })
 
 
