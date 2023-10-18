@@ -123,34 +123,32 @@ test_that("Schwartzman statistic for iid elements is chisq under H0 and pvals un
   set.seed(15)
   vals <- replicate(1000, {
     Ysamples <- list(
-      rsymm(50, diag(c(3,2,1))),
-      rsymm(50, diag(c(3,2,1)))
+      rsymm(100, diag(c(3,2,1))), #50 was too small, 100 is needed to get good estimates of a and v for the chisquared distribution
+      rsymm(100, diag(c(3,2,1)))
     )
     res <- stat_schwartzman_eval(Ysamples[[1]], Ysamples[[2]])
     res})
 
-  # qqplot(unlist(vals["t", ]), y = rchisq(1000, df = 3))
+  qqplot(unlist(vals["t", ]), y = rchisq(1000, df = 3)); abline(0, 1, lty = "dotted")
   res <- ks.test(unlist(vals["t", ]), "pchisq", df = 3)
   expect_gt(res$p.value, 0.2)
   
-  qqplot(unlist(vals["pval", ]), y = runif(1000))
-  res <- ks.test(unlist(vals["t", ]), "punif")
+  hist(unlist(vals["a", ])) #should be about 1
+  hist(unlist(vals["v", ])) #should be about 3
+  
+  qqplot(unlist(vals["pval", ]), y = runif(1000)); abline(0, 1, lty = "dotted") #it looks very uniform!
+  res <- ks.test(unlist(vals["pval", ]), "punif")
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar is well approximated by S_anv() with a chisq", {
-  skip("Schwartzman's distribution approximation using two moments doesn't appear to converge with increasing sample sizes.")
+test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar is well approximated by S_anv() with a chisq for mean=I", {
+  #note that in this situation the manifold of the nullhypothesis is flat at the population mean
   p <- 3
   C2 <- C1 <- diag(p*(p+1)/2)
-  n1 <- 1000 #Schwartzman's distribution approximation using two moments doesn't appear to converge with increasing sample sizes.
-  n2 <- 1000
+  n1 <- 30 #Schwartzman's distribution approximation using two moments doesn't appear to converge with increasing sample sizes.
+  n2 <- 30
   # set up distribution means
-  set.seed(1354)
-  mn_U1 <- runifortho(p)
-  mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
-  set.seed(135)
-  mn_U2 <- runifortho(p)
-  mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
+  mn1 <- mn2 <- diag(3)
   
   # distribution parameters
   anv <- S_anv(n1, n2, mn1, mn2, 
@@ -163,9 +161,90 @@ test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar is well a
     ms2 <- rsymm(n2, mn2, C2)
     res <- statstar_schwartzman_eval(ms1, ms2, mn1, mn2)
     return(unlist(res))
+  }
+  set.seed(31456)
+  sims <- pbapply::pbreplicate(1E4, simulateTstatstar(n1, n2),
+                               cl = parallel::detectCores() - 1)
+  # the mean of sims should be tr(Lambda) * hatnu = anv$a/anv$nu
+  expect_equal(mean(sims), anv$a * anv$v, tolerance = 0.01)
+  #similarly for the variance
+  expect_equal(var(sims), 2*anv$a^2 * anv$v, tolerance = 0.1)
+  
+  # qqplot(sims/anv$a,
+  #        qchisq(ppoints(1000), df = anv$v))
+  # abline(0, 1, lty = "dotted")
+  res <- ks.test(sims/anv$a, "pchisq", df = anv$v)
+  expect_gt(res$p.value, 0.2)
+})
+
+test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar is well approximated by S_anv() with a chisq for mean=diag(3,2,1)", {
+  #note that in this situation the manifold of the nullhypothesis is flat at the population mean
+  p <- 3
+  C2 <- C1 <- diag(p*(p+1)/2)
+  n1 <- 30 #Schwartzman's distribution approximation using two moments doesn't appear to converge with increasing sample sizes.
+  n2 <- 30
+  # set up distribution means
+  mn1 <- mn2 <- diag(c(3,2,1))
+  
+  # distribution parameters
+  anv <- S_anv(n1, n2, mn1, mn2, 
+               C1 = diag(vecd(invvech(diag(C1)))), 
+               C2 = diag(vecd(invvech(diag(C1)))))
+  
+  # more exact statistic simulation (still only an approximation of the distribution!)
+  simulateTstatstar <- function(n1, n2){
+    ms1 <- rsymm(n1, mn1, C1)
+    ms2 <- rsymm(n2, mn2, C2)
+    res <- statstar_schwartzman_eval(ms1, ms2, mn1, mn2)
+    return(unlist(res))
+  }
+  set.seed(31456)
+  sims <- pbapply::pbreplicate(1E4, simulateTstatstar(n1, n2))
+  # the mean of sims should be tr(Lambda) * hatnu = anv$a/anv$nu
+  expect_equal(mean(sims), anv$a * anv$v, tolerance = 0.05)
+  #similarly for the variance
+  expect_equal(var(sims), 2*anv$a^2 * anv$v, tolerance = 0.1)
+  
+  # qqplot(sims/anv$a,
+  #        qchisq(ppoints(1000), df = anv$v))
+  # abline(0, 1, lty = "dotted")
+  res <- suppressWarnings(ks.test(sims/anv$a, "pchisq", df = anv$v))
+  expect_gt(res$p.value, 0.01) #because distribution should only be approximately this partilar chisq
+})
+
+
+test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar is well approximated by S_anv() with a chisq", {
+  p <- 3
+  C2 <- C1 <- diag(vech(invvecd(rep(1, 6))))
+  # C2 <- C1 <- diag(p*(p+1)/2)
+  n1 <- 10 
+  n2 <- 10
+  # set up distribution means
+  set.seed(1354)
+  mn_U1 <- runifortho(p)
+  mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
+  set.seed(135)
+  mn_U2 <- runifortho(p)
+  mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
+  
+  # distribution parameters
+  anv <- S_anv(n1, n2, mn1, mn2, 
+               C1 = diag(vecd(invvech(diag(C1)))), 
+               C2 = diag(vecd(invvech(diag(C1)))))
+  # when covariances C1=C2 are I and n1=n2=n then we have mean = tr(Lambda) is the below
+  target_trLambda <- sum(diag(Omega_eval(n1, n2, mn_U1, mn_U2)))/n1
+  expect_equal(anv$a * anv$v, target_trLambda)
+  
+  # simulate statstar, result should have mean and var given by anv
+  simulateTstatstar <- function(n1, n2){
+    ms1 <- rsymm(n1, mn1, C1)
+    ms2 <- rsymm(n2, mn2, C2)
+    res <- statstar_schwartzman_eval(ms1, ms2, mn1, mn2)
+    return(unlist(res))
     }
   set.seed(31456)
-  sims <- replicate(1000, simulateTstatstar(n1, n2))
+  sims <- pbapply::pbreplicate(1E6, simulateTstatstar(n1, n2),
+                               cl = parallel::detectCores() - 1)
   # from Casella and Berger (Statistical Inference) on Satterthwaite's approximation
   # mean of statstar is sum(lamba_i * 1) = tr(Lambda). statstar/tr(Lambda) has mean of sum(lambda_i/tr(Lambda) * 1) = 1.
   # Satterthwaite estimated nu as:
@@ -178,9 +257,9 @@ test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar is well a
   # so a = tr(Lambda) * tr(Lambda^2)/tr(Lambda)^2 = tr(Lambda^2)/tr(Lambda). This is exactly what Schwartzman writes.
   
   # the mean of sims should be tr(Lambda) * hatnu = anv$a/anv$nu
-  expect_equal(mean(sims), anv$a * anv$v)
-  #similarly for the variacne
-  expect_equal(var(sims), 2*anv$a^2 * anv$v)
+  expect_equal(mean(sims), anv$a * anv$v, tolerance = 2 * sd(sims)/sqrt(length(sims)))
+  #similarly for the variance
+  expect_equal(var(sims), 2*anv$a^2 * anv$v, tolerance = 0.01)
   
   qqplot(sims/anv$a,
          qchisq(ppoints(1000), df = anv$v))
@@ -197,6 +276,42 @@ test_that("Schwartzman's Omega(M) is correct for U1=U2=I", {
   expect_equal(out, target)
 })
 
+test_that("Omega_eval returns correct trace", {
+  set.seed(1354)
+  mn_U1 <- runifortho(p)
+  mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
+  set.seed(135)
+  mn_U2 <- runifortho(p)
+  mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
+  
+  # trace of Omega is just sum of wi^2 for each i
+  # wi is just halfish elements of U1[,i] %*% t(U1[,i]) with an extra factor of sqrt(2) for the off diagonals
+  # so sum of just halfish elements of (U1[,i] %*% t(U1[,i]))^2 with an extra factor of 2 for the off diagonals
+  target <- sum(vapply(1:3, function(i){
+    m1 <- mn_U1[,i]^2 %*% t(mn_U1[,i]^2)
+    m2 <- mn_U2[,i]^2 %*% t(mn_U2[,i]^2)
+    m1[upper.tri(m1)] <- 2 * m1[upper.tri(m1)]
+    m1[lower.tri(m1)] <- 0
+    m2[upper.tri(m2)] <- 2 * m2[upper.tri(m2)]
+    m2[lower.tri(m2)] <- 0
+    sum(m1) + sum(m2)
+  }, FUN.VALUE = 1.0))/2 #the 2 here is because 1*1/(1+1) = 2
+  expect_equal(sum(diag(Omega_eval(1, 1, mn_U1, mn_U2))), target)
+})
+
+test_that("stat_schwartzman_eval() is invariant to rotations", {
+  set.seed(15)
+  Ysample1_0 <- rsymm(100, diag(c(0,0,0)), sigma = diag(6)/10)
+  Ysample2 <- rsymm(100, diag(c(3,2,1)))
+  Ysample1 <- t(t(Ysample1_0) + vech(diag(c(3,2,1))))
+  set.seed(134)
+  rotmat <- runifortho(3)
+  Ysample1_r <- t(t(Ysample1_0) + vech(rotmat %*% diag(c(3,2,1)) %*% t(rotmat)))
+
+  res1 <- stat_schwartzman_eval(Ysample1, Ysample2)
+  res2 <- stat_schwartzman_eval(Ysample1_r, Ysample2)
+  expect_equal(res1$pval, res2$pval, tolerance = 0.1)
+})
 
 test_that("stat_schwartzman_eval() doesn't reject for simulation of multi sample from null", {
   set.seed(15)
