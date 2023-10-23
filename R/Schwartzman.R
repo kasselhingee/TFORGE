@@ -92,7 +92,9 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
   v <- tr_so^2/tr_soso
   return(list(
     a = a,
-    v = v
+    v = v,
+    SigmaOmega_evals_av = tr_so / nrow(Sigma),
+    SigmaOmega_evals2_av = tr_soso / nrow(Sigma)
   ))
 }
 
@@ -123,7 +125,8 @@ stat_schwartzman_eval <- function(ms1, ms2){
     pval = pval,
     t = Tstat,
     a = anv$a,
-    v = anv$v
+    v = anv$v,
+    var_SigmaOmega_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2
   ))
 }
 
