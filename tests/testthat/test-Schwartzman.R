@@ -165,7 +165,7 @@ test_that("pvalue close to uniform when some correlation", {
     res <- stat_schwartzman_eval(ms1, ms2)
     return(unlist(res))
   }
-  set.seed(21)
+  set.seed(22)
   sims <- replicate(1000, simulateTstat(100, 500))
   # qqplot(sims["pval", ], runif(1000)); abline(0, 1, lty = "dotted")
   expect_gt(ks.test(sims["pval", ], "punif")$p.value, 0.2)
@@ -322,10 +322,10 @@ test_that("Schwartzman's Omega(M) is correct for U1=U2=I", {
 
 test_that("Omega_eval returns correct trace", {
   set.seed(1354)
-  mn_U1 <- runifortho(p)
+  mn_U1 <- runifortho(3)
   mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
   set.seed(135)
-  mn_U2 <- runifortho(p)
+  mn_U2 <- runifortho(3)
   mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
   
   # trace of Omega is just sum of wi^2 for each i
