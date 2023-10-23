@@ -10,6 +10,17 @@ invvecd <- function(x){
   m[upper.tri(m)] <- t(m)[upper.tri(m)]
   return(m)
 }
+vech2vecd_mat <- function(len){
+  permmat <- matrix(0, len, len)
+  isdiag <- isondiag_vech(rep(1, len))
+  permmat[cbind(1:sum(isdiag), which(isdiag))] <- 1
+  permmat[cbind(sum(isdiag) + (1:sum(!isdiag)), which(!isdiag))] <- 1
+  scalemat <- diag(c(rep(1, sum(isdiag)), rep(sqrt(2), sum(!isdiag))))
+  return(scalemat %*% permmat)
+}
+vech2vecd <- function(vec){
+  drop(vech2vecd_mat(length(vec)) %*% vec)
+}
 
 # Special sample covariance that uses Schwartzman's vecd
 S_mcovar <- function(merr){
