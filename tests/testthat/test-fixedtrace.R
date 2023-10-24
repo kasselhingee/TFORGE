@@ -41,9 +41,28 @@ test_that("descending order error activates", {
   )
   allsim <- lapply(allsim, normtrace)
   expect_warning(
-    expect_message(test_fixedtrace(allsim, B = 10),
+    expect_message(res <- test_fixedtrace(allsim, B = 10),
                  "descending"),
     "1 bootstrap")
+  expect_gt(length(res$est_eval_errors), 0)
+})
+
+test_that("descending order error does not get crossed by parallel cores", {
+  ress <- pbapply::pbreplicate(4, {
+    #based on finding a situation in simstudy31
+    set.seed(224)
+    allsim <- list(
+      rsymm_norm(15, mean = diag(c(4,2,1))),
+      rsymm_norm(15, mean = diag(c(4,2,1)))
+    )
+    allsim <- lapply(allsim, normtrace)
+    res <- test_fixedtrace(allsim, B = 1000)
+    res
+  },
+  simplify = FALSE,
+  cl = 4)
+  numerrs <- vapply(ress, function(res){length(res$est_eval_errors)}, FUN.VALUE = 1)
+  expect_equal(numerrs, rep(3, 4))
 })
 
 test_that("stat single sample has correct NULL distribution for projected trace", {

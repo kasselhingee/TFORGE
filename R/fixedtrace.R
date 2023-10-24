@@ -115,14 +115,19 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
     ))
   }
   
+  est_eval_errors <- c() #warning this is modified using assign() in a handler below
   res <- withCallingHandlers(
     {bootresampling(x, wts, 
                         stat = stat_fixedtrace,
                         B = B,
                         evals = evals)},
     est_evals_not_descending = function(e) {
+      assign("est_eval_errors", 
+             c(est_eval_errors, paste("Resample ignored: ", e$message)),
+             envir = parent.env(as.environment(-1))) #I think will send things to the enclosing environment, but not sure if this will be the same on different cores
       message(paste("Resample ignored: ", e$message))
       invokeRestart("use_NA")})
+  res$est_eval_errors <- est_eval_errors
   return(res)
 }
 
