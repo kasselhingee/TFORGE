@@ -7,7 +7,7 @@
 #' @useDynLib PivotalBootstrapMatrixData, .registration=TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
-cov_evals <- function(ms, evecs = NULL, av = NULL){
+cov_evals_est <- function(ms, evecs = NULL, av = NULL){
   ms <- as.mstorsst(ms)
   stopifnot(inherits(ms, "sst"))
   if (is.null(av)){av <- mmean(ms)}

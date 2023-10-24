@@ -20,7 +20,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
     d1 <- diag(t(evecs) %*% av %*% evecs)
   }
   d0 <- evals
-  V <- cov_evals(as.sst(ms), evecs = evecs, av = av)
+  V <- cov_evals_est(as.sst(ms), evecs = evecs, av = av)
   out <- n * t(d1 - d0) %*% solve(V) %*% (d1 - d0)
   return(drop(out))
 }

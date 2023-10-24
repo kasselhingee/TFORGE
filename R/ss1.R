@@ -12,7 +12,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
   evalsav <- lapply(ess, "[[", "values")
   
   # first get each Omega2j:
-  covars_unconstrained <- mapply(cov_evals, ms = x, evecs = lapply(ess, "[[", "vectors"), av = mns, SIMPLIFY = FALSE)
+  covars_unconstrained <- mapply(cov_evals_est, ms = x, evecs = lapply(ess, "[[", "vectors"), av = mns, SIMPLIFY = FALSE)
   Deltas <- lapply(evalsav, function(d2){amaral2007Lemma1(d2/sqrt(sum(d2^2)))})
   Omega2s <- mapply(function(d2, covar, Delta){
     Delta %*% covar %*% t(Delta) / sum(d2^2)

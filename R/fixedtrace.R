@@ -31,7 +31,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   ns <- lapply(mss, length)
   
   #first get all eval precision matrices
-  precisions <- lapply(mss, function(ms){solve_NAonerror(H %*% cov_evals(ms) %*% t(H), NAonerror = NAonerror)})
+  precisions <- lapply(mss, function(ms){solve_NAonerror(H %*% cov_evals_est(ms) %*% t(H), NAonerror = NAonerror)})
   
   d1s <- lapply(ess, "[[", "values")
   
