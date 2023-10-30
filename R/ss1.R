@@ -25,7 +25,6 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
                    Delta = Deltas,
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
-    if (any(is.na(mat)) && NAonerror){return(NA)}
     d0 <- eigen_desc(mat)$vectors[, ncol(mat)]
     # make d0 DOT evalsav have as much positive sign as possible
     dotprds <- vapply(evalsav, function(v){v %*% d0}, FUN.VALUE = 0.1)
@@ -118,19 +117,10 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25, sc = TRUE){
     ))
   }
   
-  est_eval_errors <- c() #warning this is modified using assign() in a handler below
-  res <- withCallingHandlers(
-    {bootresampling(x, wts, 
-                    stat = stat_ss1,
-                    B = B,
-                    evals = evals)},
-    est_evals_not_descending = function(e) {
-      assign("est_eval_errors", 
-             c(est_eval_errors, paste("Resample ignored: ", e$message)),
-             envir = parent.env(as.environment(-1))) #I think will send things to the enclosing environment, but not sure if this will be the same on different cores
-      message(paste("Resample ignored: ", e$message))
-      invokeRestart("use_NA")})
-  res$est_eval_errors <- est_eval_errors
+  res <- bootresampling(mss, wts, 
+                        stat = stat_ss1,
+                        B = B,
+                        evals = evals)
   return(res)
 }
 
