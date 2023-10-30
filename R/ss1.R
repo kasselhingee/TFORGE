@@ -72,12 +72,12 @@ amaral2007Lemma1 <- function(m){
 # wrapper around solve that returns a matrix of NA if couldn't solve
 solve_NAonerror <- function(A, NAonerror){
   erroraction <- function(e){
-    if (!NAonerror){stop(e)}
-    else {
-      out <- NA*A
-      attr(out, "message") <- e$message
-      return(out)
-    }
+    if (!grepl("singular", e$message)){stop(e)}
+    stop(structure(
+      class = c("matrixsingular", "error", "condition"),
+      list(message = e$message,
+           call = e$call)
+    ))
   }
   out <- tryCatch(solve(A), error = erroraction)
   out

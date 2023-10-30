@@ -15,20 +15,25 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
   if (inherits(x, "mst")){
     if (inherits(stdx[[1]][[1]], "numeric")){
       #stdx is weights for an mst because first element of first sample is not a matrix/array, but just a numeric
-      nullt <- replicate(B, do.call(stat, c(list(multisample(x, prob = stdx)), exargs)))
+      nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(x, prob = stdx)), exargs)), simplify = FALSE)
     } else {
-      nullt <- replicate(B, do.call(stat, c(list(multisample(stdx)), exargs)))
+      nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(stdx)), exargs)), simplify = FALSE)
     }
   } else if (inherits(x, "sst")){
     if (inherits(stdx[[1]], "numeric")){
       #stdx is weights for an sst because first element sample is not a matrix/array, but just a numeric
-      nullt <- replicate(B, do.call(stat, c(list(samplesst(x, prob = stdx, replace = TRUE)), exargs)))
+      nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(x, prob = stdx, replace = TRUE)), exargs)), simplify = FALSE)
     } else {
-      nullt <- replicate(B, do.call(stat, c(list(samplesst(stdx, replace = TRUE)), exargs)))
+      nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(stdx, replace = TRUE)), exargs)), simplify = FALSE)
     }
   }
   
-  if (any(is.na(nullt))){warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))}
+  nullt <- simplify2array(nullt_l)
+  errors <- vector(mode = "character", length = 0)
+  if (any(is.na(nullt))){
+    warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))
+    errors <- vapply(nullt_l[is.na(nullt)], attr, "message", FUN.VALUE = "abcd")
+  }
   
   pval <- mean(nullt > t0, na.rm = TRUE)
   out <- list(
@@ -36,7 +41,8 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
     t0 = t0,
     nullt = nullt,
     stdx = stdx,
-    B = B
+    B = B,
+    nullt_errors = errors
   )
   class(out) <- c(class(out), "tensorboot")
   return(out)
@@ -82,4 +88,19 @@ print.tensorboot <- function(x, ...){
   x <- x[c("pval", "t0")]
   class(x) <- "list"
   NextMethod("print")
+}
+
+# For catching specific errors in above bootresampling
+catch_do.call <- function(stat, args){
+  tryCatch(do.call(stat, args),
+           est_evals_not_descending = function(e){
+             out <- NA_real_
+             attr(out, "message") <- e$message
+             out
+           },
+           matrixsingular = function(e){
+             out <- NA_real_
+             attr(out, "message") <- e$message
+             out
+           })
 }
