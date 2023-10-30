@@ -25,6 +25,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
                    Delta = Deltas,
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
+    if (any(is.na(mat)) && NAonerror){return(NA)}
     d0 <- eigen_desc(mat)$vectors[, ncol(mat)]
     # make d0 DOT evalsav have as much positive sign as possible
     dotprds <- vapply(evalsav, function(v){v %*% d0}, FUN.VALUE = 0.1)
