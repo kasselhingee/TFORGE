@@ -196,7 +196,7 @@ opt_el.test <- function(ms, mu, maxit = 25, sc = FALSE){
     lower = attr(mu, "c_range")[["min"]], 
     upper = attr(mu, "c_range")[["max"]]) 
     scelres <- emplik(ms, bestmult$minimum*vech(mu), itermax = maxit)
-    if (!isTRUE(scelres$converged)){warning("emplik() did not converge")}
+    if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
     wts <- as.vector(scelres$wts) * nrow(ms) #the multiple here is to match the weights put out by emplik::el.test()
     # check result with el.test
     elres <- emplik::el.test(ms, 
