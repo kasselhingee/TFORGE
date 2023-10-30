@@ -32,7 +32,7 @@ test_that("descending order restarts handled - obsolete", {
   expect_error(descendingordererror(c(3,1,2)))
 })
 
-test_that("descending order error activates", {
+test_that("descending order error activates in resampling", {
   #based on finding a situation in simstudy31
   set.seed(224)
   allsim <- list(
@@ -44,22 +44,14 @@ test_that("descending order error activates", {
   expect_gt(sum(grepl("not in descending order", res$nullt_messages)), 0)
 })
 
-test_that("descending order error does not get crossed by parallel cores", {
-  ress <- pbapply::pbreplicate(4, {
-    #based on finding a situation in simstudy31
-    set.seed(224)
-    allsim <- list(
-      rsymm_norm(15, mean = diag(c(4,2,1))),
-      rsymm_norm(15, mean = diag(c(4,2,1)))
-    )
-    allsim <- lapply(allsim, normtrace)
-    res <- test_fixedtrace(allsim, B = 1000)
-    res
-  },
-  simplify = FALSE,
-  cl = 4)
-  numerrs <- vapply(ress, function(res){length(res$est_eval_errors)}, FUN.VALUE = 1)
-  expect_equal(numerrs, rep(3, 4))
+test_that("singularity error activates in resampling", {
+  #tiny sample to try to get error in covariance with resampling
+  set.seed(3)
+  s1 <- rsymm_norm(5, mean = diag(c(4,2,1)))
+  allsim <- list( s1, s1 )
+  allsim <- lapply(allsim, normtrace)
+  expect_warning(res <- test_fixedtrace(allsim, B = 10), "1 bootstrap")
+  expect_gt(sum(grepl("singular", res$nullt_messages)), 0)
 })
 
 test_that("stat single sample has correct NULL distribution for projected trace", {
