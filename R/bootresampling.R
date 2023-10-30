@@ -29,10 +29,10 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
   }
   
   nullt <- simplify2array(nullt_l)
-  errors <- vector(mode = "character", length = 0)
+  messages <- replicate(length(nullt), vector(mode = "character", length = 0))
   if (any(is.na(nullt))){
     warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))
-    errors <- vapply(nullt_l[is.na(nullt)], attr, "message", FUN.VALUE = "abcd")
+    messages[is.na(nullt)] <- vapply(nullt_l[is.na(nullt)], attr, "message", FUN.VALUE = "abcd")
   }
   
   pval <- mean(nullt > t0, na.rm = TRUE)
@@ -42,7 +42,7 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
     nullt = nullt,
     stdx = stdx,
     B = B,
-    nullt_errors = errors
+    nullt_messages = messages
   )
   class(out) <- c(class(out), "tensorboot")
   return(out)
@@ -96,11 +96,11 @@ catch_do.call <- function(stat, args){
            est_evals_not_descending = function(e){
              out <- NA_real_
              attr(out, "message") <- e$message
-             out
-           },
-           matrixsingular = function(e){
-             out <- NA_real_
-             attr(out, "message") <- e$message
-             out
-           })
+    out
+  },
+  matrixsingular = function(e){
+    out <- NA_real_
+    attr(out, "message") <- e$message
+    out
+  })
 }

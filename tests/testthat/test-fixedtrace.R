@@ -1,4 +1,4 @@
-test_that("descending order error can be handled", {
+test_that("descending order restarts handled - obsolete", {
   expect_output({out <- withCallingHandlers(
     descendingordererror(c(3,1,2)),
     est_evals_not_descending = function(e) {
@@ -40,11 +40,8 @@ test_that("descending order error activates", {
     rsymm_norm(15, mean = diag(c(4,2,1)))
   )
   allsim <- lapply(allsim, normtrace)
-  expect_warning(
-    expect_message(res <- test_fixedtrace(allsim, B = 10),
-                 "descending"),
-    "1 bootstrap")
-  expect_gt(length(res$est_eval_errors), 0)
+  expect_warning(res <- test_fixedtrace(allsim, B = 10), "1 bootstrap")
+  expect_gt(sum(grepl("not in descending order", res$nullt_messages)), 0)
 })
 
 test_that("descending order error does not get crossed by parallel cores", {
