@@ -51,7 +51,9 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
     if (avsign < 0){
       d0 <- -1 * d0
     }
-    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){warning("Estimated common eigenvalues are not in decreasing order.")}
+    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
+      d0 <- descendingordererror(d0)
+    }
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
     if (!isTRUE(all.equal(sum(d0), sum(diag(x[[1]][[1]]))))){stop("Provided evals do not sum to trace of observations.")}
@@ -110,9 +112,18 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
     ))
   }
   
-  res <- bootresampling(x, wts, 
-                        stat = stat_ss1fixedtrace,
-                        B = B,
-                        evals = evals)
+  est_eval_errors <- c() #warning this is modified using assign() in a handler below
+  res <- withCallingHandlers(
+    {bootresampling(x, wts, 
+                    stat = stat_ss1fixedtrace,
+                    B = B,
+                    evals = evals)},
+    est_evals_not_descending = function(e) {
+      assign("est_eval_errors", 
+             c(est_eval_errors, paste("Resample ignored: ", e$message)),
+             envir = parent.env(as.environment(-1))) #I think will send things to the enclosing environment, but not sure if this will be the same on different cores
+      message(paste("Resample ignored: ", e$message))
+      invokeRestart("use_NA")})
+  res$est_eval_errors <- est_eval_errors
   return(res)
 }
