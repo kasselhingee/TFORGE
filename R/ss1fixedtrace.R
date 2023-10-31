@@ -80,6 +80,8 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
 #' @export
 test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   x <- as.mstorsst(x)
+  stopifnot(hasss1(x))
+  stopifnot(hasfixedtrace(x))
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
