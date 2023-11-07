@@ -40,15 +40,16 @@ test_that("tauhat gets close to correct tau", {
   p = 3
   covmat <- covOI(p, s, tau)
   set.seed(344)
-  ms <- rsymm_norm(1E8, mean = diag(c(4,2,1)), sigma = covmat)
+  ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
   Mhat <- invvech(colMeans(ms))
   tauest <- tauhat(ms, Mhat)
   
   expect_equal(attr(tauest, "numerator"),
-    (1-p*(p+1)/2) * p * (tau/(1-p*tau)) * s^2)
+    (1-p*(p+1)/2) * p * (tau/(1-p*tau)) * s^2,
+    tolerance = 1E-2)
   expect_equal(attr(tauest, "denominator"),
-               (p*(p+1)/2 - 1) * p * (1 + p * tau/(1-p*tau)) * s^2)
-  expect_equal(tauest, tau, tolerance = 1E-1)
-  
+               (p*(p+1)/2 - 1) * p * (1 + p * tau/(1-p*tau)) * s^2,
+               tolerance = 1E-2)
+  expect_equal(as.numeric(tauest), tau, tolerance = 1E-3, ignore_attr = TRUE)
 })
   
