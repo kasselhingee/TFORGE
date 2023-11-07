@@ -31,7 +31,9 @@ invvech <- function(x,...){
 }
 
 #for a vector created by vech, get the elements that come from the diagonal
+# if vec is a single number, treat it as the length of vec
 isondiag_vech <- function(vec){
+  if (length(vec) == 1){vec <- rep(1, vec)}
   mat <- invvech(vec)
   mat[] <- FALSE;
   diag(mat) <- TRUE
