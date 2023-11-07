@@ -5,7 +5,7 @@ test_that("covOI gives correct matrices", {
                blockdiag(1 + diag(3), diag(3)))
   
   vechcovOI <- covOI(3, 1, 1/4, vectorisor = "vech")
-  expect_equal(diag(vechcovOI), rep(2, 6))
+  expect_equal(diag(vechcovOI), c(2,0.5,0.5,2,0.5,2))
   expect_equal(which(vechcovOI == 1, arr.ind = TRUE, useNames = FALSE),
   matrix(c(4,1,
            6,1,
@@ -40,8 +40,9 @@ test_that("tauhat gets close to correct tau", {
   p = 3
   covmat <- covOI(p, s, tau)
   set.seed(344)
-  ms <- rsymm_norm(1E7, mean = diag(c(4,2,1)), sigma = covmat)
-  tauest <- tauhat(ms, diag(c(4,2,1)))
+  ms <- rsymm_norm(1E8, mean = diag(c(4,2,1)), sigma = covmat)
+  Mhat <- invvech(colMeans(ms))
+  tauest <- tauhat(ms, Mhat)
   
   expect_equal(attr(tauest, "numerator"),
     (1-p*(p+1)/2) * p * (tau/(1-p*tau)) * s^2)

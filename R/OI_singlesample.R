@@ -13,15 +13,16 @@ tauhat <- function(ms, Mhat){
   class(ms) <- "matrix"
   p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
   Ybar <- colMeans(ms)
-  numerator <- sum(OIinnerprod_sst(t(t(ms) - Ybar), t(t(ms) - Ybar), 1, (p+1)/2)) +
-    nrow(ms) * OIinnerprod_sst(matrix(Ybar - vech(Mhat), nrow = 1), 
+  Yerr <- t(t(ms) - Ybar)
+  numerator <- mean(OIinnerprod_sst(Yerr, Yerr, 1, (p+1)/2)) +
+    OIinnerprod_sst(matrix(Ybar - vech(Mhat), nrow = 1), 
                                matrix(Ybar - vech(Mhat), nrow = 1), 1, (p+1)/2)
   ondiag <- isondiag_vech(ncol(ms))
-  trYi2Ybar <- rowSums(t(t(ms) - Ybar)[, ondiag])
-  denominator <- (ncol(ms) - 1) * (sum(trYi2Ybar^2) + nrow(ms) * sum((Ybar - vech(Mhat))[ondiag])^2)
+  trYi2Ybar <- rowSums(Yerr[, ondiag])
+  denominator <- (ncol(ms) - 1) * (mean(trYi2Ybar^2) + sum((Ybar - vech(Mhat))[ondiag])^2)
   out <- -numerator/denominator
-  attr(out, "numerator") <- numerator/nrow(ms)
-  attr(out, "denominator") <- denominator/nrow(ms)
+  attr(out, "numerator") <- numerator
+  attr(out, "denominator") <- denominator
   return(out)
 }
 
@@ -47,7 +48,10 @@ covOI <- function(p, s, tau, vectorisor = "vech"){
   fullcov <- s^2 * blockdiag(diagcov, offdiagcov)
   switch(vectorisor,
          "vecd" = return(fullcov),
-         "vech" = return(t(vech2vecd_mat(nrow(fullcov))) %*% fullcov %*% vech2vecd_mat(nrow(fullcov)))
+         "vech" = {
+           inv_vech2vecd <- solve(vech2vecd_mat(nrow(fullcov)))
+           return(inv_vech2vecd %*% fullcov %*% t(inv_vech2vecd))
+         }
   )
 }
 
