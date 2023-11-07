@@ -5,6 +5,29 @@
 #' Implements MLE for \eqn{\tao}{tau} and \eqn{\sigma^2}{s^2} given in Lemma 3.3 of Schwartzman et (2008). The MLE for the population mean is required.
 NULL
 
+#' @title Estimate scale for OI Covariance
+#' @description
+#' MLE for \eqn{\sigma^2}{s^2} given by equation 15 of Schwartzman et al (2008).
+#' The default \eqn{\tau} is estimated according to equation 16 of Schwartzman et al (2008) using [`tauhat()`].
+#' @param Mhat An MLE for the population mean (typically under a hypothesis)
+#' @param ms A single sample in [`sst()`] format.
+#' @param tau The \eqn{\tau} for the OI covariance.
+#' @details
+#' For MLE, supply the MLE for population mean, and use the default `tau`.
+#' @returns An estimate of \eqn{\sigma^2}{s^2}.
+scalesqhat <- function(ms, Mhat, tau = tauhat(ms, Mhat)){
+  class(ms) <- "matrix"
+  p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
+  q <- p * (p+1)/2
+  Ybar <- colMeans(ms)
+  Yerr <- t(t(ms) - Ybar)
+  normYbarMhat <- OIinnerprod_sst(matrix(Ybar - vech(Mhat), nrow = 1),
+                  matrix(Ybar - vech(Mhat), nrow = 1),
+                  1, as.numeric(tau))
+  sYerr2 <- mean(OIinnerprod_sst(Yerr, Yerr, 1, tau))
+  return(sYerr2/q + normYbarMhat/q)
+}
+
 #' @title Esitimate the tau Parameter for OI Covariance
 #' @description MLE for \eqn{\tau} given by equation 16 of Schwartzman et al (2008).
 #' @param Mhat An MLE for the population mean (typically under a hypothesis)

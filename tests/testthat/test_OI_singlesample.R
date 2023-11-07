@@ -34,7 +34,7 @@ test_that("OIinnerprod fast matches slow method", {
   expect_equal(fastinnprod_twice, c(fastinnprod2, fastinnprod2))
 })
 
-test_that("tauhat gets close to correct tau", {
+test_that("tauhat and scalehat get close really to correct tau", {
   s = 2
   tau = 1/4
   p = 3
@@ -51,5 +51,8 @@ test_that("tauhat gets close to correct tau", {
                (p*(p+1)/2 - 1) * p * (1 + p * tau/(1-p*tau)) * s^2,
                tolerance = 1E-2)
   expect_equal(as.numeric(tauest), tau, tolerance = 1E-3, ignore_attr = TRUE)
+  
+  ssq <- scalesqhat(ms = ms, Mhat = Mhat)
+  expect_equal(ssq, s^2, tolerance = 1E-2)
 })
   
