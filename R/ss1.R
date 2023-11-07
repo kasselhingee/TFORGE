@@ -222,5 +222,13 @@ normL2evals <- function(m){
 }
 # ms is an sst
 normL2evals_sst <- function(ms){
+  if (ncol(ms) == 6){#use fast method
+    class(ms) <- NULL
+    I2 <- ms[, 1] * ms[, 4] + ms[, 4] * ms[, 6] + ms[,1] * ms[,6] -
+      ms[, 2]^2 - ms[, 5]^2 - ms[,3]^2
+    I1 <- ms[, 1] + ms[, 4] + ms[, 6] #trace
+    tr2 <- I1^2 - 2*I2
+    return(as.sst(ms/sqrt(tr2)))
+  }
   as.sst(apply(ms, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
 }
