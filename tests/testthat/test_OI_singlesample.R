@@ -47,3 +47,18 @@ test_that("estimateOIparams get close really to correct tau and scale", {
   expect_equal(OIparams$scalesq, s^2, tolerance = 1E-2)
 })
   
+test_that("testOIcov has uniform p values for a null situation", {
+  s = 2
+  tau = 1/4
+  p = 3
+  covmat <- covOI(p, s, tau, vectorisor = "vech")
+  set.seed(344)
+  pvals <- pbapply::pbreplicate(1E2,
+    {
+    ms <- rsymm_norm(30, mean = diag(c(4,2,1)), sigma = covmat)
+    testOIcov(ms)$pval
+    })
+  qqplot(pvals, y = runif(1000))
+  expect_gt(ks.test(pvals, "punif")$p.value, 0.2)
+})
+

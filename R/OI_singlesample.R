@@ -1,6 +1,6 @@
 # File for Single Sample Schwartzman 2008 Methods
 
-#' Estimate of Orthogonally Invariant Covariance Parameters
+#' @title Estimate of Orthogonally Invariant Covariance Parameters
 #' @description
 #' Implements MLE for \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} given in Lemma 3.3 of Schwartzman et (2008). The MLE for the population mean is required.
 #' @param Mhat An MLE for the population mean (typically under a hypothesis)
@@ -35,6 +35,28 @@ estimateOIparams <- function(ms, Mhat, tau = NULL){
   return(list(scalesq = scalesq, tau = tau))
 }
 
+#' @title Test OI Covariance
+#' @description
+#' Proposition 3.1 of Schwartzman et al (2008) provides a test of OI covariance against unrestricted covariance structure.
+#' @details
+#' The parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} are estimated using [`estimateOIparams()`] using the sample average as the estimate of population mean.
+#' 
+testOIcov <- function(ms){
+  p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
+  q <- ncol(ms)
+  Ybar <- colMeans(ms)
+  OIparams <- estimateOIparams(ms, Ybar)
+  covhat <- S_mcovar(t(t(ms)-Ybar))
+  stat <- nrow(ms) * (q * log(OIparams$scalesq) - log(1-p*OIparams$tau) - determinant(covhat, logarithm = TRUE)$modulus)
+  stat <- as.numeric(stat)
+  pval <- 1-pchisq(stat, df = q*(q+1)/2 - 2)
+  return(list(
+    pval = pval,
+    stat = stat,
+    scalesq = OIparams$scalesq,
+    tau = OIparams$tau
+  ))
+}
 
 #' @title Create an Orthogonally Invariant Covariance Matrix from Parameters
 #' @details According to Schwartzman et al (2008), orthogonally invariant covariance is such that:
