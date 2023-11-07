@@ -22,13 +22,10 @@ vech2vecd <- function(vec){
   drop(vech2vecd_mat(length(vec)) %*% vec)
 }
 
-# Special sample covariance that uses Schwartzman's vecd
+# Special sample covariance that uses Schwartzman's vecd, but with merr in vech form
 S_mcovar <- function(merr){
-  merr_vecd <- apply(merr, 1, function(m){
-    vecd(invvech(m))
-  }, simplify = FALSE)
-  merr_vecd <- do.call(rbind, merr_vecd)
-  cov(merr_vecd)
+  tmpmat <- vech2vecd_mat(ncol(merr))
+  tmpmat %*% mcovar(merr) %*% t(tmpmat)
 }
 
 # i is the index that correponds to 1, p is the number of rows/columns
