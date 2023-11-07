@@ -5,6 +5,18 @@
 #' Implements MLE for \eqn{\tao}{tau} and \eqn{\sigma^2}{s^2} given in Lemma 3.3 of Schwartzman et (2008). The MLE for the population mean is required.
 NULL
 
+#' @title Esitimate the tau Parameter for OI Covariance
+#' @description MLE for \eqn{\tau} given by equation 16 of Schwartzman et al (2008).
+#' @param Mhat An MLE for the population mean (typically under a hypothesis)
+#' @param ms A single sample in [`sst()`] format.
+tauhat <- function(ms, Mhat){
+  p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
+  Ybar <- colMeans(ms)
+  # covqp <- covOI(p, 1, (p+1)/2, vectorisor = "vech")
+}
+
+
+
 #' @title Create an Orthogonally Invariant Covariance Matrix from Parameters
 #' @details According to Schwartzman et al (2008), orthogonally invariant covariance is such that:
 #' 1. the covariance between diagonal elements of the random matrix is \eqn{\sigma^2(I_p + c)}{s^2(I_p + c)}, where \eqn{I_p} is the identity matrix of size \eqn{p}, the number of rows of the random matrix,
@@ -16,6 +28,7 @@ NULL
 #' @param vectorisor Either 'vech' or 'vecd'. The covariance matrix in Schwartzman et al (2008) represents a random (data) matrix as a vector using [`vecd()`], which puts a \eqn{\sqrt{2}}{`sqrt(2)`} weight on the off diagonals, and has a different ordering to the [`vech()`] used by Hingee, Scealy and Wood (see [`vech2vecd_mat()`]).
 #' @param s The scale \eqn{\sigma}{s} for the covariance matrix.
 #' @param tau The offset \eqn{\tau}{tau} for the covariance related to the diagonal elements of the random matrix.
+#' @export
 covOI <- function(p, s, tau, vectorisor = "vech"){
   if (tau >= 1/p){warning("tau larger than 1/p and 'covariance' will not be positive definite")}
   offsetc <- tau/(1-tau*p)
@@ -27,4 +40,24 @@ covOI <- function(p, s, tau, vectorisor = "vech"){
          "vech" = return(t(vech2vecd_mat(nrow(fullcov))) %*% fullcov %*% vech2vecd_mat(nrow(fullcov)))
   )
 }
+
+# Schwartzman 2008 inner product in equations (10) and (12). This is the fast looking equation 12.
+OIinnerprod <- function(A, B, s, tau){
+  stopifnot(isSymmetric(A))
+  stopifnot(isSymmetric(B))
+  (sum(A * B) - tau * sum(diag(A)) * sum(diag(B)))/s^2
+}
+
+# Avecs and Bvecs in vech representation, rowwise between each row of A to each row of B
+OIinnerprod_sst <- function(Avecs, Bvecs, s, tau){
+  class(Avecs) <- class(Bvecs) <- "matrix"
+  stopifnot(ncol(Avecs) == ncol(Bvecs))
+  stopifnot(nrow(Avecs) == nrow(Bvecs))
+  isdiag <- isondiag_vech(ncol(Avecs))
+  elprods <- Avecs * Bvecs
+  tmp <- rowSums(elprods) + rowSums(elprods[,!isdiag, drop = FALSE]) - 
+    tau * rowSums(Avecs[, isdiag, drop = FALSE]) * rowSums(Bvecs[, isdiag, drop = FALSE])
+  tmp/s^2
+}
+
 

@@ -14,3 +14,22 @@ test_that("covOI gives correct matrices", {
            1,6,
            4,6), ncol = 2, byrow = TRUE), ignore_attr = TRUE)
 })
+
+test_that("OIinnerprod fast matches slow method", {
+  s = 2
+  tau = 1/4
+  p = 3
+  A <- invvech(rsymm_norm(1, mean = diag(3))[1, ])[[1]]
+  B <- invvech(rsymm_norm(1, mean = diag(3))[1, ])[[1]]
+  
+  covmat <- covOI(3, s, tau, vectorisor = "vecd")
+  slowinnprod <- drop(vecd(A) %*% solve(covmat) %*% vecd(B))
+  fastinnprod <- OIinnerprod(A, B, s, tau)
+  expect_equal(slowinnprod, fastinnprod) 
+  
+  fastinnprod2 <- OIinnerprod_sst(as.sst(list(A)), as.sst(list(B)), s, tau)
+  expect_equal(fastinnprod, fastinnprod2)
+  
+  fastinnprod_twice <- OIinnerprod_sst(as.sst(list(A, A)), as.sst(list(B, B)), s, tau)
+  expect_equal(fastinnprod_twice, c(fastinnprod2, fastinnprod2))
+})
