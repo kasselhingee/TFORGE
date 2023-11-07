@@ -33,3 +33,21 @@ test_that("OIinnerprod fast matches slow method", {
   fastinnprod_twice <- OIinnerprod_sst(as.sst(list(A, A)), as.sst(list(B, B)), s, tau)
   expect_equal(fastinnprod_twice, c(fastinnprod2, fastinnprod2))
 })
+
+test_that("tauhat gets close to correct tau", {
+  s = 2
+  tau = 1/4
+  p = 3
+  covmat <- covOI(p, s, tau)
+  set.seed(344)
+  ms <- rsymm_norm(1E7, mean = diag(c(4,2,1)), sigma = covmat)
+  tauest <- tauhat(ms, diag(c(4,2,1)))
+  
+  expect_equal(attr(tauest, "numerator"),
+    (1-p*(p+1)/2) * p * (tau/(1-p*tau)) * s^2)
+  expect_equal(attr(tauest, "denominator"),
+               (p*(p+1)/2 - 1) * p * (1 + p * tau/(1-p*tau)) * s^2)
+  expect_equal(tauest, tau, tolerance = 1E-1)
+  
+})
+  

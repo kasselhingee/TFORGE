@@ -10,9 +10,19 @@ NULL
 #' @param Mhat An MLE for the population mean (typically under a hypothesis)
 #' @param ms A single sample in [`sst()`] format.
 tauhat <- function(ms, Mhat){
+  class(ms) <- "matrix"
   p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
   Ybar <- colMeans(ms)
-  # covqp <- covOI(p, 1, (p+1)/2, vectorisor = "vech")
+  numerator <- sum(OIinnerprod_sst(t(t(ms) - Ybar), t(t(ms) - Ybar), 1, (p+1)/2)) +
+    nrow(ms) * OIinnerprod_sst(matrix(Ybar - vech(Mhat), nrow = 1), 
+                               matrix(Ybar - vech(Mhat), nrow = 1), 1, (p+1)/2)
+  ondiag <- isondiag_vech(ncol(ms))
+  trYi2Ybar <- rowSums(t(t(ms) - Ybar)[, ondiag])
+  denominator <- (ncol(ms) - 1) * (sum(trYi2Ybar^2) + nrow(ms) * sum((Ybar - vech(Mhat))[ondiag])^2)
+  out <- -numerator/denominator
+  attr(out, "numerator") <- numerator/nrow(ms)
+  attr(out, "denominator") <- denominator/nrow(ms)
+  return(out)
 }
 
 
