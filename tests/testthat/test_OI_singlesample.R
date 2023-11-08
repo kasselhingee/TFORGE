@@ -79,18 +79,16 @@ test_that("blk() returns correct averages", {
 })
 
 test_that("test_multiplicity_OI() on null has uniform p values", {
-  set.seed(1331)
+  set.seed(13313)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- pbapply::pbreplicate(100, {
-    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    Ysample <- rsymm_norm(1E3, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     test_multiplicity_OI(Ysample, mult = mult)$pval
   })
   
   qqplot(vals, y = runif(1000))
-  res <- suppressWarnings(ks.test(vals, "punif"))
-  expect_gt(res$p.value, 0.15) #above 0.2 if above two thoroughness measures taken
+  res <- ks.test(vals, "punif")
+  expect_gt(res$p.value, 0.15)
 })
   
-  
-})
