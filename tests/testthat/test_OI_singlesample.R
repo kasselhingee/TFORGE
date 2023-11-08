@@ -48,17 +48,25 @@ test_that("estimateOIparams get close really to correct tau and scale", {
 })
   
 test_that("testOIcov has uniform p values for a null situation", {
-  s = 2
-  tau = 1/4
+  s = 1
+  tau = 1/8
   p = 3
   covmat <- covOI(p, s, tau, vectorisor = "vech")
   set.seed(344)
-  pvals <- pbapply::pbreplicate(1E2,
+  vals <- pbapply::pbreplicate(1E2,
     {
-    ms <- rsymm_norm(30, mean = diag(c(4,2,1)), sigma = covmat)
-    testOIcov(ms)$pval
+    ms <- rsymm_norm(1E4, mean = diag(c(4,2,1)), sigma = covmat)
+    res <- testOIcov(ms)
+    c(pval = res$pval, stat = res$stat)
     })
-  qqplot(pvals, y = runif(1000))
-  expect_gt(ks.test(pvals, "punif")$p.value, 0.2)
+  # hist(vals["stat", ])
+  qqplot(vals["pval", ], y = runif(1000))
+  expect_gt(ks.test(vals["pval", ], "punif")$p.value, 0.2)
+
+  # looks like stat is missing a 6! 
+  qqplot(vals["stat", ] + 6, y = rchisq(1000, df = 6 * (6+1)/2 -2)); abline(a=0, b= 1)
+  offsetpvals <-  1 - pchisq(vals["stat", ]+6, df = 6 * (6+1)/2 -2)
+  qqplot(offsetpvals, y = runif(1000)); abline(a=0, b= 1)
+  expect_gt(ks.test(offsetpvals, "punif")$p.value, 0.2)
 })
 
