@@ -130,7 +130,7 @@ blk <- function(evals, mult){
 
 #' @title Test of multiplicity given in Corllary 4.3 Schwartzman et al 2008
 #' @details An estimate of the scale of the covariance is required, which uses [`estimateOIparams()`] and the MLE under the null hypothesis given by Theorem 4.2 of Schwartzman 2008
-#' 
+#' @export
 test_multiplicity_OI <- function(Ysample, mult){
   mn <- colMeans(Ysample)
   es_mn <- eigen_desc(invvech(mn))
