@@ -70,3 +70,27 @@ test_that("testOIcov has uniform p values for a null situation", {
   expect_gt(ks.test(offsetpvals, "punif")$p.value, 0.2)
 })
 
+test_that("blk() returns correct averages", {
+  evals <- 10:1
+  mult <- c(2,2,2,2,2)
+  expect_equal(blk(evals, mult), c(9.5,9.5, 7.5,7.5, 5.5,5.5, 3.5,3.5, 1.5,1.5))
+  expect_equal(blk(evals, c(5,5)), c(rep(8, 5), rep(3, 5)))
+  expect_equal(blk(evals, c(5,4,1)), c(rep(8, 5), rep(14/4, 4), 1))
+})
+
+test_that("test_multiplicity_OI() on null has uniform p values", {
+  set.seed(1331)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  vals <- pbapply::pbreplicate(100, {
+    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    test_multiplicity_OI(Ysample, mult = mult)$pval
+  })
+  
+  qqplot(vals, y = runif(1000))
+  res <- suppressWarnings(ks.test(vals, "punif"))
+  expect_gt(res$p.value, 0.15) #above 0.2 if above two thoroughness measures taken
+})
+  
+  
+})
