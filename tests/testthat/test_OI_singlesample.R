@@ -53,18 +53,27 @@ test_that("testOIcov has uniform p values for a null situation", {
   p = 3
   covmat <- covOI(p, s, tau, vectorisor = "vech")
   set.seed(344)
-  vals <- pbapply::pbreplicate(1E2,
+  vals <- pbapply::pbreplicate(1E4,
     {
-    ms <- rsymm_norm(1E4, mean = diag(c(4,2,1)), sigma = covmat)
+    ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
     res <- testOIcov(ms)
-    c(pval = res$pval, stat = res$stat)
-    })
+    unlist(res)
+    }, cl = 2)
   # hist(vals["stat", ])
   qqplot(vals["pval", ], y = runif(1000))
   expect_gt(ks.test(vals["pval", ], "punif")$p.value, 0.2)
+  
+  # distribution of stat
+  plot(quantile(vals["stat", ], probs = (1:100)/100),
+       qchisq(p = (1:100)/100, df =  6 * (6+1)/2 -2))
+  abline(a = 0, b = 1)
+  
+  plot(quantile(vals["stat", ] + 6, probs = (1:100)/100),
+       qchisq(p = (1:100)/100, df =  6 * (6+1)/2 -2))
+  abline(a = 0, b = 1)
 
   # looks like stat is missing a 6! 
-  qqplot(vals["stat", ] + 6, y = rchisq(1000, df = 6 * (6+1)/2 -2)); abline(a=0, b= 1)
+  qqplot(vals["stat", ] + 6, y = rchisq(1E5, df = 6 * (6+1)/2 -2)); abline(a=0, b= 1)
   offsetpvals <-  1 - pchisq(vals["stat", ]+6, df = 6 * (6+1)/2 -2)
   qqplot(offsetpvals, y = runif(1000)); abline(a=0, b= 1)
   expect_gt(ks.test(offsetpvals, "punif")$p.value, 0.2)
