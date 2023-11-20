@@ -76,6 +76,12 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  if (!is.null(evals)){
+    if (all(abs(evals - evals[1]) < sqrt(.Machine$double.eps))){
+      warning("Supplied evals are equal to each other so test is testing for isotropy. test_multiplicity() usually has better behaviour for testing isotropy.")
+    }
+  }
+
 
   t0 <- stat_fixedtrace(x, evals = evals, NAonerror = FALSE)
   estevals <- attr(t0, "null_evals")
