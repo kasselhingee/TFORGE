@@ -1,4 +1,4 @@
-test_that("regularellipse point lie on equation", {
+test_that("regularellipse() point satisfy on equation", {
   a <- 3
   b <- 5
   expect_equal(drop(regularellipse(0, a = a, b = b)), c(x = a, y = 0))

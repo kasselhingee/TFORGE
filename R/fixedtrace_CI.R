@@ -8,3 +8,12 @@ regularellipse <- function(angle, a, b){
   y <- b * sin(angle)
   return(cbind(x = x, y = y))
 }
+
+# convert points from regular ellipse to the ft plane with rotation by eigenvectors of Omega
+# @param pts from regularellipse()
+# @param evecs Eigenvectors of Omega
+ellipseinftplane <- function(pts, evecs){
+  rotpts <- evecs %*% t(pts)
+  Hfull <- helmert(ncol(pts) + 1)
+  t(Hfull) %*% rbind(0, rotpts)
+}
