@@ -180,10 +180,9 @@ test_that("hasfixedtrace() gives TRUE or FALSE values", {
     }, simplify = FALSE)
   
   expect_equal(sum(diag(Ysamples[[1]][[1]])), const)
-  as.mstorsst(Ysamples)[[1]][[1]]
 
   expect_true(hasfixedtrace(as.mstorsst(Ysamples)))
-  expect_true(hasfixedtrace(Ysamples[[1]]))
+  expect_true(hasfixedtrace(as.sst(Ysamples[[1]])))
   
   set.seed(134)
   Ysamples <- replicate(5, {
