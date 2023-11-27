@@ -27,14 +27,18 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
 
   H <- helmertsub(ncol(mss[[1]][[1]]))
-  ess <- lapply(mss, function(ms){eigen_desc(mmean(ms))})
+  avs <- lapply(mss, mmean)
+  ess <- lapply(avs, function(av){eigen_desc(av)})
   ns <- lapply(mss, length)
   
   #first get all eval precision matrices 
   ## below could be faster by passing evecs to cov_evals_est()
   ## stop using solve_NAonerror, or atleast the parameter
-  precisions <- lapply(mss, function(ms){solve_NAonerror(H %*% cov_evals_est(ms) %*% t(H), NAonerror = NAonerror)})
-  
+  precisions <- mapply(function(ms, evecs, av){solve_NAonerror(cov_evals_ft(ms, H = H, evecs = evecs, av = av), NAonerror = NAonerror)},
+                       ms = mss,
+                       evecs = lapply(ess, "[[", "vectors"),
+                       av = avs,
+                       SIMPLIFY = FALSE)
   d1s <- lapply(ess, "[[", "values")
   
   #get estimate of common evals for multisample situation
@@ -167,6 +171,11 @@ normtrace <- function(m){
     newm <- m/tr
   }
   return(newm)
+}
+
+cov_evals_ft <- function(ms, H = NULL, evecs = NULL, av = NULL){
+  if (is.null(H)){H <- helmertsub(ncol(ms[[1]]))}
+  H %*% cov_evals_est(ms, evecs = evecs, av = av) %*% t(H)
 }
 
 descendingordererror <- function(d0){
