@@ -1,3 +1,10 @@
++ in fixedtrace:
+  + could be faster by passing evecs to cov_evals_est()
+  + stop using solve_NAonerror, or atleast the parameter
+
++ what about converting to Python using ChatGPT?
+Or calling it from python?
+
 + the NAonerror passing would be much better implemented using with calling handlers and a use_value function ala http://adv-r.had.co.nz/beyond-exception-handling.html
 
 There are the following types of functions

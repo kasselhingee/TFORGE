@@ -30,7 +30,9 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   ess <- lapply(mss, function(ms){eigen_desc(mmean(ms))})
   ns <- lapply(mss, length)
   
-  #first get all eval precision matrices
+  #first get all eval precision matrices 
+  ## below could be faster by passing evecs to cov_evals_est()
+  ## stop using solve_NAonerror, or atleast the parameter
   precisions <- lapply(mss, function(ms){solve_NAonerror(H %*% cov_evals_est(ms) %*% t(H), NAonerror = NAonerror)})
   
   d1s <- lapply(ess, "[[", "values")
