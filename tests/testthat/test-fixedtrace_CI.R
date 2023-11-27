@@ -9,8 +9,27 @@ test_that("regularellipse() point satisfy on equation", {
   expect_equal(locs[, "x"]^2/(a^2) + locs[, "y"]^2/(b^2), rep(1, 100))
 })
 
-test_that("conf_fixedtrace() contains about 95% of sample points", {
+test_that("conf_fixedtrace() warns when ordered boundary is intersected", {
   set.seed(345)
-  ms <- rsymm_norm(n = 100, mean = diag(c(4,2,1)))
+  ms <- rsymm_norm(n = 10, mean = diag(c(4,2,1)))
   ms <- normtrace(ms)
+  expect_warning(cr <- conf_fixedtrace(ms, alpha = 0.05, B = 1000, npts = 1000),
+                 "boundary")
+  expect_true(cr$inregion(c(4,2,1)/7))
+  expect_false(cr$inregion(c(0.8, -0.1, 0.3)))
+
+  plot(cr$boundary[, 1], cr$boundary[, 2])
+  abline(a = 0, b = 1)
+  abline(a = 1/2, b = -1/2)
 })
+
+test_that("conf_fixedtrace() contains population mean about 95% of the time", {
+  set.seed(345)
+  popmeanincr <- pbapply::pbreplicate(500, {
+     ms <- rsymm_norm(n = 30, mean = diag(c(4,2,1)))
+     ms <- normtrace(ms)
+     cr <- suppressWarnings(conf_fixedtrace(ms, alpha = 0.05, B = 1000, npts = 1000))
+     cr$inregion(c(4,2,1)/7)})
+  expect_equal(mean(popmeanincr), 0.95, tolerance = 1E-2)
+})
+

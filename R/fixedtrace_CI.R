@@ -22,15 +22,21 @@ ellipseinftplane <- function(pts, evecs){
 ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
   locs2d <- regularellipse(angle, a = a, b = b)
   locsplane <- ellipseinftplane(locs2d, evecs = evecs)
-  locsplanearoundcenter <- t(ctrevals - t(locs))
+  locsplanearoundcenter <- t(ctrevals - t(locsplane))
   return(locsplanearoundcenter)
 }
 
-#' @title Confidence for 3x3 Tensors with Fixed Trace Constraint
+#' @title Confidence region for 3x3 Tensors with Fixed Trace Constraint
 #' @param x A sample of 3x3 tensors.
 #' @param alpha Significance level
 #' @param B Number of bootstrap resamples.
 #' @param pts Number of points on the boundary of the region to compute.
+#' @return A list:
+#' + `est`: the eigenvalues of the mean tensor
+#' + `boundary`: npts x 3 matrix giving the boundary of the region (each row corresponds to a point on the boundary and the columns are the first, second and final eigenvalue).
+#' + `inregion`: A function that accepts a vector of eigenvalues and returns `TRUE` when the eigenvalues are in the confidence region and `FALSE` otherwise.
+#' + `Omega`: The estimated covariance of the (projected) eigenvalues
+#' + `threshold`: The threshold on the statistic used.
 #' @export
 conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
   stopifnot(ncol(x) == 6)
@@ -41,18 +47,21 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
   av <- mmean(x)
   av_ess <- eigen_desc(av)
   av_eval <- av_ess$values
+  size <- nrow(x)
 
   # resampling and computing stat_fixedtrace()
   res <- bootresampling(x, x, stat = stat_fixedtrace, B = B, evals = av_eval)
-  statthreshold <- quantile(res$nullt, probs = 1-alpha)
+  statthreshold <- quantile(res$nullt, probs = 1-alpha, names = FALSE)
 
   # now compute boundary of region
   Omega <- cov_evals_ft(x, evecs = av_ess$vectors, av = av)
   Omega_ess <- eigen_desc(Omega)
+  a <- sqrt(statthreshold * Omega_ess$values[1]/size)
+  b <- sqrt(statthreshold * Omega_ess$values[2]/size)
   stopifnot(all(Omega_ess$values >= 0))
   bdrypts <- ellipseftcentre(angle = seq(0, 2*pi, length.out = npts),
-                         a = sqrt(statthreshold * Omega_ess$values[1]),
-                         b = sqrt(statthreshold * Omega_ess$values[2]),
+                         a = a,
+                         b = b,
                          evecs = Omega_ess$vectors,
                          ctreval = av_eval
                          )
@@ -60,16 +69,16 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
   # also create a function that tests whether inside the region using the statistic directly
   H <- helmertsub(p)
   inregion <- function(evals){
-    statval <- t(av_eval - evals) %*% t(H) %*% Omega_ess$vectors %*% diag(1/Omega_ess$values) %*% t(Omega_ess$vectors) %*% (av_eval - evals)
-    return(statval <= statthreshold)
+    statval <- size * t(av_eval - evals) %*% t(H) %*% Omega_ess$vectors %*% diag(1/Omega_ess$values) %*% t(Omega_ess$vectors) %*% H %*% (av_eval - evals)
+    return(drop(statval) <= statthreshold)
   }
 
   # now check if close to the descending order boundary empirically
   e1e2 <- optim(par = c(0, pi/2), 
         fn = function(angle){
       bdrypt <- ellipseftcentre(angle = angle,
-                         a = sqrt(statthreshold * Omega_ess$values[1]),
-                         b = sqrt(statthreshold * Omega_ess$values[2]),
+                         a = a,
+                         b = b,
                          evecs = Omega_ess$vectors,
                          ctreval = av_eval
                          )
@@ -79,21 +88,24 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
   e2e3 <- optim(par = c(0, pi/2), 
         fn = function(angle){
       bdrypt <- ellipseftcentre(angle = angle,
-                         a = sqrt(statthreshold * Omega_ess$values[1]),
-                         b = sqrt(statthreshold * Omega_ess$values[2]),
+                         a = a,
+                         b = b,
                          evecs = Omega_ess$vectors,
                          ctreval = av_eval
                          )
       (bdrypt[2] - bdrypt[3])^2 
       },
   method = "CG")
-  if ((e1e2$value < sqrt(.Machine$double.eps)) |
-      (e2e3$value < sqrt(.Machine$double.eps)) ){
+  if ((e1e2$value < 2*sqrt(.Machine$double.eps)) |
+      (e2e3$value < 2*sqrt(.Machine$double.eps)) ){
     warning("Confidence region intersects the change in order boundary, the confidence region should not be trusted in this situation")
   }
 
   return(list(
+    est = av_eval,
     boundary = bdrypts,
-    inregion = inregion
+    inregion = inregion,
+    Omega = Omega,
+    threshold = statthreshold
   ))
 }
