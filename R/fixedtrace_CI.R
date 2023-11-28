@@ -109,6 +109,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
     boundary = bdrypts,
     inregion = inregion,
     Omega = Omega,
-    threshold = statthreshold
+    threshold = statthreshold,
+    bootstat = res$nullt
   ))
 }
