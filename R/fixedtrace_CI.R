@@ -73,7 +73,6 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
     return(drop(statval) <= statthreshold)
   }
 
-  browser()
   # now check if close to the descending order boundary by solving for the intersection of the boundary lines and the ellipse
   # the sqrt(6) comes from the definition of the helmertsub matrix
   # see ConfidenceRegionsFT.pdf EQ1 and EQ2 for obtaining the equations
