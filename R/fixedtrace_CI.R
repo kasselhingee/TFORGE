@@ -73,33 +73,37 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
     return(drop(statval) <= statthreshold)
   }
 
-  # now check if close to the descending order boundary empirically
-  e1e2 <- optim(par = c(0, pi/2), 
-        fn = function(angle){
-      bdrypt <- ellipseftcentre(angle = angle,
-                         a = a,
-                         b = b,
-                         evecs = Omega_ess$vectors,
-                         ctreval = av_eval
-                         )
-      (bdrypt[1] - bdrypt[2])^2 
-      },
-  method = "CG")
-  e2e3 <- optim(par = c(0, pi/2), 
-        fn = function(angle){
-      bdrypt <- ellipseftcentre(angle = angle,
-                         a = a,
-                         b = b,
-                         evecs = Omega_ess$vectors,
-                         ctreval = av_eval
-                         )
-      (bdrypt[2] - bdrypt[3])^2 
-      },
-  method = "CG")
-  if ((e1e2$value < 2*sqrt(.Machine$double.eps)) |
-      (e2e3$value < 2*sqrt(.Machine$double.eps)) ){
-    warning("Confidence region intersects the change in order boundary, the confidence region should not be trusted in this situation")
-  }
+  browser()
+  # now check if close to the descending order boundary by solving for the intersection of the boundary lines and the ellipse
+  # the sqrt(6) comes from the definition of the helmertsub matrix
+  # see ConfidenceRegionsFT.pdf EQ1 and EQ2 for obtaining the equations
+  # first two evals:
+  ft <- sum(av_eval)
+  A <- t(Omega_ess$vectors) %*% (H %*% av_eval + (2*ft/sqrt(6)) * rbind(0, 1))
+  B <- sqrt(6)  * t(Omega_ess$vectors)  %*%  rbind(0, 1)
+  # b^2 - 4ac >= 0
+  invLambda <- diag(1/Omega_ess$values)
+  e1e2intersect <- drop(
+  (t(A) %*% invLambda %*% B + t(B) %*%  invLambda %*% A)^2 -
+    4 * (t(B) %*% invLambda %*% B) * ((t(A) %*% invLambda %*% A) - statthreshold/size)
+  ) >= 0
+  
+  # second two evals
+  A <- t(Omega_ess$vectors) %*% (H %*% av_eval + (ft/2) * rbind(1/sqrt(2), 1/sqrt(6)))
+  B <- (3/2) * t(Omega_ess$vectors) %*% rbind(1/sqrt(2), 1/sqrt(6))
+  e2e3intersect <- drop(
+    (t(A) %*% invLambda %*% B + t(B) %*%  invLambda %*% A)^2 -
+      4 * (t(B) %*% invLambda %*% B) * ((t(A) %*% invLambda %*% A) - statthreshold/size)
+  ) >= 0
+  
+  
+  if (e1e2intersect | e2e3intersect){
+    desc <- switch(e1e2intersect + 2 * e2e3intersect,
+           "largest two eigenvalues",
+           "smallest two eigenvalues",
+           "largest two eigenvalues or smallest two eigenvalues")
+    warning(sprintf("Confidence region includes eigenvalues where the %s are not in descending order.", desc))
+  } 
 
   return(list(
     est = av_eval,
