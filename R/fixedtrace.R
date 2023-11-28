@@ -19,6 +19,7 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @title Test for eigenvalues when trace is fixed.
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 #' @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
+#' @export
 stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   x <- as.mstorsst(x)
   if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}

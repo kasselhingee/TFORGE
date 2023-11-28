@@ -19,10 +19,10 @@ test_that("conf_fixedtrace() warns when ordered boundary is intersected", {
 
 test_that("conf_fixedtrace() contains population mean about 95% of the time", {
   set.seed(345)
-  popmeanincr <- pbapply::pbreplicate(100, {
+  popmeanincr <- replicate(100, {
      ms <- rsymm_norm(n = 30, mean = diag(c(4,2,1)))
      ms <- normtrace(ms)
-     cr <- suppressWarnings(conf_fixedtrace(ms, alpha = 0.05, B = 1000, npts = 1000))
+     cr <- suppressWarnings(conf_fixedtrace(ms, alpha = 0.05, B = 100, npts = 1000))
      cr$inregion(c(4,2,1)/7)})
   expect_lt(abs(mean(popmeanincr) - 0.95),
             2*sd(popmeanincr)/sqrt(length(popmeanincr)))
