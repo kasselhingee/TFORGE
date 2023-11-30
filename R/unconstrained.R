@@ -31,6 +31,9 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   # null evals
   if (is.null(evals)){
     d0 <- est_commonevals(x, Vs = Vs, evals = avevals, NAonerror = NAonerror)
+    if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
+      d0 <- descendingordererror(d0)
+    }
   } else {
     d0 <- sort(evals, decreasing = TRUE)
   }
