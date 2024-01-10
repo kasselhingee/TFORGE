@@ -9,7 +9,7 @@ regularellipse <- function(angle, a, b){
   return(cbind(x = x, y = y))
 }
 
-# convert points from regular ellipse to the ft plane with rotation by eigenvectors of Omega
+# convert points from regular ellipse to the ft plane through the origin with rotation by eigenvectors of Omega
 # @param pts from regularellipse()
 # @param evecs Eigenvectors of Omega
 ellipseinftplane <- function(pts, evecs){
@@ -19,6 +19,7 @@ ellipseinftplane <- function(pts, evecs){
 }
 
 # combine ellipseinftplane and regular ellipse to get locations around the mean
+# also shifts the ellipse into the plane through ctrevals
 ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
   locs2d <- regularellipse(angle, a = a, b = b)
   locsplane <- ellipseinftplane(locs2d, evecs = evecs)
@@ -40,6 +41,7 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 #' @export
 conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
   stopifnot(ncol(x) == 6)
+  stopifnot(hasfixedtrace(x))
   p <- 3
   x <- as.sst(x)
 
