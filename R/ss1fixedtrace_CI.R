@@ -37,7 +37,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000){
                   -1, 0, 1,
                   1,-1, 0), ncol = 3, nrow = 3, byrow = TRUE)
   # the x^2 in my notes
-  exsq <- statthreshold * t(naveval) %*% t(A0) %*% covar_unconstrained %*% A0 %*% naveval/9
+  exsq <- statthreshold * t(naveval) %*% t(A0) %*% covar_unconstrained %*% A0 %*% naveval/(9 * nrow(x))
   ex_upper <- sqrt(drop(exsq))
   
   # check bounds do not include multiplicity situations - because ex interval is symmetric about 0, sign not needed
@@ -70,7 +70,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000){
   upper <- ex_upper * A0 %*% naveval + naveval
   upper <- drop(upper / sqrt(sum(upper^2)))
   
-  return(list(lower = lower, upper = upper))
+  return(list(lower = lower, upper = upper, est = naveval, statthreshold = statthreshold))
 }
   
 
