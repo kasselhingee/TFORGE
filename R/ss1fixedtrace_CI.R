@@ -80,6 +80,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000){
 #' @param cr A confidence region returned by [conf_ss1fixedtrace()].
 #' @export
 conf_ss1fixedtrace_inregion <- function(evals, cr){
+  stopifnot(sum(evals) <= sqrt(.Machine$double.eps))
   evals <- evals/sqrt(sum(evals^2))
   A0 <- matrix(c( 0, 1,-1,
                   -1, 0, 1,
