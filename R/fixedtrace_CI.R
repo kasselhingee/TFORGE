@@ -52,7 +52,6 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
 
   # resampling and computing stat_fixedtrace()
   res <- bootresampling(x, x, stat = stat_fixedtrace, B = B, evals = av_eval)
-  warning("check: need to ignore original sample")
   statthreshold <- quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
 
   # now compute boundary of region
