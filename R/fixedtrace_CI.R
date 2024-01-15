@@ -42,7 +42,6 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
   stopifnot(ncol(x) == 6)
   stopifnot(hasfixedtrace(x))
-  p <- 3
   x <- as.sst(x)
 
   # sample mean
@@ -53,6 +52,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
 
   # resampling and computing stat_fixedtrace()
   res <- bootresampling(x, x, stat = stat_fixedtrace, B = B, evals = av_eval)
+  warning("check: need to ignore original sample")
   statthreshold <- quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
 
   # now compute boundary of region
@@ -69,7 +69,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
                          )
 
   # also create a function that tests whether inside the region using the statistic directly
-  H <- helmertsub(p)
+  H <- helmertsub(3)
   inregion <- function(evals){
     statval <- size * t(av_eval - evals) %*% t(H) %*% Omega_ess$vectors %*% diag(1/Omega_ess$values) %*% t(Omega_ess$vectors) %*% H %*% (av_eval - evals)
     return(drop(statval) <= statthreshold)
