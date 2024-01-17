@@ -33,6 +33,13 @@ cov_evals_est <- function(ms, evecs = NULL, av = NULL){
     evecs <- eigen_desc(av, symmetric = TRUE)$vectors
   }
   mcov <- mcovar(merr(ms, mean = av))
+  if (all(mcov == 0)){
+    stop(structure(
+      class = c("zerocovariance", "error", "condition"),
+      list(message = "covariance is zero",
+           call =  sys.call(0))
+    ))
+  }
 
   cov_evals(evecs, mcov)
 }
