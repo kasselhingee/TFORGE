@@ -31,7 +31,7 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
   nullt <- simplify2array(nullt_l)
   messages <- replicate(length(nullt), vector(mode = "character", length = 0))
   if (any(is.na(nullt))){
-    warning(sprintf("The statistic could not be calculated for %i bootstrap resamples.", sum(is.na(nullt))))
+    warning(sprintf("The statistic could not be calculated for %i bootstrap resamples. See the returned nullt_messages for more information.", sum(is.na(nullt))))
     messages[is.na(nullt)] <- vapply(nullt_l[is.na(nullt)], attr, "message", FUN.VALUE = "abcd")
   }
   
@@ -90,7 +90,7 @@ print.tensorboot <- function(x, ...){
   NextMethod("print")
 }
 
-# For catching specific errors in above bootresampling
+# For catching specific errors in above bootresampling, and any new ones
 catch_do.call <- function(stat, args){
   tryCatch(do.call(stat, args),
            est_evals_not_descending = function(e){
@@ -99,6 +99,16 @@ catch_do.call <- function(stat, args){
     out
   },
   matrixsingular = function(e){
+    out <- NA_real_
+    attr(out, "message") <- e$message
+    out
+  },
+  zerocovariance = function(e){
+    out <- NA_real_
+    attr(out, "message") <- e$message
+    out
+  },
+  error = function(e){
     out <- NA_real_
     attr(out, "message") <- e$message
     out
