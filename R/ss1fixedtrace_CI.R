@@ -2,6 +2,7 @@
 #' @param x A sample of 3x3 tensors.
 #' @param alpha Significance level
 #' @param B Number of bootstrap resamples.
+#' @param check If `TRUE`, then the mean of 100 new resamples will be used to check the coverage of the interval.
 #' @return A list:
 #' + `est`: point estimate of eigenvalues of the mean tensor
 #' + `lower`: lower end of the confidence interval
@@ -9,7 +10,7 @@
 #' + `Omega`: The estimated covariance of the (projected) eigenvalues
 #' + `threshold`: The threshold on the statistic used.
 #' @export
-conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000){
+conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   # checks
   x <- as.sst(x)
   stopifnot(ncol(x) == 6)
@@ -68,8 +69,26 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000){
   lower <- drop(lower / sqrt(sum(lower^2)))
   upper <- ex_upper * A0 %*% naveval + naveval
   upper <- drop(upper / sqrt(sum(upper^2)))
+  cr <- list(lower = lower, upper = upper, est = naveval, statthreshold = statthreshold)
   
-  return(list(lower = lower, upper = upper, est = naveval, statthreshold = statthreshold))
+  if (check){
+    resample_avevals <- t(replicate(100, {
+      evals <- eigen_desc(mmean(samplesst(x)))$values
+      evals/sqrt(sum(evals^2))}
+    ))
+    inregion <- apply(resample_avevals, MARGIN = 1, 
+                      function(v) {conf_ss1fixedtrace_inregion(v, cr)})
+    coverage <- mean(inregion)
+    coverage_sd <- sd(inregion)/sqrt(length(inregion))
+    if (coverage + 2 * coverage_sd < 1-alpha){
+      warning(sprintf("Interval covers only %0.0f%% of resample means.", coverage * 100))
+    }
+    if (coverage - 2 * coverage_sd > 1-alpha){
+      warning(sprintf("Interval covers %0.0f%% of resample means.", coverage * 100))
+    }
+  }
+  
+  return(cr)
 }
   
 

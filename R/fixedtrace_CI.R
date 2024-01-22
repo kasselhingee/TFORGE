@@ -32,14 +32,15 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 #' @param alpha Significance level
 #' @param B Number of bootstrap resamples.
 #' @param pts Number of points on the boundary of the region to compute.
+#' @param check If `TRUE`, then the mean of 100 new resamples will be used to check the coverage of the interval.
 #' @return A list:
 #' + `est`: the eigenvalues of the mean tensor
 #' + `boundary`: npts x 3 matrix giving the boundary of the region (each row corresponds to a point on the boundary and the columns are the first, second and final eigenvalue).
-#' + `inregion`: A function that accepts a vector of eigenvalues and returns `TRUE` when the eigenvalues are in the confidence region and `FALSE` otherwise.
+#' + `inregion`: A function that accepts a vector of eigenvalues and returns `TRUE` when the eigenvalues are in the confidence region and `FALSE` otherwise. *This function may not survive being saved as an .rds because it looks at the environment it was created in. - Need to check.*
 #' + `Omega`: The estimated covariance of the (projected) eigenvalues
 #' + `threshold`: The threshold on the statistic used.
 #' @export
-conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
+conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE){
   stopifnot(ncol(x) == 6)
   stopifnot(hasfixedtrace(x))
   x <- as.sst(x)
@@ -104,6 +105,19 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000){
            "largest two eigenvalues or smallest two eigenvalues")
     warning(sprintf("Confidence region includes eigenvalues where the %s are not in descending order.", desc))
   } 
+  
+  if (check){
+    resample_avevals <- t(replicate(100, eigen_desc(mmean(samplesst(x)))$values))
+    inregionvals <- apply(resample_avevals, MARGIN = 1, function(v) {inregion(v)})
+    coverage <- mean(inregionvals)
+    coverage_sd <- sd(inregionvals)/sqrt(length(inregionvals))
+    if (coverage + 2 * coverage_sd < 1-alpha){
+      warning(sprintf("Interval covers only %0.0f%% of resample means.", coverage * 100))
+    }
+    if (coverage - 2 * coverage_sd > 1-alpha){
+      warning(sprintf("Interval covers %0.0f%% of resample means.", coverage * 100))
+    }
+  }
 
   return(list(
     est = av_eval,
