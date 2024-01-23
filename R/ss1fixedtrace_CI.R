@@ -71,6 +71,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   upper <- drop(upper / sqrt(sum(upper^2)))
   cr <- list(lower = lower, upper = upper, est = naveval, statthreshold = statthreshold)
   
+  coverage = NULL
   if (check){
     resample_avevals <- t(replicate(100, {
       evals <- eigen_desc(mmean(samplesst(x)))$values
@@ -88,7 +89,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
     }
   }
   
-  return(cr)
+  return(c(cr, coveragecheck = coverage))
 }
   
 
