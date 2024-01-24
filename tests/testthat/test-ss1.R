@@ -63,6 +63,15 @@ test_that("test_ss1() reject for single sample with wrong eval", {
   expect_lt(res$pval, 0.05)
 })
 
+test_that("test_ss1() reject with warning for single sample with very wrong eval", {
+  set.seed(1333)
+  Y <- rsymm_norm(50, diag(c(3,2,1)), sigma = diag(0.7, 6))
+  Y <- normL2evals_sst(Y)
+  expect_warning(res <- test_ss1(Y, c(-3,-2,-1)/sqrt(3^2 + 2^2 + 1), 100, maxit = 100),
+                 "convex hull")
+  expect_equal(res$pval, 0)
+})
+
 test_that("test_ss1() reject for an mst", {
   set.seed(1333)
   Ysamples <- list(
