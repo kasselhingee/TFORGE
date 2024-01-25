@@ -36,6 +36,11 @@ as.mstorsst <- function(x, ...){
 as.sst <- function(x, ...){
   if (inherits(x, "sst")){return(x)}
   if (inherits(x, "matrix")){
+    # check that invvech can be run on it
+    tryCatch(invvech(x[1, ]),
+             error = function(e){
+      if (grepl("round", e$message)){stop("Number of columns of x don't correspond to a possible result of vech()")}
+      }
     class(x) <- c("sst", class(x))
     return(x)}
   if (!all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){stop("Some elements are not matrices")}

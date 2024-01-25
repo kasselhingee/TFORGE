@@ -8,7 +8,7 @@ test_that("as.mstorsst()",{
   expect_silent(as.mstorsst(Ysamples[1]))
   
   expect_error(as.sst(Ysamples))
-  expect_error(as.sst(matrix(1, 2, 3)))
+  expect_error(as.sst(matrix(1, 2, 5)), "number")
 })
 
 test_that("new generics work for sst", {

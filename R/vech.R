@@ -24,6 +24,7 @@ vech <- function(m, name = FALSE){
 invvech <- function(x,...){
   # n is s.t. l = 0.5 n (n+1) --> n = 0.5(-1 + sqrt(4l+1))
   n <- (-1 + sqrt(8*length(x) + 1))/2
+  stopifnot(round(n) == n)
   m <- matrix(NA, nrow = n, ncol = n)
   m[lower.tri(m, diag = TRUE)] <- x
   m[upper.tri(m)] <- t(m)[upper.tri(m)]
