@@ -61,7 +61,7 @@ multisample <- function(x, prob = NULL){
   }
   else {
     stopifnot(length(prob) == length(x))
-    stopifnot(all(vapply(x, length, 2) == vapply(prob, length, 2)))
+    stopifnot(all(vapply(x, nrow, 2) == vapply(prob, length, 2)))
     out <- mapply(samplesst, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
     class(out) <- c(class(out), "mst")
     return(out)
