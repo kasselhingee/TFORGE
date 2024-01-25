@@ -93,7 +93,7 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
   
   # el weights
-  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, sc = sc, SIMPLIFY = FALSE)
+  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
   
   #check the weights
   lapply(wts, function(w){
