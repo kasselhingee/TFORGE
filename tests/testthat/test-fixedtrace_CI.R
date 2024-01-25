@@ -14,7 +14,7 @@ test_that("conf_fixedtrace() warns when ordered boundary is intersected", {
   ms <- rsymm_norm(n = 10, mean = diag(c(4,2,1)))
   ms <- normtrace(ms)
   expect_warning(cr <- conf_fixedtrace(ms, alpha = 0.05, B = 1000, npts = 1000),
-                 "boundary")
+                 "not.*descending")
 })
 
 test_that("conf_fixedtrace() contains population mean about 95% of the time", {
