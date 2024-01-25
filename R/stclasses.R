@@ -40,10 +40,14 @@ as.sst <- function(x, ...){
     tryCatch(invvech(x[1, ]),
              error = function(e){
       if (grepl("round", e$message)){stop("Number of columns of x don't correspond to a possible result of vech()")}
-      }
+      })
     class(x) <- c("sst", class(x))
     return(x)}
-  if (!all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){stop("Some elements are not matrices")}
+
+  # 
+
+  # now if its a list of matrices
+  if (is.list(x)) {if (!all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){stop("Some elements are not matrices")}}
   dims <- do.call(rbind, lapply(x, dim))
   if (dims[1,2] != dims[1,2]){stop("Matrices are not square.")}
   if (length(unique(dims[,2])) != 1){stop("Some matrices are different sizes.")}
@@ -55,13 +59,3 @@ as.sst <- function(x, ...){
   return(xmat)
 }
 
-#' @export
-`[.sst` <- function(x, i, j, ...){
-  class(x) <- "matrix" #so it uses the default array indexing
-  apply(x[i, , drop = FALSE], 1, invvech, simplify = FALSE)
-}
-
-#' @export
-length.sst <- function(x){
-  nrow(x)
-}
