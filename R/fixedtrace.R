@@ -27,7 +27,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
 
-  H <- helmertsub(ncol(invech(mss[[1]][1,]))
+  H <- helmertsub(dimfromvech(mss[[1]][1,]))
   avs <- lapply(mss, mmean)
   ess <- lapply(avs, function(av){eigen_desc(av)})
   ns <- lapply(mss, length)

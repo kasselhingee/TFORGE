@@ -22,13 +22,20 @@ vech <- function(m, name = FALSE){
 #' @describeIn vech The inverse of vech.
 #' @export
 invvech <- function(x,...){
-  # n is s.t. l = 0.5 n (n+1) --> n = 0.5(-1 + sqrt(4l+1))
-  n <- (-1 + sqrt(8*length(x) + 1))/2
-  stopifnot(round(n) == n)
+  n <- dimfromvech(x)
   m <- matrix(NA, nrow = n, ncol = n)
   m[lower.tri(m, diag = TRUE)] <- x
   m[upper.tri(m)] <- t(m)[upper.tri(m)]
   return(m)
+}
+
+#' @describeIn vech Dimension of matrix represented as a vector by `vech()`
+#' @export
+dimfromvech <- function(x){
+  # n is s.t. l = 0.5 n (n+1) --> n = 0.5(-1 + sqrt(4l+1))
+  n <- (-1 + sqrt(8*length(x) + 1))/2
+  stopifnot(round(n) == n)
+  return(n)
 }
 
 #for a vector created by vech, get the elements that come from the diagonal
