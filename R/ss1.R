@@ -105,9 +105,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   wts <- mapply(opt_el.test, ms = mss, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
   
   #check the weights
-  wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
-  if (any(wtsums_discrepacies > 1E-2)){
-    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
+  if (!wtsokay(wts)){
     return(list(
       pval = 0,
       t0 = t0,
@@ -170,6 +168,7 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
 #empirical likelihood maximised
 # note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
 # So there is unique minimum value to the problem where the mean lies on a line.
+# @returns If the method doesn't converge then the negative of the weights is returned
 # @param ms A single sample of symmetric tensors
 # @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" range gives a range of values of c, passed to `optimize()`
 opt_el.test <- function(ms, mu, maxit = 25){
@@ -184,17 +183,32 @@ opt_el.test <- function(ms, mu, maxit = 25){
   lower = attr(mu, "c_range")[["min"]], 
   upper = attr(mu, "c_range")[["max"]]) 
   scelres <- emplik(ms, bestmult$minimum*vech(mu), itermax = maxit)
-  if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
   wts <- as.vector(scelres$wts) * nrow(ms) #the multiple here is to match the weights put out by emplik::el.test()
-  # check result with el.test
-  elres <- emplik::el.test(ms, 
-                           bestmult$minimum*vech(mu), 
-                           lam = as.vector(scelres$lam),
-                           maxit = maxit)
-  if (!isTRUE(all.equal(elres$wts, wts))){
-    warning("Weights from emplik() differ from check by emplik::el.test()")
+
+  # check and warn about results
+  if (!isTRUE(scelres$converged)){
+    wts <- -1 * wts
   }
   wts
+}
+
+# A function for checking that a list of weights is okay
+wtsokay <- function(wts){
+  if (any(vapply(wts, sum, FUN.VALUE = 1.3) < 0)){ #negative weights
+    warning("The proposed null mean appears to be outside the convex hull for at least one sample (emplik() did not converge)" )
+    return(FALSE)
+  }
+  if (any(vapply(wts, sum, FUN.VALUE = 1.3) < 0.5)){# weights sum to zero
+    warning("The proposed null mean appears to be outside the convex hull for at least one sample (empirical likelihood weights are zero)")
+    return(FALSE)
+  }  
+  lapply(wts, function(w){
+    if (abs(length(w) - sum(w)) > 0.9){
+      # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). 
+      warning(sprintf("Empirical likelihood weights sum to %0.1f, which suggests the proposed null mean is on a face of the convex hull.", sum(w)))
+    }
+  })
+  return(TRUE)
 }
 
 

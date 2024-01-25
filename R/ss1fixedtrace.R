@@ -77,6 +77,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
 #' @param maxit Passed to [`el.test()`]
 #' @details The number of iterations in [`el.test()`] can have a big influence on the result, and it seems the mean with the best empirical likelihood can often be on the boundary of the convex hull of the data.
 #' `maxit = 25` is too small. Perhaps `maxit = 1000`?
+#' *There are too many different warnings about convex hull and empirical likelihood.*
 #' @export
 test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   x <- as.mstorsst(x)
@@ -96,15 +97,7 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
   
   #check the weights
-  lapply(wts, function(w){
-    if (abs(length(w) - sum(w)) > 0.9){
-      # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). 
-      warning(sprintf("Empirical likelihood weights sum to %0.1f, which suggests the mean is on a face of the convex hull.", sum(w)))
-    }
-  })
-  if (any(vapply(wts, sum, FUN.VALUE = 1.3) < 0.5)){
-    warning("Empirical likelihood finds mean is outside the convex hull of a sample.")
-    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is outside convex hull and with pval of zero, t0 of +infty
+  if (!wtsokay(wts)){
     return(list(
       pval = 0,
       t0 = t0,
