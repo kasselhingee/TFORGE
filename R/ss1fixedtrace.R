@@ -6,7 +6,7 @@
 stat_ss1fixedtrace <- function(x, evals = NULL){
   x <- as.mstorsst(x)
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
-  stopifnot(all(dim(x[[1]][[1]]) == c(3,3)))
+  stopifnot(ncol(x[[1]]) == 6) #corresponds to 3x3 matrix
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
   
@@ -56,7 +56,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
     }
   } else {
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
-    if (!isTRUE(all.equal(sum(d0), sum(diag(x[[1]][[1]]))))){stop("Provided evals do not sum to trace of observations.")}
+    if (!isTRUE(all.equal(sum(d0), sum(diag(invvech(x[[1]][1, ])))))){stop("Provided evals do not sum to trace of observations.")}
   }
   
   # now the statistic (40) for each sample:

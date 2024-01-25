@@ -57,18 +57,6 @@ as.sst <- function(x, ...){
 }
 
 #' @export
-`[[.sst` <- function(x, i, j, ...){
-  stopifnot(is.vector(i))
-  class(x) <- "matrix" #so it uses the default array indexing
-  if (length(i) == 2){
-    return(invvech(x[i[[1]], ])[ i[[2]] ])
-  }
-  if (length(i) == 1){
-    return(invvech(x[i, ]))
-  }
-}
-
-#' @export
 length.sst <- function(x){
   nrow(x)
 }

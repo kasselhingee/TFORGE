@@ -27,7 +27,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
 
-  H <- helmertsub(ncol(mss[[1]][[1]]))
+  H <- helmertsub(ncol(invech(mss[[1]][1,]))
   avs <- lapply(mss, mmean)
   ess <- lapply(avs, function(av){eigen_desc(av)})
   ns <- lapply(mss, length)
@@ -48,12 +48,12 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
     precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
     d0proj <- drop(solve_NAonerror(sum_precisions, NAonerror = TRUE) %*% sum_precisionsbyevals)
-    d0 <- (t(H) %*% d0proj) + mean(diag(mss[[1]][[1]])) #convert projected evals back to p-dimensions, then shift to give correct trace.
+    d0 <- (t(H) %*% d0proj) + mean(diag(invvech(mss[[1]][1, ]))) #convert projected evals back to p-dimensions, then shift to give correct trace.
     if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
       d0 <- descendingordererror(d0)
     }
   } else {
-    if (!isTRUE(all.equal(sum(evals), sum(diag(mss[[1]][[1]]))))){stop("Provided evals do not sum to trace of observations.")}
+    if (!isTRUE(all.equal(sum(evals), sum(diag(invvech(mss[[1]][1, ])))))){stop("Provided evals do not sum to trace of observations.")}
     d0 <- sort(evals, decreasing = TRUE)
   }
   
@@ -175,7 +175,7 @@ normtrace <- function(m){
 }
 
 cov_evals_ft <- function(ms, H = NULL, evecs = NULL, av = NULL){
-  if (is.null(H)){H <- helmertsub(ncol(ms[[1]]))}
+  if (is.null(H)){H <- helmertsub(ncol(ms[1, ]))}
   H %*% cov_evals_est(ms, evecs = evecs, av = av) %*% t(H)
 }
 
