@@ -13,15 +13,13 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
   exargs <- list(...)
   if ("NAonerror" %in% names(formals(stat))){ exargs <- c(exargs, NAonerror = NAonerror) }
   if (inherits(x, "mst")){
-    if (inherits(stdx[[1]][[1]], "numeric")){
-      #stdx is weights for an mst because first element of first sample is not a matrix/array, but just a numeric
+    if ((!all(dim(stdx[[1]]) == dim(x[[1]])))){ #sample with weights cos stdx isn't the same shape as x
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(x, prob = stdx)), exargs)), simplify = FALSE)
     } else {
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(stdx)), exargs)), simplify = FALSE)
     }
   } else if (inherits(x, "sst")){
-    if (inherits(stdx[[1]], "numeric")){
-      #stdx is weights for an sst because first element sample is not a matrix/array, but just a numeric
+    if (!all(dim(stdx) == dim(x))){#sample with weights cos stdx isn't the same shape as x
       nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(x, prob = stdx, replace = TRUE)), exargs)), simplify = FALSE)
     } else {
       nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(stdx, replace = TRUE)), exargs)), simplify = FALSE)
