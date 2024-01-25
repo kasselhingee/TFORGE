@@ -19,8 +19,8 @@ test_that("OIinnerprod fast matches slow method", {
   s = 2
   tau = 1/4
   p = 3
-  A <- invvech(rsymm_norm(1, mean = diag(3))[1, ])[[1]]
-  B <- invvech(rsymm_norm(1, mean = diag(3))[1, ])[[1]]
+  A <- invvech(rsymm_norm(1, mean = diag(3))[1, ])
+  B <- invvech(rsymm_norm(1, mean = diag(3))[1, ])
   
   covmat <- covOI(3, s, tau, vectorisor = "vecd")
   slowinnprod <- drop(vecd(A) %*% solve(covmat) %*% vecd(B))
