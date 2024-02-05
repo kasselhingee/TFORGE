@@ -101,5 +101,6 @@ standardise_specifiedevals <- function(ms, evals){
   av_evecs <- av_eigenspace$vectors
   cen <- vech(av_evecs %*% diag(evals) %*% t(av_evecs))
   newms <- t(t(errs) + cen)
+  class(newms) <- c("sst", class(newms))
   return(newms)
 }
