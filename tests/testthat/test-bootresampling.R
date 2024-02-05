@@ -13,10 +13,10 @@ test_that("multisample() listens to weights and gives correct sizes", {
   newY <- multisample(Ysamples, prob = w)
   expect_equal(lapply(newY, "[[", 1), lapply(Ysamples, "[[", 1))
   expect_equal(lapply(newY, "[[", 5), lapply(Ysamples, "[[", 1))
-  expect_equal(lapply(newY, length), lapply(Ysamples, length))
+  expect_equal(lapply(newY, nrow), lapply(Ysamples, nrow))
   
   set.seed(315)
   newY <- multisample(Ysamples)
-  expect_equal(lapply(newY, length), lapply(Ysamples, length))
+  expect_equal(lapply(newY, nrow), lapply(Ysamples, nrow))
   expect_error(expect_equal(lapply(newY, "[[", 1), lapply(Ysamples, "[[", 1)))
 })
