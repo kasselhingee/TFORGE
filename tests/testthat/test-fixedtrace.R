@@ -179,7 +179,7 @@ test_that("hasfixedtrace() gives TRUE or FALSE values", {
     Y
     }, simplify = FALSE)
   
-  expect_equal(sum(diag(invvech(Ysamples[[1]][1, ]))), const)
+  expect_equal(sum(diag(Ysamples[[1]][[1]])), const)
 
   expect_true(hasfixedtrace(as.mstorsst(Ysamples)))
   expect_true(hasfixedtrace(as.sst(Ysamples[[1]])))

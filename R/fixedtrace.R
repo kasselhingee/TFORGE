@@ -9,7 +9,6 @@
 hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
   if (inherits(x, "mst")){x <- do.call(rbind, x)}
-  else {class(x) <- "matrix"}
   diagels <- isondiag_vech(x[1, ])
   traces <- rowSums(x[, diagels])
   tracerange <- range(traces)
@@ -30,7 +29,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   H <- helmertsub(dimfromvech(mss[[1]][1,]))
   avs <- lapply(mss, mmean)
   ess <- lapply(avs, function(av){eigen_desc(av)})
-  ns <- lapply(mss, length)
+  ns <- lapply(mss, nrow)
   
   #first get all eval precision matrices 
   ## below could be faster by passing evecs to cov_evals_est()
@@ -102,7 +101,6 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   
   # compute corresponding weights that lead to emp.lik.
   wts <- mapply(function(ms, nullmean){
-    class(ms) <- c("matrix", "array")
     if (sc){
       scelres <- emplik(ms, vech(nullmean), itermax = maxit)
       if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
@@ -163,7 +161,6 @@ projtrace_sst <- function(ms){
 #' m A symmetric matric.
 normtrace <- function(m){
   if (inherits(m, "sst")){
-    class(m) <- "matrix"
     diagels <- isondiag_vech(m[1, ])
     newm <- m / rowSums(m[, diagels])
     class(newm) <- c("sst", class(m))
