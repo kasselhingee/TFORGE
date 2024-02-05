@@ -76,7 +76,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
 #' @describeIn stat_fixedtrace Bootstrap test
 #' @inheritParams stat_ss1fixedtrace
 #' @export
-test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
+test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   x <- as.mstorsst(x)
   stopifnot(hasfixedtrace(x))
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
@@ -101,15 +101,9 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   
   # compute corresponding weights that lead to emp.lik.
   wts <- mapply(function(ms, nullmean){
-    if (sc){
-      scelres <- emplik(ms, vech(nullmean), itermax = maxit)
-      if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
-      wts <- as.vector(scelres$wts) * nrow(ms)
-    } else {
-      elres <- emplik::el.test(ms, vech(nullmean), maxit = maxit)
-      if (elres$nits == maxit){warning(paste("Reached maximum iterations", maxit, "in el.test() at best null mean."))}
-      wts <- elres$wts
-    }
+    scelres <- emplik(ms, vech(nullmean), itermax = maxit)
+    if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
+    wts <- as.vector(scelres$wts) * nrow(ms)
     wts
   }, ms = x, nullmean = nullmeans, SIMPLIFY = FALSE)
 
