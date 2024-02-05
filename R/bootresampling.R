@@ -19,7 +19,7 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(stdx)), exargs)), simplify = FALSE)
     }
   } else if (inherits(x, "sst")){
-    if (inherits(stdx[[1]], "numeric")){#sample with weights cos stdx isn't the same shape as x
+    if (inherits(stdx, "numeric")){#sample with weights cos stdx isn't the same shape as x
       nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(x, prob = stdx, replace = TRUE)), exargs)), simplify = FALSE)
     } else {
       nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(stdx, replace = TRUE)), exargs)), simplify = FALSE)
