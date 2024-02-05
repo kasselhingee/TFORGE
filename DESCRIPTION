@@ -1,6 +1,6 @@
 Package: PivotalBootstrapMatrixData
 Title: Pivotal Bootstrap Hypothesis Tests for Matrix Data
-Version: 0.0.0.26
+Version: 0.0.1.00
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
