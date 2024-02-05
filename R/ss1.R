@@ -83,7 +83,7 @@ solve_NAonerror <- function(A, NAonerror){
 }
 
 #' @describeIn stat_ss1 Bootstrap test.
-#' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik::el.test()]`.
+#' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik()]`.
 #' @details The test did not perform well when the dispersion was very high (e.g. Normal entries with mean diagonal c(3,2,1) and variance of 1) - more studying needed.
 #' @export
 test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
@@ -166,7 +166,7 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
 
 #function finds the best c and weights such that weighted average of data is c.mu and 
 #empirical likelihood maximised
-# note that the profile likelihood function (result of el.test) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
+# note that the profile likelihood function (result of emplik()) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
 # So there is unique minimum value to the problem where the mean lies on a line.
 # @returns If the method doesn't converge then the negative of the weights is returned
 # @param ms A single sample of symmetric tensors

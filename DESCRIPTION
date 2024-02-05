@@ -8,7 +8,6 @@ Description: What the package does (one paragraph).
 Imports:
   mvtnorm,
   purrr,
-  emplik,
   Rcpp (>= 1.0.11),
   Rdpack
 Suggests:
