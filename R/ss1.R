@@ -68,20 +68,6 @@ amaral2007Lemma1 <- function(m){
   return(A)
 }
 
-# wrapper around solve that returns a matrix of NA if couldn't solve
-solve_error <- function(A){
-  erroraction <- function(e){
-    if (!grepl("singular", e$message)){stop(e)}
-    stop(structure(
-      class = c("matrixsingular", "error", "condition"),
-      list(message = e$message,
-           call = e$call)
-    ))
-  }
-  out <- tryCatch(solve(A), error = erroraction)
-  out
-}
-
 #' @describeIn stat_ss1 Bootstrap test.
 #' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik()]`.
 #' @details The test did not perform well when the dispersion was very high (e.g. Normal entries with mean diagonal c(3,2,1) and variance of 1) - more studying needed.
