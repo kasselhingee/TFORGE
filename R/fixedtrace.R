@@ -175,7 +175,7 @@ normtrace <- function(m){
 }
 
 cov_evals_ft <- function(ms, H = NULL, evecs = NULL, av = NULL){
-  if (is.null(H)){H <- helmertsub(ncol(ms[1, ]))}
+  if (is.null(H)){H <- helmertsub(dimfromvech(ms[1, ]))}
   H %*% cov_evals_est(ms, evecs = evecs, av = av) %*% t(H)
 }
 
