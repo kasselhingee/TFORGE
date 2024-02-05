@@ -42,7 +42,7 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL, NAonerror = FALSE)
   persamplestat <- mapply(function(n, d1, V){
     n * t(d1 - d0) %*% solve_NAonerror(V, NAonerror = NAonerror) %*% (d1 - d0)
   },
-  n = lapply(x, length),
+  n = lapply(x, nrow),
   d1 = avevals,
   V = Vs,
   SIMPLIFY = FALSE)

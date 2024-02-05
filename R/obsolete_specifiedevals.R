@@ -10,7 +10,7 @@ NULL
 #' @param evecs Column vectors of eigenvalues, if supplied, the eigenvectors are considered fixed. In this case the \eqn{\delta_1} in the statistic is the diagonal of
 stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
   evals <- sort(evals, decreasing = TRUE)
-  n <- length(ms)
+  n <- nrow(ms)
   av <- mmean(as.sst(ms))
   if (is.null(evecs)){
     av_eigenspace <- eigen_desc(av, symmetric = TRUE)

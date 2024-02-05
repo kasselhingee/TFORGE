@@ -71,7 +71,7 @@ Omega_eval <- function(n1, n2, U1, U2){
 #ms1 and ms2 are the two samples
 #M1 and M2 are the means
 #C1 and C2 are the covariances (Schwartzman style)
-#n1 and n2 are the lengths
+#n1 and n2 are the sample sizes
 S_anv <- function(n1, n2, M1, M2, C1, C2){
   # cov1 <- S_mcovar(merr(ms1))
   # cov2 <- S_mcovar(merr(ms2))
@@ -133,11 +133,13 @@ stat_schwartzman_eval <- function(ms1, ms2){
 # @param M2 population expectation for second population
 #' @export
 statstar_schwartzman_eval <- function(ms1, ms2, M1, M2){
+  ms1 <- as.sst(ms1)
+  ms2 <- as.sst(ms2)
   Z1 <- mmean(ms1) - M1
   Z2 <- mmean(ms2) - M2
   U1 <- eigen_desc(M1)$vectors
   U2 <- eigen_desc(M2)$vectors
-  Omega <- Omega_eval(length(ms1), length(ms2), U1, U2)
+  Omega <- Omega_eval(nrow(ms1), nrow(ms2), U1, U2)
   Tstatstar <- t(c(vecd(Z1), vecd(Z2))) %*% Omega %*% c(vecd(Z1), vecd(Z2))
   return(drop(Tstatstar))
 }

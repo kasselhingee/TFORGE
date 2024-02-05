@@ -54,7 +54,7 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL){
   xi <- xiget(es$values, mult, idxs)
 
   C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
-  covar <- xicovar(mult, idxs, es$vectors, C0/length(ms))
+  covar <- xicovar(mult, idxs, es$vectors, C0/nrow(ms))
 
   return(drop(t(xi) %*% solve_NAonerror(covar, NAonerror) %*% xi))
 }
