@@ -71,6 +71,7 @@ samplesst <- function(x, prob = NULL, replace = TRUE){
   stopifnot(inherits(x, "sst"))
   idx <- sample.int(nrow(x), prob = prob, replace = replace)
   out <- x[idx, ]
+  class(out) <- c("sst", class(out))
   return(out)
 }
 
