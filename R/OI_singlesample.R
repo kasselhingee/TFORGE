@@ -9,7 +9,7 @@
 #' @returns A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
 #' @export
 estimateOIparams <- function(ms, Mhat, tau = NULL){
-  class(ms) <- "matrix"
+  ms <- as.sst(ms)
   p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
   q <- p * (p+1)/2
   Ybar <- colMeans(ms)
@@ -101,7 +101,6 @@ OIinnerprod <- function(A, B, s, tau){
 
 # Avecs and Bvecs in vech representation, rowwise between each row of A to each row of B
 OIinnerprod_sst <- function(Avecs, Bvecs, s, tau){
-  class(Avecs) <- class(Bvecs) <- "matrix"
   stopifnot(ncol(Avecs) == ncol(Bvecs))
   stopifnot(nrow(Avecs) == nrow(Bvecs))
   isdiag <- isondiag_vech(ncol(Avecs))

@@ -172,7 +172,6 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
 # @param ms A single sample of symmetric tensors
 # @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" range gives a range of values of c, passed to `optimize()`
 opt_el.test <- function(ms, mu, maxit = 25){
-  class(ms) <- "matrix"
   if (attr(mu, "c_range")[["min"]] > attr(mu, "c_range")[["max"]]){
     return(rep(0, nrow(ms))) #no pluasible values of c - avoids error triggered in optimise
   }
@@ -224,7 +223,6 @@ normL2evals <- function(m){
 # ms is an sst
 normL2evals_sst <- function(ms){
   if (ncol(ms) == 6){#use fast method
-    class(ms) <- NULL
     I2 <- ms[, 1] * ms[, 4] + ms[, 4] * ms[, 6] + ms[,1] * ms[,6] -
       ms[, 2]^2 - ms[, 5]^2 - ms[,3]^2
     I1 <- ms[, 1] + ms[, 4] + ms[, 6] #trace

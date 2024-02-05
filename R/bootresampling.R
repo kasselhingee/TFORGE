@@ -42,7 +42,7 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
     B = B,
     nullt_messages = messages
   )
-  class(out) <- c(class(out), "tensorboot")
+  class(out) <- c("tensorboot", class(out))
   return(out)
 }
 
@@ -54,14 +54,14 @@ bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
 multisample <- function(x, prob = NULL){
   if (is.null(prob)){
     out <- lapply(x, samplesst, replace = TRUE)
-    class(out) <- c(class(out), "mst")
+    class(out) <- c("mst", class(out))
     return(out)
   }
   else {
     stopifnot(length(prob) == length(x))
     stopifnot(all(vapply(x, nrow, 2) == vapply(prob, length, 2)))
     out <- mapply(samplesst, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
-    class(out) <- c(class(out), "mst")
+    class(out) <- c("mst", class(out))
     return(out)
   }
 }
@@ -70,9 +70,7 @@ multisample <- function(x, prob = NULL){
 samplesst <- function(x, prob = NULL, replace = TRUE){
   stopifnot(inherits(x, "sst"))
   idx <- sample.int(nrow(x), prob = prob, replace = replace)
-  class(x) <- "matrix"
   out <- x[idx, ]
-  class(out) <- c("sst", class(out))
   return(out)
 }
 

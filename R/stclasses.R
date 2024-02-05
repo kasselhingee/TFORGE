@@ -13,20 +13,20 @@ as.mstorsst <- function(x, ...){
   if (inherits(x, "matrix")){return(as.sst(x))}
   if (inherits(x, "list")){
     if (all(vapply(x, inherits, "sst", FUN.VALUE = FALSE))){ #sst objects already :)
-      class(x) <- c(class(x), "mst")
+      class(x) <- c("mst", class(x))
       return(x)
       }
     if (all(vapply(x, inherits, "list", FUN.VALUE = FALSE))){ #a list of lists: possible multisample
       x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
       dims <- vapply(x, ncol, FUN.VALUE = 3)
       if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
-      class(x) <- c(class(x), "mst")
+      class(x) <- c("mst", class(x))
       return(x)
     }
     # if not a list of lists, then assume a list of matrices
     if (all(vapply(x, inherits, "matrix", FUN.VALUE = FALSE))){
       out <- lapply(x, as.sst)
-      class(out) <- c(class(out), "mst")
+      class(out) <- c("mst", class(out))
       return(out)}
   }
   stop("Could not convert to mst or sst.")
