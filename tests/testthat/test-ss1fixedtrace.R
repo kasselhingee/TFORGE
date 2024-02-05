@@ -10,7 +10,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL with fixed evecs is n
   }
   vals <- replicate(1000, {
     # choose a fixed set of eigenvectors
-    evecs <- eigen_desc(rsymm_norm(1, mean = diag(1, 3))[[1]])$vectors
+    evecs <- eigen_desc(invvech(rsymm_norm(1, mean = diag(1, 3))[1, ]))$vectors
     evals <- revals(50, m = c(1/sqrt(2), 0, -1/sqrt(2)))
     Y <- apply(evals, 1, function(v){
       out <- evecs %*% diag(v) %*% t(evecs)
@@ -54,7 +54,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is 
   vals <- replicate(1000, {
     Ysamples <- replicate(2, {
       # choose a fixed set of eigenvectors
-      evecs <- eigen_desc(rsymm_norm(1, mean = diag(1, 3))[[1]])$vectors
+      evecs <- eigen_desc(invvech(rsymm_norm(1, mean = diag(1, 3))[1, ]))$vectors
       evals <- revals(50, m = c(1/sqrt(2), 0, -1/sqrt(2)))
       Y <- apply(evals, 1, function(v){
         out <- evecs %*% diag(v) %*% t(evecs)
