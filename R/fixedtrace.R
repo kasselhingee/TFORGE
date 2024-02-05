@@ -114,9 +114,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   }, ms = x, nullmean = nullmeans, SIMPLIFY = FALSE)
 
   #check the weights
-  wtsums_discrepacies <- vapply(wts, function(x){abs(length(x) - sum(x))}, FUN.VALUE = 0.1)
-  if (any(wtsums_discrepacies > 1E-2)){
-    # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). Assume proposed mean is close or outside convex hull and with pval of zero, t0 of +infty
+  if (!wtsokay(wts)){
     return(list(
       pval = 0,
       t0 = t0,
@@ -125,7 +123,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
       B = NA
     ))
   }
-  
+
   res <- bootresampling(x, wts, 
                         stat = stat_fixedtrace,
                         B = B,
@@ -163,7 +161,6 @@ normtrace <- function(m){
   if (inherits(m, "sst")){
     diagels <- isondiag_vech(m[1, ])
     newm <- m / rowSums(m[, diagels])
-    class(newm) <- c("sst", class(m))
   } else {
     tr <- sum(diag(m))
     newm <- m/tr
