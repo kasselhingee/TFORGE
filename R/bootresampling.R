@@ -4,14 +4,23 @@
 #' @param stat Function to compute the statistic
 #' @param B The number of bootstrap samples to use
 #' @param ... Passed to `stat`
-#' @param NAonerror Passed to `stat` if `stat` has a formal argument called `NAonerror`. If `FALSE` then bootstrap resamples that lead to matrix inversion errors will return a statistic value of `NA`. `NAonerror` is *not* passed to the call of `stat` applied to the original data `x`.
+#' @details Resamples that lead to an error will have NA values with error message returned in the `nullt_messages` slot.
+#' @return
+#' A list of
+#'  + `pval` the given p-value
+#'  + `t0` the statistic for the observations `x`,
+#'  + `nullt` The statistics for the resampled (and possibly tranformed) data
+#'  + `stdx` The `stdx` passed into `bootresampling()`
+#'  + `B` The number of resamples requested
+#'  + `nullt_messages` Any error messages for the corresponding resample
+#'
+#' The object has bespoke class `tensorboot` for easy use of `print()`
 #' @export
-bootresampling <- function(x, stdx, stat, B, NAonerror = TRUE, ...){
+bootresampling <- function(x, stdx, stat, B,  ...){
   stopifnot(is_single_whole_number(B))
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
   exargs <- list(...)
-  if ("NAonerror" %in% names(formals(stat))){ exargs <- c(exargs, NAonerror = NAonerror) }
   if (inherits(x, "mst")){
     if (inherits(stdx[[1]], "numeric")){ #stdx is a vector of weights
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(x, prob = stdx)), exargs)), simplify = FALSE)

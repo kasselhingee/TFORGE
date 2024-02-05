@@ -22,7 +22,7 @@ test_multiplicity <- function(ms, mult, B){
 #' @describeIn multiplicity Test statistic (including uniformly random rotation of eigenvectors associated with each eigenvalue)
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
 #' @export
-stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL){
+stat_multiplicity <- function(ms, mult, evecs = NULL){
   av <- mmean(ms)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
@@ -56,7 +56,7 @@ stat_multiplicity <- function(ms, mult, NAonerror = FALSE, evecs = NULL){
   C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
   covar <- xicovar(mult, idxs, es$vectors, C0/nrow(ms))
 
-  return(drop(t(xi) %*% solve_NAonerror(covar, NAonerror) %*% xi))
+  return(drop(t(xi) %*% solve_NAonerror(covar) %*% xi))
 }
 
 #this function turns the qYbarq into vectors perpendicular to 1,1,1,1,1,1...

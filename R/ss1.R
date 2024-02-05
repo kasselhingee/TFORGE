@@ -1,6 +1,6 @@
 #' @title Methods for testing eigenvalues with sum of squares = 1
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
-stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
+stat_ss1 <- function(x, evals = NULL){
   x <- as.mstorsst(x)
   if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
@@ -21,7 +21,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
   # now for the eigenvalue for the null
   if (is.null(evals)){
     #estimate according to (36)
-    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve_NAonerror(Omega, NAonerror) %*% Delta},
+    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve_NAonerror(Omega) %*% Delta},
                    Delta = Deltas,
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
@@ -41,7 +41,7 @@ stat_ss1 <- function(x, evals = NULL, NAonerror = FALSE){
   
   # now the statistic (32) for each sample:
   persamplestat <- mapply(function(d2, Delta, Omega, n){
-    n * t(d2/sqrt(sum(d2^2)) - d0) %*% t(Delta) %*% solve_NAonerror(Omega, NAonerror) %*% Delta %*% (d2/sqrt(sum(d2^2)) - d0)
+    n * t(d2/sqrt(sum(d2^2)) - d0) %*% t(Delta) %*% solve_NAonerror(Omega) %*% Delta %*% (d2/sqrt(sum(d2^2)) - d0)
   },
   d2 = evalsav, #not yet normalised as in (32)
   Delta = Deltas,
@@ -69,7 +69,7 @@ amaral2007Lemma1 <- function(m){
 }
 
 # wrapper around solve that returns a matrix of NA if couldn't solve
-solve_NAonerror <- function(A, NAonerror){
+solve_NAonerror <- function(A){
   erroraction <- function(e){
     if (!grepl("singular", e$message)){stop(e)}
     stop(structure(
@@ -93,7 +93,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   
-  t0 <- stat_ss1(mss, evals = evals, NAonerror = FALSE)
+  t0 <- stat_ss1(mss, evals = evals)
   d0 <- attr(t0, "null_evals")
   
   # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0)

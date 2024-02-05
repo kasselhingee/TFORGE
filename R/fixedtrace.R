@@ -19,7 +19,7 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 #' @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
 #' @export
-stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
+stat_fixedtrace <- function(x, evals = NULL){
   x <- as.mstorsst(x)
   if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
   else {mss <- x}
@@ -34,7 +34,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
   #first get all eval precision matrices 
   ## below could be faster by passing evecs to cov_evals_est()
   ## stop using solve_NAonerror, or atleast the parameter
-  precisions <- mapply(function(ms, evecs, av){solve_NAonerror(cov_evals_ft(ms, H = H, evecs = evecs, av = av), NAonerror = NAonerror)},
+  precisions <- mapply(function(ms, evecs, av){solve_NAonerror(cov_evals_ft(ms, H = H, evecs = evecs, av = av))},
                        ms = mss,
                        evecs = lapply(ess, "[[", "vectors"),
                        av = avs,
@@ -46,7 +46,7 @@ stat_fixedtrace <- function(x, evals = NULL, NAonerror = FALSE){
     sum_precisions <- purrr::reduce(precisions, `+`)
     precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
-    d0proj <- drop(solve_NAonerror(sum_precisions, NAonerror = TRUE) %*% sum_precisionsbyevals)
+    d0proj <- drop(solve_NAonerror(sum_precisions) %*% sum_precisionsbyevals)
     d0 <- (t(H) %*% d0proj) + mean(diag(invvech(mss[[1]][1, ]))) #convert projected evals back to p-dimensions, then shift to give correct trace.
     if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
       d0 <- descendingordererror(d0)
@@ -89,7 +89,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   }
 
 
-  t0 <- stat_fixedtrace(x, evals = evals, NAonerror = FALSE)
+  t0 <- stat_fixedtrace(x, evals = evals)
   estevals <- attr(t0, "null_evals")
   
   # compute means that satisfy the NULL hypothesis (eigenvalues equal to estevals)
