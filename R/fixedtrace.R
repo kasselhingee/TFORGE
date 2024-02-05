@@ -33,8 +33,8 @@ stat_fixedtrace <- function(x, evals = NULL){
   
   #first get all eval precision matrices 
   ## below could be faster by passing evecs to cov_evals_est()
-  ## stop using solve_NAonerror, or atleast the parameter
-  precisions <- mapply(function(ms, evecs, av){solve_NAonerror(cov_evals_ft(ms, H = H, evecs = evecs, av = av))},
+  ## stop using solve_error, or atleast the parameter
+  precisions <- mapply(function(ms, evecs, av){solve_error(cov_evals_ft(ms, H = H, evecs = evecs, av = av))},
                        ms = mss,
                        evecs = lapply(ess, "[[", "vectors"),
                        av = avs,
@@ -46,7 +46,7 @@ stat_fixedtrace <- function(x, evals = NULL){
     sum_precisions <- purrr::reduce(precisions, `+`)
     precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
-    d0proj <- drop(solve_NAonerror(sum_precisions) %*% sum_precisionsbyevals)
+    d0proj <- drop(solve_error(sum_precisions) %*% sum_precisionsbyevals)
     d0 <- (t(H) %*% d0proj) + mean(diag(invvech(mss[[1]][1, ]))) #convert projected evals back to p-dimensions, then shift to give correct trace.
     if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
       d0 <- descendingordererror(d0)

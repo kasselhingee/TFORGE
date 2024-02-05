@@ -21,7 +21,7 @@ stat_ss1 <- function(x, evals = NULL){
   # now for the eigenvalue for the null
   if (is.null(evals)){
     #estimate according to (36)
-    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve_NAonerror(Omega) %*% Delta},
+    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve_error(Omega) %*% Delta},
                    Delta = Deltas,
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)
@@ -41,7 +41,7 @@ stat_ss1 <- function(x, evals = NULL){
   
   # now the statistic (32) for each sample:
   persamplestat <- mapply(function(d2, Delta, Omega, n){
-    n * t(d2/sqrt(sum(d2^2)) - d0) %*% t(Delta) %*% solve_NAonerror(Omega) %*% Delta %*% (d2/sqrt(sum(d2^2)) - d0)
+    n * t(d2/sqrt(sum(d2^2)) - d0) %*% t(Delta) %*% solve_error(Omega) %*% Delta %*% (d2/sqrt(sum(d2^2)) - d0)
   },
   d2 = evalsav, #not yet normalised as in (32)
   Delta = Deltas,
@@ -69,7 +69,7 @@ amaral2007Lemma1 <- function(m){
 }
 
 # wrapper around solve that returns a matrix of NA if couldn't solve
-solve_NAonerror <- function(A){
+solve_error <- function(A){
   erroraction <- function(e){
     if (!grepl("singular", e$message)){stop(e)}
     stop(structure(
