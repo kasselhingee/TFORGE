@@ -18,9 +18,8 @@ as.mstorsst <- function(x, ...){
       }
     if (all(vapply(x, inherits, "list", FUN.VALUE = FALSE))){ #a list of lists: possible multisample
       x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
-      dims <- do.call(rbind, lapply(x, function(y){dim(y[[1]])}))
-      if (length(unique(dims[,2])) != 1){stop("Matrices in samples have different sizes.")}
-      if (length(unique(dims[,2])) != 1){stop("Matrices in samples have different sizes.")}
+      dims <- vapply(x, ncol, FUN.VALUE = 3)
+      if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
       class(x) <- c(class(x), "mst")
       return(x)
     }

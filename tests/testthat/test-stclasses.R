@@ -1,4 +1,4 @@
-test_that("as.mstorsst()",{
+test_that("as.mstorsst() on list of sst",{
   set.seed(134)
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -9,6 +9,19 @@ test_that("as.mstorsst()",{
   
   expect_error(as.sst(Ysamples))
   expect_error(as.sst(matrix(1, 2, 5)), "Number")
+})
+
+test_that("as.mstorsst() on list of list of matrices", {
+  set.seed(13)
+  Ysamples <- replicate(5, {
+    Y <- rsymm_norm(50, diag(c(3,2,1)))
+    Y <- apply(Y, 1, 
+               function(vec) {m <- invvech(vec)},
+               simplify = FALSE)
+    Y
+    }, simplify = FALSE)
+  
+  expect_s3_class(as.mstorsst(Ysamples), "mst")
 })
 
 test_that("matrix generics work for sst", {
