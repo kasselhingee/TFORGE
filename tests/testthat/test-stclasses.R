@@ -22,6 +22,54 @@ test_that("as.mstorsst() on list of list of matrices", {
     }, simplify = FALSE)
   
   expect_s3_class(as.mstorsst(Ysamples), "mst")
+  
+  Ysamples <- list({
+    Y <- rsymm_norm(50, diag(c(3,2,1)))
+    Y <- apply(Y, 1, 
+               function(vec) {m <- invvech(vec)},
+               simplify = FALSE)
+    Y
+    }, {
+    Y <- rsymm_norm(50, diag(c(3, 3,2,1)))
+    Y <- apply(Y, 1, 
+               function(vec) {m <- invvech(vec)},
+               simplify = FALSE)
+    Y})
+  
+  expect_error(as.mstorsst(Ysamples), "different")
+})
+
+test_that("as.mstorsst() on list of sst-like matrices", {
+  set.seed(13)
+  Ysamples <- replicate(5, {
+    Y <- rsymm_norm(50, diag(c(3,2,1)))
+    class(Y) <- "matrix"
+    Y
+    }, simplify = FALSE)
+  
+  expect_s3_class(as.mstorsst(Ysamples), "mst")
+  
+  Ysamples <- list({
+    Y <- rsymm_norm(50, diag(c(3,2,1)))
+    class(Y) <- "matrix"
+    Y
+    }, {
+    Y <- rsymm_norm(50, diag(c(3, 3,2,1)))
+    class(Y) <- "matrix"
+    Y})
+  
+  expect_error(as.mstorsst(Ysamples), "different")
+})
+
+
+test_that("as.mstorsst() on a matrix-like sst", {
+  set.seed(13)
+  Y <- rsymm_norm(50, diag(c(3,2,1)))
+  class(Y) <- "matrix"
+  Ysst <- as.mstorsst(Y)
+  expect_s3_class(Ysst, "sst")
+  expect_equal(nrow(Ysst), nrow(Y))
+  expect_equal(ncol(Ysst), ncol(Y))
 })
 
 test_that("matrix generics work for sst", {
