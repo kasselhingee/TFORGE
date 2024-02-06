@@ -72,6 +72,13 @@ test_that("as.mstorsst() on a matrix-like sst", {
   expect_equal(ncol(Ysst), ncol(Y))
 })
 
+test_that("as.sst() error when bad lists of matrices passed", {
+  expect_error(as.sst(list(diag(3), "test")))
+  expect_error(as.sst(list(rbind(diag(3), rep(1, 3)), diag(4))))
+  expect_error(as.sst(list(diag(3), diag(4))))
+  expect_error(as.sst(list(diag(3), cbind(diag(3), rep(1, 3)))))
+})
+
 test_that("matrix generics work for sst", {
   set.seed(134)
   Ysample <- matrix(runif(6*5), nrow = 5)
