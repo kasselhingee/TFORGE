@@ -29,13 +29,13 @@ test_that("stat for sst, specified evecs, has correct null distribution", {
 test_that("stat for mst has correct null distribution", {
   set.seed(13131)
   vals <- replicate(100, {
-    Ysamples <- lapply(c(2000,2000,1000,1000,1000), function(n) rsymm(n, diag(c(3,2,1))))
+    Ysamples <- lapply(c(2000,100,100,100), function(n) rsymm(n, diag(c(3,2,1))))
     stat <- stat_unconstrained(Ysamples)
     stat
   })
   
-  # qqplot(vals, y = rchisq(1000, df = (5-1)*3))
-  res <- ks.test(vals, "pchisq", df = (5-1)*3)
+  # qqplot(vals, y = rchisq(1000, df = (4-1)*3))
+  res <- ks.test(vals, "pchisq", df = (4-1)*3)
   expect_gt(res$p.value, 0.2)
 })
 
