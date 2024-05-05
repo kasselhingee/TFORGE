@@ -83,13 +83,12 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
 #' @export
 est_commonevals <- function(mss, Vs, evals){
   ns <- vapply(mss, nrow, FUN.VALUE = 1)
+  Vs <- mapply(`/`, Vs, ns, SIMPLIFY = FALSE)
   invVs <- lapply(Vs, solve_error)
-  nsbyinvVs <- mapply(`*`, ns, invVs, SIMPLIFY = FALSE)
-  sum_nsinvVs <- purrr::reduce(nsbyinvVs, `+`)
+  sum_invVs <- purrr::reduce(invVs, `+`)
   invVevals <- mapply(`%*%`, invVs, evals, SIMPLIFY = FALSE)
-  nsbyinvVevals <- mapply(`*`, ns, invVevals, SIMPLIFY = FALSE)
-  sum_nsinvVevals <- purrr::reduce(nsbyinvVevals, `+`)
-  return(drop(solve(sum_nsinvVs) %*% sum_nsinvVevals))
+  sum_invVevals <- purrr::reduce(invVevals, `+`)
+  return(drop(solve(sum_invVs) %*% sum_invVevals))
 }
 
 #' @describeIn stat_unconstrained Standardise a sample to satisfy the null hypothesis (i.e. the average has eigenvalues equal to `eval`).
