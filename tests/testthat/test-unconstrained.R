@@ -29,7 +29,7 @@ test_that("stat for sst, specified evecs, has correct null distribution", {
 test_that("stat for mst has correct null distribution", {
   set.seed(13131)
   vals <- replicate(100, {
-    Ysamples <- lapply(c(200,200,150,150,150), function(n) rsymm(n, diag(c(3,2,1))))
+    Ysamples <- lapply(c(2000,2000,1000,1000,1000), function(n) rsymm(n, diag(c(3,2,1))))
     stat <- stat_unconstrained(Ysamples)
     stat
   })
