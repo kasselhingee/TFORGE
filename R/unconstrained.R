@@ -83,7 +83,7 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
 #' @export
 est_commonevals <- function(mss, Vs, evals){
   ns <- vapply(mss, nrow, FUN.VALUE = 1)
-  Vs <- mapply(`/`, Vs, ns, SIMPLIFY = FALSE)
+  Vs <- mapply(`/`, Vs, ns, SIMPLIFY = FALSE) #covariance of  Y_i eigenvalues to covariance of mean(Y) eigenvalues
   invVs <- lapply(Vs, solve_error)
   sum_invVs <- purrr::reduce(invVs, `+`)
   invVevals <- mapply(`%*%`, invVs, evals, SIMPLIFY = FALSE)
