@@ -236,7 +236,7 @@ test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar has momen
     return(unlist(res))
     }
   set.seed(31456)
-  sims <- pbapply::pbreplicate(1E4, simulateTstatstar(n1, n2),
+  sims <- replicate(1E4, simulateTstatstar(n1, n2),
                                cl = parallel::detectCores() - 1)
   # from Casella and Berger (Statistical Inference) on Satterthwaite's approximation
   # mean of statstar is sum(lamba_i * 1) = tr(Lambda). statstar/tr(Lambda) has mean of sum(lambda_i/tr(Lambda) * 1) = 1.
@@ -288,7 +288,7 @@ test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar has momen
     return(unlist(res))
   }
   set.seed(31456)
-  sims <- pbapply::pbreplicate(1E4, simulateTstatstar(n1, n2),
+  sims <- replicate(1E4, simulateTstatstar(n1, n2),
                                cl = parallel::detectCores() - 1)
   # from Casella and Berger (Statistical Inference) on Satterthwaite's approximation
   # mean of statstar is sum(lamba_i * 1) = tr(Lambda). statstar/tr(Lambda) has mean of sum(lambda_i/tr(Lambda) * 1) = 1.

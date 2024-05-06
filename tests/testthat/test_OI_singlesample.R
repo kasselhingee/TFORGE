@@ -54,7 +54,7 @@ test_that("testOIcov has uniform p values for a null situation", {
   p = 3
   covmat <- covOI(p, s, tau, vectorisor = "vech")
   set.seed(344)
-  vals <- pbapply::pbreplicate(1E4,
+  vals <- replicate(1E4,
     {
     ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
     res <- testOIcov(ms)
@@ -92,7 +92,7 @@ test_that("test_multiplicity_OI() on null has uniform p values", {
   set.seed(13312)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- pbapply::pbreplicate(1000, {
+  vals <- replicate(1000, {
     Ysample <- rsymm_norm(1E2, diag(evals), sigma = covOI(length(evals), 1/2, 0, vectorisor = "vech"))
     test_multiplicity_OI(Ysample, mult = mult)$pval
   })
