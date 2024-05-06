@@ -50,7 +50,7 @@ test_that("singularity error activates in resampling", {
   s1 <- rsymm_norm(5, mean = diag(c(4,2,1)))
   allsim <- list( s1, s1 )
   allsim <- lapply(allsim, normtrace)
-  expect_warning(res <- test_fixedtrace(allsim, B = 10), "1 bootstrap")
+  expect_warning(res <- test_fixedtrace(allsim, B = 10), "bootstrap resamples")
   expect_gt(sum(grepl("singular", res$nullt_messages)), 0)
 })
 

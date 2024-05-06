@@ -20,8 +20,9 @@ stat_ss1 <- function(x, evals = NULL){
   
   # now for the eigenvalue for the null
   if (is.null(evals)){
-    #estimate according to (36)
-    mats <- mapply(function(Delta, Omega){t(Delta) %*% solve_error(Omega) %*% Delta},
+    #estimate according to (35)
+    mats <- mapply(function(n, Delta, Omega){n * t(Delta) %*% solve_error(Omega) %*% Delta},
+                   n = vapply(x, nrow, FUN.VALUE = 1),
                    Delta = Deltas,
                    Omega = Omega2s, SIMPLIFY = FALSE)
     mat <- purrr::reduce(mats, `+`)

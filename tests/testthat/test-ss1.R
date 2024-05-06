@@ -14,16 +14,16 @@ test_that("stat_ss1() on single sample from NULL is consistent with chisq", {
 test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
   set.seed(13)
   vals <- replicate(100, {
-  Ysamples <- replicate(5, {
-    Y <- rsymm_norm(30, diag(c(3,2,1)))
+  Ysamples <- lapply(c(2000,100,100,100), function(n){
+    Y <- rsymm_norm(n, diag(c(3,2,1)))
     Y <- normL2evals_sst(Y)
     Y
-  }, simplify = FALSE)
+  })
   stat_ss1(Ysamples)
   })
   
-  # qqplot(vals, y = rchisq(1000, df = (5-1)*2))
-  res <- ks.test(vals, "pchisq", df = (5-1)*2)
+  # qqplot(vals, y = rchisq(1000, df = (4-1)*2))
+  res <- ks.test(vals, "pchisq", df = (4-1)*2)
   expect_gt(res$p.value, 0.2)
 })
 
