@@ -125,25 +125,22 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   return(res)
 }
 
-#' Eigenvalues projected onto hyperplane through origin orthogonal to (1,1,..., 1)
+#' Diagonal elements projected onto hyperplane through origin orthogonal to (1,1,..., 1)
 #' m A symmetric matrix
 projtrace <- function(m){ #project to have trace 0
-  ess <- eigen_desc(m)
-  vec <- ess$values
-  ones <- rep(1, length(vec))/sqrt(length(vec))
-  newvec <- vec - drop(vec %*% ones) * ones
-  newm <- ess$vectors %*% diag(newvec) %*% t(ess$vectors)
-  newm <- makeSymmetric(newm) #remove computational inaccuracies
-  return(newm)
+  diags <- diag(m)
+  ones <- rep(1, length(diags))/sqrt(length(diags))
+  newdiag <- diags - drop(diags %*% ones) * ones
+  diag(m) <- newdiag
+  return(m)
 }
 projtrace_sst <- function(ms){
-  out <- apply(ms, 1, function(v){
-    m <- invvech(v)
-    vech(projtrace(m))
-  }, simplify = FALSE)
-  out <- do.call(rbind, out)
-  class(out) <- c("sst", class(out))
-  return(out)
+  diagels <- isondiag_vech(ms[1, ])
+  H <- helmert(sum(diagels))
+  projmat <- t(H) %*% diag(c(0,rep(1, sum(diagels)-1))) %*% H
+  diags <- ms[, diagels, drop = FALSE]
+  ms[, diagels] <- diags %*% t(projmat)
+  return(ms)
 }
 
 #' Whole matrix is divided by trace.
