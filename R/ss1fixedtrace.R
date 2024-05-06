@@ -31,10 +31,11 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   
   # now for the eigenvalue for the null
   if (is.null(evals)){
-    #estimate according to equation after (41)
-    mats <- mapply(function(aveval, Omega){
-      t(A0) %*% aveval %*% t(aveval) %*% A0 / drop(t(aveval) %*% t(A0) %*% Omega %*% A0 %*% aveval)
+    #estimate according to equation after (40)
+    mats <- mapply(function(n, aveval, Omega){
+      n * t(A0) %*% aveval %*% t(aveval) %*% A0 / drop(t(aveval) %*% t(A0) %*% Omega %*% A0 %*% aveval)
       },
+      n = vapply(x, nrow, FUN.VALUE = 1),
       aveval = naveval,
       Omega = Omegas,
       SIMPLIFY = FALSE)

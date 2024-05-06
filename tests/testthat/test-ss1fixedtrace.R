@@ -52,10 +52,10 @@ test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is 
     evals
   }
   vals <- replicate(1000, {
-    Ysamples <- replicate(2, {
+    Ysamples <- lapply(c(2000, 100), function(n){
       # choose a fixed set of eigenvectors
       evecs <- eigen_desc(invvech(rsymm_norm(1, mean = diag(1, 3))[1, ]))$vectors
-      evals <- revals(50, m = c(1/sqrt(2), 0, -1/sqrt(2)))
+      evals <- revals(n, m = c(1/sqrt(2), 0, -1/sqrt(2)))
       Y <- apply(evals, 1, function(v){
         out <- evecs %*% diag(v) %*% t(evecs)
         out <- makeSymmetric(out) #to remove machine differences
@@ -63,7 +63,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is 
       }, simplify = FALSE)
       Y <- as.sst(Y)
       Y
-    }, simplify = FALSE)
+    })
     stat_ss1fixedtrace(Ysamples)
   })
   # qqplot(vals, y = rchisq(1E6, df = (2-1) * 1))
@@ -71,14 +71,14 @@ test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is 
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq on n=200", {
+test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq on n=300", {
   vals <- vapply(300 + (1:1000), function(seed){
     set.seed(seed)
-    Ysamples <- replicate(2, {
-    Y <- rsymm_norm(300, diag(c(1/sqrt(2), 0, -1/sqrt(2)))) #samples of 300 are big enough, but 200 are not
+    Ysamples <- lapply(c(1000, 300), function(n){
+    Y <- rsymm_norm(n, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
     Y <- projtrace_sst(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
     Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
-    Y}, simplify = FALSE)
+    Y})
     stat_ss1fixedtrace(Ysamples)
     }, FUN.VALUE = 1.32)
   
