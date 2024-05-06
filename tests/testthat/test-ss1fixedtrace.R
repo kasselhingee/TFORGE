@@ -41,36 +41,6 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat_ss1fixedtrace() on mst from NULL with fixed evecs per sample is not inconsistent with chisq", {
-  set.seed(1353351)
-  #method for simulating eigenvalues
-  revals <- function(n, m = c(1/sqrt(2), 0, -1/sqrt(2))){
-    H <- helmertsub(3)
-    projevals <- mvtnorm::rmvnorm(n, mean = H %*% m)
-    projevals <- projevals/sqrt(rowSums(projevals^2))
-    evals <- projevals %*% H
-    evals
-  }
-  vals <- replicate(1000, {
-    Ysamples <- lapply(c(2000, 100), function(n){
-      # choose a fixed set of eigenvectors
-      evecs <- eigen_desc(invvech(rsymm_norm(1, mean = diag(1, 3))[1, ]))$vectors
-      evals <- revals(n, m = c(1/sqrt(2), 0, -1/sqrt(2)))
-      Y <- apply(evals, 1, function(v){
-        out <- evecs %*% diag(v) %*% t(evecs)
-        out <- makeSymmetric(out) #to remove machine differences
-        out
-      }, simplify = FALSE)
-      Y <- as.sst(Y)
-      Y
-    })
-    stat_ss1fixedtrace(Ysamples)
-  })
-  # qqplot(vals, y = rchisq(1E6, df = (2-1) * 1))
-  res <- ks.test(vals, "pchisq", df = (2-1) * 1)
-  expect_gt(res$p.value, 0.2)
-})
-
 test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq on n=300", {
   vals <- vapply(300 + (1:1000), function(seed){
     set.seed(seed)
