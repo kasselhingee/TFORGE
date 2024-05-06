@@ -81,18 +81,18 @@ test_that("stat single sample has WRONG NULL distribution for normtrace", {
 })
 
 test_that("stat on multi sample has correct NULL distribution", {
-  set.seed(65141)
+  set.seed(65142)
   vals <- replicate(100, {
-    Ysamples <- replicate(5, {
-      Y <- rsymm_norm(50, diag(c(3,2,1)))
+    Ysamples <- lapply(c(2000, 100, 100, 100), function(n){
+      Y <- rsymm_norm(n, diag(c(3,2,1)))
       Y <- projtrace_sst(Y)
       Y
-    }, simplify = FALSE)
+    })
     stat_fixedtrace(Ysamples)
   })
   
-  # qqplot(vals, y = rchisq(1000, df = (5-1)*2))
-  res <- ks.test(vals, "pchisq", df = (5-1)*2)
+  # qqplot(vals, y = rchisq(1000, df = (4-1)*2))
+  res <- ks.test(vals, "pchisq", df = (4-1)*2)
   expect_gt(res$p.value, 0.2)
 })
 
