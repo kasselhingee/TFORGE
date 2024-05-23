@@ -366,6 +366,8 @@ test_that("stat_schwartzman_eval() doesn't reject for simulation of multi sample
   
   res <- stat_schwartzman_eval(Ysamples[[1]], Ysamples[[2]])
   expect_gt(res$pval, 0.2)
+  res2 <- stat_schwartzman_eval(as.mstorsst(Ysamples))
+  expect_equal(res, res2)
 })
 
 test_that("stat_schwartzman_eval() reject for simulation of multi sample not from null", {
