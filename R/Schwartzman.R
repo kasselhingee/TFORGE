@@ -99,10 +99,19 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @description Computes the citeSchwartzman test statistic for equality between eigenvalues (eq 11 Schwartzman 2010) and corresponding approximate p value.
 #' @details The test statistic computed is (eq 11 Schwartzman 2010).
 #' The p value computed uses the approximate distribution reached at the end of section 2.4 Schwartzman: the distribution is chi-squared with first two moments approximating the first two moments of a statistic (eq 16 Schwartzman), that approximates (eq 11 Schwartzman 2010) for large samples.
-#' @param ms1 Sample of matrices.
+#' @param ms1 Sample of matrices or a list of samples.
 #' @param ms2 Sample of matrices.
 #' @export
-stat_schwartzman_eval <- function(ms1, ms2){
+stat_schwartzman_eval <- function(ms1, ms2 = NULL){
+  if (inherits(ms1, "mst")){
+    if (length(ms1) == 2){
+      if (!is.null(ms2)){stop("ms1 is a list of samples, so ms2 must be NULL.")}
+      ms2 <- ms1[[2]]
+      ms1 <- ms1[[1]]
+    } else if (length(ms1 > 2)){
+      stop("Must be exactly two samples")
+    }
+  }
   ms1 <- as.sst(ms1)
   ms2 <- as.sst(ms2)
   n1 <- nrow(ms1)
