@@ -103,6 +103,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param ms2 Sample of matrices.
 #' @export
 stat_schwartzman_eval <- function(ms1, ms2 = NULL){
+  ms1 <- as.mstorsst(ms1)
   if (inherits(ms1, "mst")){
     if (length(ms1) == 2){
       if (!is.null(ms2)){stop("ms1 is a list of samples, so ms2 must be NULL.")}
@@ -112,7 +113,6 @@ stat_schwartzman_eval <- function(ms1, ms2 = NULL){
       stop("Must be exactly two samples")
     }
   }
-  ms1 <- as.sst(ms1)
   ms2 <- as.sst(ms2)
   n1 <- nrow(ms1)
   n2 <- nrow(ms2)
