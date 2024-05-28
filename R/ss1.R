@@ -207,14 +207,23 @@ normL2evals <- function(m){
   newm <- makeSymmetric(newm) #remove computational inaccuracies
   return(newm)
 }
-# ms is an sst
-normL2evals_sst <- function(ms){
-  if (ncol(ms) == 6){#use fast method
-    I2 <- ms[, 1] * ms[, 4] + ms[, 4] * ms[, 6] + ms[,1] * ms[,6] -
-      ms[, 2]^2 - ms[, 5]^2 - ms[,3]^2
-    I1 <- ms[, 1] + ms[, 4] + ms[, 6] #trace
+
+#' @title Normalise so that Sum of Squared Eigenvalues is One
+#' @description
+#' Scales symmetric tensors so that the square of the eigenvalues sum to one.
+#' Designed to be applied to an `sst` object.
+#' For 3x3 tensors a method using tensor invariants avoids calculating eigenvalues.
+#' @export
+normalise_ss1 <- function(x){
+  if (ncol(x) == 6){#use fast method
+    I2 <- x[, 1] * x[, 4] + x[, 4] * x[, 6] + x[,1] * x[,6] -
+      x[, 2]^2 - x[, 5]^2 - x[,3]^2
+    I1 <- x[, 1] + x[, 4] + x[, 6] #trace
     tr2 <- I1^2 - 2*I2
-    return(as.sst(ms/sqrt(tr2)))
+    return(as.sst(x/sqrt(tr2)))
   }
-  as.sst(apply(ms, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
+  as.sst(apply(x, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
 }
+
+# ms is an sst
+normL2evals_sst <- normalise_ss1
