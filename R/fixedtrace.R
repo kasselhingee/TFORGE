@@ -151,7 +151,7 @@ projtrace_sst <- function(ms){
 # I think will usually break the symmetry of the eigenvalues about their mean.
 #' @param x A symmetric tensor, or a set of symmetric tensors as an `sst`.
 #' @export
-normtrace <- function(x){
+normalise_trace <- function(x){
   if (inherits(x, "sst")){
     diagels <- isondiag_vech(x[1, ])
     newx <- x / rowSums(x[, diagels])
