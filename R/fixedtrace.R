@@ -144,20 +144,22 @@ projtrace_sst <- function(ms){
   return(ms)
 }
 
-#' Whole matrix is divided by trace.
-#' This is how magnetic susceptibility tensors are scaled to examine isotropy in paleomagnetism (Tauxe, 2010 Essentials of Paleomagnetism, p248).
-#' The method is sensitive to traces of zero and I think will usually break the symmetry of the eigenvalues about their mean.
-#' The projection method above projtrace() preserves the symmetry.
-#' m A symmetric matric.
-normtrace <- function(m){
-  if (inherits(m, "sst")){
-    diagels <- isondiag_vech(m[1, ])
-    newm <- m / rowSums(m[, diagels])
+#' @title Scale tensors to have trace of one.
+#' @description Scales tensors by their trace, so that resulting tensors have a trace of one.
+#' The method will create `Inf` values for tensors that have a trace of zero.
+# This is how magnetic susceptibility tensors are scaled to examine isotropy in paleomagnetism (Tauxe, 2010 Essentials of Paleomagnetism, p248).
+# I think will usually break the symmetry of the eigenvalues about their mean.
+#' @param x A symmetric tensor, or a set of symmetric tensors as an `sst`.
+#' @export
+normtrace <- function(x){
+  if (inherits(x, "sst")){
+    diagels <- isondiag_vech(x[1, ])
+    newx <- x / rowSums(x[, diagels])
   } else {
-    tr <- sum(diag(m))
-    newm <- m/tr
+    tr <- sum(diag(x))
+    newx <- x/tr
   }
-  return(newm)
+  return(newx)
 }
 
 cov_evals_ft <- function(ms, H = NULL, evecs = NULL, av = NULL){
