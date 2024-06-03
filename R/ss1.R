@@ -81,6 +81,8 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   
+  if (hasfixedtrace(x)){warning("All tensors the same trace. Consider using test_ss1fixedtrace().")}
+  
   t0 <- stat_ss1(mss, evals = evals)
   d0 <- attr(t0, "null_evals")
   
