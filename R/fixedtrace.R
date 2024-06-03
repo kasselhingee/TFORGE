@@ -163,6 +163,8 @@ normalise_trace <- function(x){
   }
   return(newx)
 }
+#' @export
+normalize_trace <- normalise_trace
 
 cov_evals_ft <- function(ms, H = NULL, evecs = NULL, av = NULL){
   if (is.null(H)){H <- helmertsub(dimfromvech(ms[1, ]))}
