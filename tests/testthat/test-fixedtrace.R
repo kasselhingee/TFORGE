@@ -39,7 +39,7 @@ test_that("descending order error activates in resampling", {
     rsymm_norm(15, mean = diag(c(4,2,1))),
     rsymm_norm(15, mean = diag(c(4,2,1)))
   )
-  allsim <- lapply(allsim, normtrace)
+  allsim <- lapply(allsim, normalise_trace)
   expect_warning(res <- test_fixedtrace(allsim, B = 10), "1 bootstrap")
   expect_gt(sum(grepl("not in descending order", res$nullt_messages)), 0)
 })
@@ -49,7 +49,7 @@ test_that("singularity error activates in resampling", {
   set.seed(3)
   s1 <- rsymm_norm(5, mean = diag(c(4,2,1)))
   allsim <- list( s1, s1 )
-  allsim <- lapply(allsim, normtrace)
+  allsim <- lapply(allsim, normalise_trace)
   expect_warning(res <- test_fixedtrace(allsim, B = 10), "bootstrap resamples")
   expect_gt(sum(grepl("singular", res$nullt_messages)), 0)
 })
@@ -67,11 +67,11 @@ test_that("stat single sample has correct NULL distribution for projected trace"
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat single sample has WRONG NULL distribution for normtrace", {
+test_that("stat single sample has WRONG NULL distribution for normalise_trace", {
   set.seed(6514)
   vals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = 0.05 * diag(1, 3*2))
-    Y <- normtrace(Y) 
+    Y <- normalise_trace(Y) 
     stat_fixedtrace(Y, c(3,2,1)/6)
   })
   
@@ -101,7 +101,7 @@ test_that("stat on normed multi sample has correct NULL distribution", {
   vals <- replicate(100, {
     Ysamples <- replicate(5, {
       Y <- rsymm_norm(50, diag(c(3,2,1)))
-      Y <- normtrace(Y)
+      Y <- normalise_trace(Y)
       Y
     }, simplify = FALSE)
     stat_fixedtrace(Ysamples)
