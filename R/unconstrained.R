@@ -60,6 +60,14 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   if (!is.null(evecs) && (length(x) > 1)){stop("evecs specified for multisample not supported")}
+
+  # user friendliness check for fixedtrace or ss1
+  switch(4 - hasfixedtrace(x) - 2*hasss1(x),
+     warning("All tensors in x have the same trace and the sum of the squared eigenvalues is 1. Consider using test_ss1fixedtrace()"),
+     warning("All tensors have a sum of squared eigenvalues of 1. Consider using test_ss1()"),
+     warning("All tensors have the same trace. Consider using test_fixedtrace()"),
+     NULL
+     )
   
   if (is.null(evals)){#estimate common evals using stat_unconstrained()
     t0info <- stat_unconstrained(x, evecs = evecs)
