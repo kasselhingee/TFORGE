@@ -72,6 +72,7 @@ amaral2007Lemma1 <- function(m){
 #' @describeIn stat_ss1 Bootstrap test.
 #' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik()]`.
 #' @details The test did not perform well when the dispersion was very high (e.g. Normal entries with mean diagonal c(3,2,1) and variance of 1) - more studying needed.
+#' *Should I require tensors to be 3x3?
 #' @export
 test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   mss <- as.mstorsst(mss)
