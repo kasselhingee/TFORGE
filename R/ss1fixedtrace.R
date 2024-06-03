@@ -96,13 +96,15 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   
   #check the weights
   if (!wtsokay(wts)){
-    return(list(
+    out <- list(
       pval = 0,
       t0 = t0,
       nullt = NA,
       stdx = wts,
       B = NA
-    ))
+    )
+    class(out) <- c("tensorboot", class(out))
+    return(out)
   }
   
   res <- bootresampling(x, wts, 

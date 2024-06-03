@@ -93,13 +93,15 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   
   #check the weights
   if (!wtsokay(wts)){
-    return(list(
+    out <- list(
       pval = 0,
       t0 = t0,
       nullt = NA,
       stdx = wts,
       B = NA
-    ))
+    )
+    class(out) <- c("tensorboot", class(out))
+    return(out)
   }
   
   res <- bootresampling(mss, wts, 
@@ -215,6 +217,7 @@ normL2evals <- function(m){
 #' For 3x3 tensors a method using tensor invariants avoids calculating eigenvalues.
 #' @export
 normalise_ss1 <- function(x){
+  x <- as.sst(x)
   if (ncol(x) == 6){#use fast method
     I2 <- x[, 1] * x[, 4] + x[, 4] * x[, 6] + x[,1] * x[,6] -
       x[, 2]^2 - x[, 5]^2 - x[,3]^2
