@@ -102,7 +102,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param ms1 Sample of matrices or a list of samples.
 #' @param ms2 Sample of matrices.
 #' @export
-stat_schwartzman_eval <- function(ms1, ms2 = NULL){
+test_unconstrained_Schwartzman <- function(ms1, ms2 = NULL){
   ms1 <- as.mstorsst(ms1)
   if (inherits(ms1, "mst")){
     if (length(ms1) == 2){

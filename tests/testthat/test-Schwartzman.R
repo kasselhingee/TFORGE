@@ -34,7 +34,7 @@ test_that("Results are consistent with the simulation check at the start of Schw
     #simulate samples
     ms1 <- rsymm_Schwartzman(n1, M0, Sigma)
     ms2 <- rsymm_Schwartzman(n2, M0, Sigma)
-    res <- stat_schwartzman_eval(ms1, ms2)
+    res <- test_unconstrained_Schwartzman(ms1, ms2)
     return(unlist(res))
   }
   
@@ -66,7 +66,7 @@ test_that("Results are consistent with the simulation check at the start of Schw
     #simulate samples
     ms1 <- rsymm_Schwartzman(n1, M0, Sigma)
     ms2 <- rsymm_Schwartzman(n2, M0, Sigma)
-    res <- stat_schwartzman_eval(ms1, ms2)
+    res <- test_unconstrained_Schwartzman(ms1, ms2)
     return(unlist(res))
   }
   
@@ -93,7 +93,7 @@ test_that("Schwartzman statistic for iid elements is chisq under H0 and pvals un
       rsymm(100, diag(c(3,2,1))), #50 was too small, 100 is needed to get good estimates of a and v for the chisquared distribution
       rsymm(100, diag(c(3,2,1)))
     )
-    res <- stat_schwartzman_eval(Ysamples[[1]], Ysamples[[2]])
+    res <- test_unconstrained_Schwartzman(Ysamples[[1]], Ysamples[[2]])
     res})
 
   # qqplot(unlist(vals["t", ]), y = rchisq(1000, df = 3)); abline(0, 1, lty = "dotted")
@@ -136,7 +136,7 @@ test_that("pvalue close to uniform for non diagonal mean, unequal sample size", 
   simulateTstat <- function(n1, n2){
     ms1 <- rsymm(n1, mn1, C1)
     ms2 <- rsymm(n2, mn2, C2)
-    res <- stat_schwartzman_eval(ms1, ms2)
+    res <- test_unconstrained_Schwartzman(ms1, ms2)
     return(unlist(res))
   }
   set.seed(231654)
@@ -162,7 +162,7 @@ test_that("pvalue close to uniform when some correlation", {
   simulateTstat <- function(n1, n2){
     ms1 <- rsymm(n1, mn1, C1)
     ms2 <- rsymm(n2, mn2, C2)
-    res <- stat_schwartzman_eval(ms1, ms2)
+    res <- test_unconstrained_Schwartzman(ms1, ms2)
     return(unlist(res))
   }
   set.seed(22)
@@ -341,7 +341,7 @@ test_that("Omega_eval returns correct trace", {
   expect_equal(sum(diag(Omega_eval(1, 1, mn_U1, mn_U2))), target)
 })
 
-test_that("stat_schwartzman_eval() is invariant to rotations", {
+test_that("test_unconstrained_Schwartzman() is invariant to rotations", {
   set.seed(15)
   Ysample1_0 <- rsymm(100, diag(c(0,0,0)), sigma = diag(6)/10)
   Ysample2 <- rsymm(100, diag(c(3,2,1)))
@@ -350,31 +350,31 @@ test_that("stat_schwartzman_eval() is invariant to rotations", {
   rotmat <- runifortho(3)
   Ysample1_r <- t(t(Ysample1_0) + vech(rotmat %*% diag(c(3,2,1)) %*% t(rotmat)))
 
-  res1 <- stat_schwartzman_eval(Ysample1, Ysample2)
-  res2 <- stat_schwartzman_eval(Ysample1_r, Ysample2)
+  res1 <- test_unconstrained_Schwartzman(Ysample1, Ysample2)
+  res2 <- test_unconstrained_Schwartzman(Ysample1_r, Ysample2)
   expect_equal(res1$pval, res2$pval, tolerance = 0.1)
 })
 
-test_that("stat_schwartzman_eval() doesn't reject for simulation of multi sample from null", {
+test_that("test_unconstrained_Schwartzman() doesn't reject for simulation of multi sample from null", {
   set.seed(15)
   Ysamples <- list(
     rsymm(50, diag(c(3,2,1))),
     rsymm(50, diag(c(3,2,1)))
   )
   
-  res <- stat_schwartzman_eval(Ysamples[[1]], Ysamples[[2]])
+  res <- test_unconstrained_Schwartzman(Ysamples[[1]], Ysamples[[2]])
   expect_gt(res$pval, 0.2)
-  res2 <- stat_schwartzman_eval(as.mstorsst(Ysamples))
+  res2 <- test_unconstrained_Schwartzman(as.mstorsst(Ysamples))
   expect_equal(res, res2)
 })
 
-test_that("stat_schwartzman_eval() reject for simulation of multi sample not from null", {
+test_that("test_unconstrained_Schwartzman() reject for simulation of multi sample not from null", {
   set.seed(13)
   Ysamples <- list(
     rsymm(50, diag(c(3,2,1))),
     rsymm(50, diag(c(4,3,2)))
   )
   
-  res <- stat_schwartzman_eval(Ysamples[[1]], Ysamples[[2]])
+  res <- test_unconstrained_Schwartzman(Ysamples[[1]], Ysamples[[2]])
   expect_lt(res$pval, 0.05)
 })
