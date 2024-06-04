@@ -186,17 +186,17 @@ opt_el.test <- function(ms, mu, maxit = 25){
 # A function for checking that a list of weights is okay
 wtsokay <- function(wts){
   if (any(vapply(wts, sum, FUN.VALUE = 1.3) < 0)){ #negative weights
-    warning("The proposed null mean appears to be outside the convex hull for at least one sample (emplik() did not converge)" )
+    warning("The proposed null mean appears to be outside the convex hull for at least one sample (emplik() did not converge)" , call. = FALSE)
     return(FALSE)
   }
   if (any(vapply(wts, sum, FUN.VALUE = 1.3) < 0.5)){# weights sum to zero
-    warning("The proposed null mean appears to be outside the convex hull for at least one sample (empirical likelihood weights are zero)")
+    warning("The proposed null mean appears to be outside the convex hull for at least one sample (empirical likelihood weights are zero)", call. = FALSE)
     return(FALSE)
   }  
   lapply(wts, function(w){
     if (abs(length(w) - sum(w)) > 0.9){
       # above sees if weight sums to n (otherwise should sum to k < n being number of points in face). 
-      warning(sprintf("Empirical likelihood weights sum to %0.1f, which suggests the proposed null mean is on a face of the convex hull.", sum(w)))
+      warning(sprintf("Empirical likelihood weights sum to %0.1f, which suggests the proposed null mean is on a face of the convex hull.", sum(w)), call. = FALSE)
     }
   })
   return(TRUE)
