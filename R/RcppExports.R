@@ -6,6 +6,6 @@
 #' @description Cpp version of `cov_evals_inside()`
 #' @return Single numeric value
 cov_evals_inside_cpp <- function(vj, vk, dupmat, mcov) {
-    .Call(`_PivotalBootstrapMatrixData_cov_evals_inside_cpp`, vj, vk, dupmat, mcov)
+    .Call(`_TFORGE_cov_evals_inside_cpp`, vj, vk, dupmat, mcov)
 }
 

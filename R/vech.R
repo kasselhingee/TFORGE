@@ -1,6 +1,6 @@
 #' @title Stack elements of a symmetric matrix into a vector.
 #' @description
-#' The `vech` operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{PivotalBootstrapMatrixData}.
+#' The `vech` operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE}.
 #' @details
 #' Columns are stacked in order from left to right, entries above the diagonal are ignored.
 #' Matrix is not checked for symmetry.

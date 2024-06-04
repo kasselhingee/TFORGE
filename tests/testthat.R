@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(PivotalBootstrapMatrixData)
+library(TFORGE)
 
-test_check("PivotalBootstrapMatrixData")
+test_check("TFORGE")

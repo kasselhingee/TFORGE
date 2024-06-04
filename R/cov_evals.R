@@ -2,7 +2,7 @@
 #' @param evecs Matrix of eigenvectors of the mean as columns.
 #' @param mcov Covariance of `vech(Y)`, where `Y` is the random matrix.
 #' @details Computes equation (11) of `tensors_4` with \eqn{C_0}.
-#' @useDynLib PivotalBootstrapMatrixData, .registration=TRUE
+#' @useDynLib TFORGE, .registration=TRUE
 #' @importFrom Rcpp evalCpp
 #' @export
 cov_evals <- function(evecs, mcov){

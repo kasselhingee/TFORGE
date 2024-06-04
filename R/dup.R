@@ -1,5 +1,5 @@
 #' @title Duplication matrix
-#' @description Duplication matrix as defined by \insertCite{@Section 3.8 @magnus2019ma}{PivotalBootstrapMatrixData}
+#' @description Duplication matrix as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE}
 #' @details The entries of the matrix are inferred from the indexes using [`which()`], so creation of the matrix can be computationally intensive for large `n`.
 
 dup <- function(n){

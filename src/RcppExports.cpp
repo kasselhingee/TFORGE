@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // cov_evals_inside_cpp
 double cov_evals_inside_cpp(const arma::colvec& vj, const arma::colvec& vk, const arma::mat& dupmat, const arma::mat& mcov);
-RcppExport SEXP _PivotalBootstrapMatrixData_cov_evals_inside_cpp(SEXP vjSEXP, SEXP vkSEXP, SEXP dupmatSEXP, SEXP mcovSEXP) {
+RcppExport SEXP _TFORGE_cov_evals_inside_cpp(SEXP vjSEXP, SEXP vkSEXP, SEXP dupmatSEXP, SEXP mcovSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -27,11 +27,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_PivotalBootstrapMatrixData_cov_evals_inside_cpp", (DL_FUNC) &_PivotalBootstrapMatrixData_cov_evals_inside_cpp, 4},
+    {"_TFORGE_cov_evals_inside_cpp", (DL_FUNC) &_TFORGE_cov_evals_inside_cpp, 4},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_PivotalBootstrapMatrixData(DllInfo *dll) {
+RcppExport void R_init_TFORGE(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
