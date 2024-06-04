@@ -17,11 +17,12 @@ as.mstorsst <- function(x, ...){
     x <- tryCatch(
         as.sst(x), #if the sst fails
         error = function(e){
-          lapply(x, as.sst, ...) #does nothing if elements already preprocessed
+          x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
 
           dims <- vapply(x, ncol, FUN.VALUE = 3)
           if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
           class(x) <- c("mst", class(x))
+          return(x)
         })
     return(x)
   }
