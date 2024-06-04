@@ -92,3 +92,10 @@ test_that("matrix generics work for sst", {
   expect_equal(Ysample_sst[[3]], Ysample[[3]])
   expect_error(Ysample_sst[[1:2]], "more than one")
 })
+
+test_that("as.mstorsst() works on a list of matrices", {
+  x <- rsymm_Schwartzman(10, diag(c(1,2,4)), drop(rWishart(1, 6, diag(6))))
+  res <- as.mstorsst(x)
+  expect_s3_class(res, "sst")
+  expect_equal(dim(res), c(10, 6))
+})
