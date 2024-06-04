@@ -14,17 +14,15 @@ as.mstorsst <- function(x, ...){
   if (inherits(x, "sst")){return(x)}
   if (inherits(x, "matrix")){return(as.sst(x))}
   if (inherits(x, "list")){ #a list of symmetric tensors or a list of sst like things
-    x <- tryCatch(
-        as.sst(x), #if the sst fails
-        error = function(e){
-          x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
-
-          dims <- vapply(x, ncol, FUN.VALUE = 3)
-          if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
-          class(x) <- c("mst", class(x))
-          return(x)
-        })
-    return(x)
+    val <- try(x <- as.sst(x), silent = TRUE)
+    if (!inherits(val, "try-error")){return(x)}
+    else { #if the sst fails then...
+      x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
+      dims <- vapply(x, ncol, FUN.VALUE = 3)
+      if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
+      class(x) <- c("mst", class(x))
+      return(x)
+    }
   }
   stop("Could not convert to mst or sst.")
 }
