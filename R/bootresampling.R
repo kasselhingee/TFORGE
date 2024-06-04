@@ -14,7 +14,7 @@
 #'  + `B` The number of resamples requested
 #'  + `nullt_messages` Any error messages for the corresponding resample
 #'
-#' The object has bespoke class `tensorboot` for easy use of `print()`
+#' The object has bespoke class `TFORGE` for easy use of `print()`
 #' @export
 bootresampling <- function(x, stdx, stat, B,  ...){
   stopifnot(is_single_whole_number(B))
@@ -51,7 +51,7 @@ bootresampling <- function(x, stdx, stat, B,  ...){
     B = B,
     nullt_messages = messages
   )
-  class(out) <- c("tensorboot", class(out))
+  class(out) <- c("TFORGE", class(out))
   return(out)
 }
 
@@ -90,7 +90,7 @@ is_single_whole_number <- function(x, tol = .Machine$double.eps^0.5) {
 }
 
 #' @export
-print.tensorboot <- function(x, ...){
+print.TFORGE <- function(x, ...){
   x <- x[c("pval", "t0")]
   class(x) <- "list"
   NextMethod("print")

@@ -103,7 +103,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
       stdx = wts,
       B = NA
     )
-    class(out) <- c("tensorboot", class(out))
+    class(out) <- c("TFORGE", class(out))
     return(out)
   }
   

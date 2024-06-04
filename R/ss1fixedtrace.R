@@ -103,7 +103,7 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
       stdx = wts,
       B = NA
     )
-    class(out) <- c("tensorboot", class(out))
+    class(out) <- c("TFORGE", class(out))
     return(out)
   }
   
