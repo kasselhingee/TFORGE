@@ -5,18 +5,25 @@
 #' @details 
 #' + If `x` is a list of list of equal-sized matrices then it returns
 #' `x` with class `ms` added.
+#' If x is a list of symmetric matrices then it will become an `sst`.
+#' In the rare case that `x` is a list, and each element is a matrix *vectorised* matrices such that each element of `x` is symmetric then `as.mstorsst()` will mistakenly treat each each element of `x` as a symmetric tensor and return an `sst` object.
 #' @return An object with class `mst` or `sst`.
 #' @export
 as.mstorsst <- function(x, ...){
   if (inherits(x, "mst")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (inherits(x, "sst")){return(x)}
   if (inherits(x, "matrix")){return(as.sst(x))}
-  if (inherits(x, "list")){
-    x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
-    dims <- vapply(x, ncol, FUN.VALUE = 3)
-    if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
-      class(x) <- c("mst", class(x))
-      return(x)
+  if (inherits(x, "list")){ #a list of symmetric tensors or a list of sst like things
+    x <- tryCatch(
+        as.sst(x), #if the sst fails
+        error = function(e){
+          lapply(x, as.sst, ...) #does nothing if elements already preprocessed
+
+          dims <- vapply(x, ncol, FUN.VALUE = 3)
+          if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
+          class(x) <- c("mst", class(x))
+        })
+    return(x)
   }
   stop("Could not convert to mst or sst.")
 }
