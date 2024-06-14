@@ -1,4 +1,14 @@
-#' The ms and ss classes
+#' @rdname fsm
+#' @title Flat symmetric matrix classes for storing and checking symmetric matrices
+#' @description
+#' The `fsm` class, short for 'Flat Symmetric Matrices' is for a collection symmetric matrices with each matrix stored as a row according to [`vech()`].
+#' The `kfsm` class is for a collection of multiple `fsm`.
+#' @examples
+#' x <- list(list(matrix(c(1,2,3,2,4,5,3,5,6), 3), 
+#'                matrix(c(2,3,4,3,5,6,4,6,7), 3)),
+#'           list(matrix(c(0.1,0.2,0.3,0.2,0.4,0.5,0.3,0.5,0.6), 3), 
+#'                matrix(c(0.2,0.3,0.4,0.3,0.5,0.6,0.4,0.6,0.7), 3)))
+NULL
 
 #' @param x An object. 
 #' @param ... Passed to `isSymmetric()` for testing whether matrices are symmetric.
@@ -27,16 +37,20 @@ as.mstorsst <- function(x, ...){
   stop("Could not convert to mst or sst.")
 }
 
-as.sst <- function(x, ...){
-  if (inherits(x, "sst")){return(x)}
+#' @describeIn fsm For `x` a list of symmetric matrices of the same size, flattens `x` into a 2D array the `i`th row is a flattened version `vech(x[[i]])` of the `i`th matrix of  `x`. If `x` is already flattened then `as_fsm()` will check that the number of columns are consistent with a flattened symmetric matrix.
+#' @param ... is passed to [`isSymmetric()`] for checking symmetric matrices.
+#' @export
+as_fsm <- function(x, ...){
+  if (inherits(x, "TFORGE_fsm")){return(x)}
   if (inherits(x, "matrix")){
     # check that columns numbers make sense
     tryCatch(dimfromvech(x[1, ]),
              error = function(e){
       if (grepl("round", e$message)){stop("Number of columns of x don't correspond to a possible result of vech()")}
       })
-    class(x) <- c("sst", class(x))
-    return(x)}
+    class(x) <- c("TFORGE_fsm", class(x))
+    return(x)
+  }
 
   # 
 
@@ -49,7 +63,15 @@ as.sst <- function(x, ...){
   if (!all(vapply(x, isSymmetric, FUN.VALUE = FALSE, ...))){stop("Some matrices are not symmetric according to default limits in isSymmetric().")}
   xvec <- lapply(x, vech)
   xmat <- do.call(rbind, xvec)
-  class(xmat) <- c("sst", class(xmat))
+  class(xmat) <- c("TFORGE_fsm", class(xmat))
   return(xmat)
+}
+
+#' @export
+summary.TFORGE_fsm <- function(object, ...){
+  p <- dimfromvech(object[1, , drop = TRUE])
+  list(Size = c("Number of matrices" = nrow(object), "Unflattened matrix ncol=nrow" = p, "Flattened ncol" = ncol(object)),
+       #sprintf("%i flattened symmetric %i x %i matrices", nrow(object), p, p),
+       "Element Summary" = NextMethod())
 }
 
