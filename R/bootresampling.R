@@ -5,6 +5,7 @@
 #' @param B The number of bootstrap samples to use
 #' @param ... Passed to `stat`
 #' @details Resamples that lead to an error will have NA values with error message returned in the `nullt_messages` slot.
+#' *include an option to use common evals that aren't descending by reordering?*
 #' @return
 #' A list of
 #'  + `pval` the given p-value
