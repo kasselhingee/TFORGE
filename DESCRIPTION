@@ -1,6 +1,7 @@
 Package: TFORGE 
 Title: Tests for Geophysical Eigenvalues
 Version: 0.0.1.3
+Date: 2024-06-14
 Authors@R: 
     person(given = "Kassel Liam", family = "Hingee", email = "kassel.hingee@anu.edu.au", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9894-2407"))
 Description: Pivotal bootstrap Tests FOR Geophysical Eigenvalues, including unconstrained symmetric matrices, and symmetric matrices with constraints common on geophysics.
