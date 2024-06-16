@@ -4,7 +4,7 @@
 #' @description
 #' Implements MLE for \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} given in Lemma 3.3 of Schwartzman et (2008). The MLE for the population mean is required.
 #' @param Mhat An MLE for the population mean (typically under a hypothesis)
-#' @param ms A single sample in [`sst()`] format.
+#' @param ms A single sample in [`TFORGE_fsm()`] format.
 #' @param tau If supplied only \eqn{\sigma^2}{s^2} will be estimated.
 #' @returns A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
 #' @export

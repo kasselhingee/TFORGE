@@ -27,7 +27,7 @@ cov_evals <- function(evecs, mcov){
 # @return An estimated covariance matrix for the eigenvalues of `ms`.
 cov_evals_est <- function(ms, evecs = NULL, av = NULL){
   ms <- as.mstorsst(ms)
-  stopifnot(inherits(ms, "sst"))
+  stopifnot(inherits(ms, "TFORGE_fsm"))
   if (is.null(av)){av <- mmean(ms)}
   if (is.null(evecs)){
     evecs <- eigen_desc(av, symmetric = TRUE)$vectors

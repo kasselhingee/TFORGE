@@ -147,7 +147,7 @@ standardise_multiplicity <- function(ms, mult){
   newM <- vech(newM)
   av <- vech(av)
   out <- t(t(ms) - av + newM)
-  class(out) <- c("sst", class(out))
+  class(out) <- c("TFORGE_fsm", class(out))
   return(out)
 }
 

@@ -22,6 +22,6 @@ rsymm_t <- function(n, delta, df = 1, sigma = diag(length(vech(delta)))){
   out <- do.call(rbind, sim_l)
   out <- t(t(out) + delta)
   colnames(out) <- names(mean)
-  class(out) <- c("sst", class(out))
+  class(out) <- c("TFORGE_fsm", class(out))
   return(out)
 }

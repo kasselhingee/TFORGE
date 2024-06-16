@@ -2,7 +2,7 @@
 #' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
 stat_ss1 <- function(x, evals = NULL){
   x <- as.mstorsst(x)
-  if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
   
@@ -77,7 +77,7 @@ amaral2007Lemma1 <- function(m){
 test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   mss <- as.mstorsst(mss)
   stopifnot(hasss1(mss))
-  if (inherits(mss, "sst")){mss <- as.mstorsst(list(mss))}
+  if (inherits(mss, "TFORGE_fsm")){mss <- as.mstorsst(list(mss))}
   if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   
@@ -216,7 +216,7 @@ normL2evals <- function(m){
 #' @title Normalise so that Sum of Squared Eigenvalues is One
 #' @description
 #' Scales symmetric tensors so that the square of the eigenvalues sum to one.
-#' Designed to be applied to an `sst` object.
+#' Designed to be applied to an `TFORGE_fsm` object.
 #' For 3x3 tensors a method using tensor invariants avoids calculating eigenvalues.
 #' @export
 normalise_ss1 <- function(x){
@@ -231,5 +231,5 @@ normalise_ss1 <- function(x){
   as_fsm(apply(x, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
 }
 
-# ms is an sst
+# ms is an TFORGE_fsm
 normL2evals_sst <- normalise_ss1

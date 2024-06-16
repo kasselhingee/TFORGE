@@ -21,7 +21,7 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @export
 stat_fixedtrace <- function(x, evals = NULL){
   x <- as.mstorsst(x)
-  if (inherits(x, "sst")){mss <- as.mstorsst(list(x))}
+  if (inherits(x, "TFORGE_fsm")){mss <- as.mstorsst(list(x))}
   else {mss <- x}
   if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
@@ -80,7 +80,7 @@ stat_fixedtrace <- function(x, evals = NULL){
 test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   x <- as.mstorsst(x)
   stopifnot(hasfixedtrace(x))
-  if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   if (!is.null(evals)){
@@ -152,10 +152,10 @@ projtrace_sst <- function(ms){
 #' The method will create `Inf` values for tensors that have a trace of zero.
 # This is how magnetic susceptibility tensors are scaled to examine isotropy in paleomagnetism (Tauxe, 2010 Essentials of Paleomagnetism, p248).
 # I think will usually break the symmetry of the eigenvalues about their mean.
-#' @param x A symmetric tensor, or a set of symmetric tensors as an `sst`.
+#' @param x A symmetric tensor, or a set of symmetric tensors as an `TFORGE_fsm`.
 #' @export
 normalise_trace <- function(x){
-  if (inherits(x, "sst")){
+  if (inherits(x, "TFORGE_fsm")){
     diagels <- isondiag_vech(x[1, ])
     newx <- x / rowSums(x[, diagels])
   } else {

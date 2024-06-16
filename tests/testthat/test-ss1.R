@@ -27,7 +27,7 @@ test_that("stat_ss1() on multiple NULL samples is consistent with chisq", {
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("test_ss1() uniform pval on NULL sst", {
+test_that("test_ss1() uniform pval on NULL TFORGE_fsm", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(30, diag(c(3,2,1)), sigma = diag(1, 6))

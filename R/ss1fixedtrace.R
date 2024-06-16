@@ -5,7 +5,7 @@
 #' @export
 stat_ss1fixedtrace <- function(x, evals = NULL){
   x <- as.mstorsst(x)
-  if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
   stopifnot(ncol(x[[1]]) == 6) #corresponds to 3x3 matrix
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
@@ -81,7 +81,7 @@ test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   x <- as.mstorsst(x)
   stopifnot(hasss1(x))
   stopifnot(hasfixedtrace(x))
-  if (inherits(x, "sst")){x <- as.mstorsst(list(x))}
+  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   

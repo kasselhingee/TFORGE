@@ -15,18 +15,18 @@ NULL
 #' @details 
 #' + If `x` is a list of list of equal-sized matrices then it returns
 #' `x` with class `ms` added.
-#' If x is a list of symmetric matrices then it will become an `sst`.
-#' In the rare case that `x` is a list, and each element is a matrix *vectorised* matrices such that each element of `x` is symmetric then `as.mstorsst()` will mistakenly treat each each element of `x` as a symmetric tensor and return an `sst` object.
-#' @return An object with class `mst` or `sst`.
+#' If x is a list of symmetric matrices then it will become an `TFORGE_fsm`.
+#' In the rare case that `x` is a list, and each element is a matrix *vectorised* matrices such that each element of `x` is symmetric then `as.mstorsst()` will mistakenly treat each each element of `x` as a symmetric tensor and return an `TFORGE_fsm` object.
+#' @return An object with class `mst` or `TFORGE_fsm`.
 #' @export
 as.mstorsst <- function(x, ...){
   if (inherits(x, "mst")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
-  if (inherits(x, "sst")){return(x)}
+  if (inherits(x, "TFORGE_fsm")){return(x)}
   if (inherits(x, "matrix")){return(as_fsm(x))}
-  if (inherits(x, "list")){ #a list of symmetric tensors or a list of sst like things
+  if (inherits(x, "list")){ #a list of symmetric tensors or a list of TFORGE_fsm like things
     val <- try(x <- as_fsm(x), silent = TRUE)
     if (!inherits(val, "try-error")){return(x)}
-    else { #if the sst fails then...
+    else { #if the TFORGE_fsm fails then...
       x <- lapply(x, as_fsm, ...) #does nothing if elements already preprocessed
       dims <- vapply(x, ncol, FUN.VALUE = 3)
       if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
@@ -34,7 +34,7 @@ as.mstorsst <- function(x, ...){
       return(x)
     }
   }
-  stop("Could not convert to mst or sst.")
+  stop("Could not convert to collection of flattened symmetric matrices.")
 }
 
 #' @describeIn fsm For `x` a list of symmetric matrices of the same size, flattens `x` into a 2D array the `i`th row is a flattened version `vech(x[[i]])` of the `i`th matrix of  `x`. If `x` is already flattened then `as_fsm()` will check that the number of columns are consistent with a flattened symmetric matrix.

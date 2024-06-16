@@ -28,7 +28,7 @@ bootresampling <- function(x, stdx, stat, B,  ...){
     } else { #if stdx isn't a vector of weights, assume it is a standardised version of x
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(stdx)), exargs)), simplify = FALSE)
     }
-  } else if (inherits(x, "sst")){
+  } else if (inherits(x, "TFORGE_fsm")){
     if (inherits(stdx, "numeric")){#sample with weights cos stdx isn't the same shape as x
       nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(x, prob = stdx, replace = TRUE)), exargs)), simplify = FALSE)
     } else {
@@ -76,12 +76,12 @@ multisample <- function(x, prob = NULL){
   }
 }
 
-# an internal version of sample that automatically marks the result as an sst
+# an internal version of sample that automatically marks the result as an TFORGE_fsm
 samplesst <- function(x, prob = NULL, replace = TRUE){
-  stopifnot(inherits(x, "sst"))
+  stopifnot(inherits(x, "TFORGE_fsm"))
   idx <- sample.int(nrow(x), prob = prob, replace = replace)
   out <- x[idx, ]
-  class(out) <- c("sst", class(out))
+  class(out) <- c("TFORGE_fsm", class(out))
   return(out)
 }
 

@@ -57,7 +57,7 @@ test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq 
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("test_ss1fixedtrace() uniform pval on NULL sst", {
+test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))

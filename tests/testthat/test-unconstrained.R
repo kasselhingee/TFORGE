@@ -1,4 +1,4 @@
-test_that("stat for sst has correct null distribution", {
+test_that("stat for TFORGE_fsm has correct null distribution", {
   vals <- vapply(1:100, function(seed){
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
@@ -12,7 +12,7 @@ test_that("stat for sst has correct null distribution", {
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat for sst, specified evecs, has correct null distribution", {
+test_that("stat for TFORGE_fsm, specified evecs, has correct null distribution", {
   vals <- vapply(1:100, function(seed){
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
@@ -51,7 +51,7 @@ test_that("stat for mst w specified evecs has INcorrect null distribution", {
   expect_lt(res$p.value, 0.2)
 })
 
-test_that("test sst from NULL has uniform p-values", {
+test_that("test TFORGE_fsm from NULL has uniform p-values", {
   pvals <- vapply(13 + (1:100), function(seed){
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))

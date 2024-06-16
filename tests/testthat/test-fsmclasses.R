@@ -1,4 +1,4 @@
-test_that("as.mstorsst() on list of sst",{
+test_that("as.mstorsst() on list of TFORGE_fsm",{
   set.seed(134)
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -39,7 +39,7 @@ test_that("as.mstorsst() on list of list of matrices", {
   expect_error(as.mstorsst(Ysamples), "different")
 })
 
-test_that("as.mstorsst() on list of sst-like matrices", {
+test_that("as.mstorsst() on list of TFORGE_fsm-like matrices", {
   set.seed(13)
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -62,12 +62,12 @@ test_that("as.mstorsst() on list of sst-like matrices", {
 })
 
 
-test_that("as.mstorsst() on a matrix-like sst", {
+test_that("as.mstorsst() on a matrix-like TFORGE_fsm", {
   set.seed(13)
   Y <- rsymm_norm(50, diag(c(3,2,1)))
   class(Y) <- "matrix"
   Ysst <- as.mstorsst(Y)
-  expect_s3_class(Ysst, "sst")
+  expect_s3_class(Ysst, "TFORGE_fsm")
   expect_equal(nrow(Ysst), nrow(Y))
   expect_equal(ncol(Ysst), ncol(Y))
 })
@@ -79,7 +79,7 @@ test_that("as_fsm() error when bad lists of matrices passed", {
   expect_error(as_fsm(list(diag(3), cbind(diag(3), rep(1, 3)))))
 })
 
-test_that("matrix generics work for sst", {
+test_that("matrix generics work for TFORGE_fsm", {
   set.seed(134)
   Ysample <- matrix(runif(6*5), nrow = 5)
   Ysample_sst <- as_fsm(Ysample)
@@ -96,6 +96,6 @@ test_that("matrix generics work for sst", {
 test_that("as.mstorsst() works on a list of matrices", {
   x <- rsymm_Schwartzman(10, diag(c(1,2,4)), drop(rWishart(1, 6, diag(6))))
   res <- as.mstorsst(x)
-  expect_s3_class(res, "sst")
+  expect_s3_class(res, "TFORGE_fsm")
   expect_equal(dim(res), c(10, 6))
 })
