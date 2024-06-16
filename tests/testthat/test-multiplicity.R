@@ -200,7 +200,7 @@ test_that("fixed trace from projection preserved by standardisation and ignored 
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   Ysample <- rsymm_norm(1000, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
-  Ysample_n <- as.sst(apply(Ysample, 1, function(m){projtrace(invvech(m))}, simplify = FALSE))
+  Ysample_n <- as_fsm(apply(Ysample, 1, function(m){projtrace(invvech(m))}, simplify = FALSE))
   
   # check that only first element of Hevals  is changed by trace fix
   evals <- eigen_desc(mmean(Ysample))$values
@@ -210,7 +210,7 @@ test_that("fixed trace from projection preserved by standardisation and ignored 
   
   std <- standardise_multiplicity(Ysample, mult)
   std_n <- standardise_multiplicity(Ysample_n, mult)
-  expect_true(all.equal(as.sst(apply(std, 1, function(m){projtrace(invvech(m))}, simplify = FALSE)), 
+  expect_true(all.equal(as_fsm(apply(std, 1, function(m){projtrace(invvech(m))}, simplify = FALSE)), 
                         std_n, check.attributes = FALSE))
   
   set.seed(123)

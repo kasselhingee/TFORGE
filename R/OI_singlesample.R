@@ -9,7 +9,7 @@
 #' @returns A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
 #' @export
 estimateOIparams <- function(ms, Mhat, tau = NULL){
-  ms <- as.sst(ms)
+  ms <- as_fsm(ms)
   p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
   q <- p * (p+1)/2
   Ybar <- colMeans(ms)

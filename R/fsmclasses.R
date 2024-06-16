@@ -22,12 +22,12 @@ NULL
 as.mstorsst <- function(x, ...){
   if (inherits(x, "mst")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (inherits(x, "sst")){return(x)}
-  if (inherits(x, "matrix")){return(as.sst(x))}
+  if (inherits(x, "matrix")){return(as_fsm(x))}
   if (inherits(x, "list")){ #a list of symmetric tensors or a list of sst like things
-    val <- try(x <- as.sst(x), silent = TRUE)
+    val <- try(x <- as_fsm(x), silent = TRUE)
     if (!inherits(val, "try-error")){return(x)}
     else { #if the sst fails then...
-      x <- lapply(x, as.sst, ...) #does nothing if elements already preprocessed
+      x <- lapply(x, as_fsm, ...) #does nothing if elements already preprocessed
       dims <- vapply(x, ncol, FUN.VALUE = 3)
       if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
       class(x) <- c("mst", class(x))

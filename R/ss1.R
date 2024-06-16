@@ -220,15 +220,15 @@ normL2evals <- function(m){
 #' For 3x3 tensors a method using tensor invariants avoids calculating eigenvalues.
 #' @export
 normalise_ss1 <- function(x){
-  x <- as.sst(x)
+  x <- as_fsm(x)
   if (ncol(x) == 6){#use fast method
     I2 <- x[, 1] * x[, 4] + x[, 4] * x[, 6] + x[,1] * x[,6] -
       x[, 2]^2 - x[, 5]^2 - x[,3]^2
     I1 <- x[, 1] + x[, 4] + x[, 6] #trace
     tr2 <- I1^2 - 2*I2
-    return(as.sst(x/sqrt(tr2)))
+    return(as_fsm(x/sqrt(tr2)))
   }
-  as.sst(apply(x, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
+  as_fsm(apply(x, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
 }
 
 # ms is an sst

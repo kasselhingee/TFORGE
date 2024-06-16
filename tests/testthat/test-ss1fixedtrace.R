@@ -17,7 +17,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL with fixed evecs is n
       out <- makeSymmetric(out) #to remove machine differences
       out
       }, simplify = FALSE)
-    Y <- as.sst(Y)
+    Y <- as_fsm(Y)
     stat_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)))
   })
   # qqplot(vals, y = rchisq(1E6, df = 1))

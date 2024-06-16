@@ -12,7 +12,7 @@
 #' @export
 conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   # checks
-  x <- as.sst(x)
+  x <- as_fsm(x)
   stopifnot(ncol(x) == 6)
   stopifnot(hasfixedtrace(x))
   stopifnot(hasss1(x))

@@ -113,7 +113,7 @@ test_unconstrained_Schwartzman <- function(ms1, ms2 = NULL){
       stop("Must be exactly two samples")
     }
   }
-  ms2 <- as.sst(ms2)
+  ms2 <- as_fsm(ms2)
   n1 <- nrow(ms1)
   n2 <- nrow(ms2)
   M1 <- mmean(ms1)
@@ -142,8 +142,8 @@ test_unconstrained_Schwartzman <- function(ms1, ms2 = NULL){
 # @param M2 population expectation for second population
 #' @export
 statstar_schwartzman_eval <- function(ms1, ms2, M1, M2){
-  ms1 <- as.sst(ms1)
-  ms2 <- as.sst(ms2)
+  ms1 <- as_fsm(ms1)
+  ms2 <- as_fsm(ms2)
   Z1 <- mmean(ms1) - M1
   Z2 <- mmean(ms2) - M2
   U1 <- eigen_desc(M1)$vectors

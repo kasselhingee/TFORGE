@@ -1,6 +1,6 @@
 test_that("cov_evals_inside() matches cov_evals_inside_cpp()",{
   set.seed(12)
-  Ysample <- as.sst(rsymm(1E2, diag(c(3,2,1))))
+  Ysample <- as_fsm(rsymm(1E2, diag(c(3,2,1))))
   mcov <- mcovar(Ysample)
   evecs <- eigen_desc(mmean(Ysample))$vectors
   dupmat <- dup(nrow(evecs))

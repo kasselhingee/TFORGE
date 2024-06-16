@@ -7,8 +7,8 @@ test_that("as.mstorsst() on list of sst",{
   expect_silent(as.mstorsst(Ysamples))
   expect_silent(as.mstorsst(Ysamples[1]))
   
-  expect_error(as.sst(Ysamples))
-  expect_error(as.sst(matrix(1, 2, 5)), "Number")
+  expect_error(as_fsm(Ysamples))
+  expect_error(as_fsm(matrix(1, 2, 5)), "Number")
 })
 
 test_that("as.mstorsst() on list of list of matrices", {
@@ -72,17 +72,17 @@ test_that("as.mstorsst() on a matrix-like sst", {
   expect_equal(ncol(Ysst), ncol(Y))
 })
 
-test_that("as.sst() error when bad lists of matrices passed", {
-  expect_error(as.sst(list(diag(3), "test")))
-  expect_error(as.sst(list(rbind(diag(3), rep(1, 3)), diag(4))))
-  expect_error(as.sst(list(diag(3), diag(4))))
-  expect_error(as.sst(list(diag(3), cbind(diag(3), rep(1, 3)))))
+test_that("as_fsm() error when bad lists of matrices passed", {
+  expect_error(as_fsm(list(diag(3), "test")))
+  expect_error(as_fsm(list(rbind(diag(3), rep(1, 3)), diag(4))))
+  expect_error(as_fsm(list(diag(3), diag(4))))
+  expect_error(as_fsm(list(diag(3), cbind(diag(3), rep(1, 3)))))
 })
 
 test_that("matrix generics work for sst", {
   set.seed(134)
   Ysample <- matrix(runif(6*5), nrow = 5)
-  Ysample_sst <- as.sst(Ysample)
+  Ysample_sst <- as_fsm(Ysample)
   expect_equal(Ysample_sst[1], Ysample[1])
   expect_equal(Ysample_sst[1:3], Ysample[1:3])
   expect_equal(Ysample_sst[1,3], Ysample[1,3])

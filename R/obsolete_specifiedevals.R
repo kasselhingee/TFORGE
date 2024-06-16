@@ -11,7 +11,7 @@ NULL
 stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
   evals <- sort(evals, decreasing = TRUE)
   n <- nrow(ms)
-  av <- mmean(as.sst(ms))
+  av <- mmean(as_fsm(ms))
   if (is.null(evecs)){
     av_eigenspace <- eigen_desc(av, symmetric = TRUE)
     d1 <- av_eigenspace$values
@@ -20,7 +20,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
     d1 <- diag(t(evecs) %*% av %*% evecs)
   }
   d0 <- evals
-  V <- cov_evals_est(as.sst(ms), evecs = evecs, av = av)
+  V <- cov_evals_est(as_fsm(ms), evecs = evecs, av = av)
   out <- n * t(d1 - d0) %*% solve(V) %*% (d1 - d0)
   return(drop(out))
 }

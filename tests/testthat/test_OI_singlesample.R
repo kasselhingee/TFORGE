@@ -27,10 +27,10 @@ test_that("OIinnerprod fast matches slow method", {
   fastinnprod <- OIinnerprod(A, B, s, tau)
   expect_equal(slowinnprod, fastinnprod) 
   
-  fastinnprod2 <- OIinnerprod_sst(as.sst(list(A)), as.sst(list(B)), s, tau)
+  fastinnprod2 <- OIinnerprod_sst(as_fsm(list(A)), as_fsm(list(B)), s, tau)
   expect_equal(fastinnprod, fastinnprod2)
   
-  fastinnprod_twice <- OIinnerprod_sst(as.sst(list(A, A)), as.sst(list(B, B)), s, tau)
+  fastinnprod_twice <- OIinnerprod_sst(as_fsm(list(A, A)), as_fsm(list(B, B)), s, tau)
   expect_equal(fastinnprod_twice, c(fastinnprod2, fastinnprod2))
 })
 
