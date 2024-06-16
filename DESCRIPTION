@@ -1,4 +1,4 @@
-Package: TFORGE 
+Package: TFORGE
 Title: Tests for Geophysical Eigenvalues
 Version: 0.0.1.3
 Authors@R: 
@@ -16,5 +16,5 @@ RdMacros: Rdpack
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.1.2
 LinkingTo: Rcpp, RcppArmadillo
