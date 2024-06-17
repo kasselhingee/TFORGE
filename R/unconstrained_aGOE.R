@@ -1,4 +1,5 @@
-# Schwartzman vecd (which is not quite vech and has a different ordering)
+# Utility functions for Schwartzman 2010 test
+# vecd (which is not quite vech and has a different ordering)
 vecd <- function(m){
   c(diag(m), sqrt(2) * m[lower.tri(m, diag = FALSE)])
 }
@@ -102,7 +103,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param ms1 Sample of matrices or a list of samples.
 #' @param ms2 Sample of matrices.
 #' @export
-test_unconstrained_Schwartzman <- function(ms1, ms2 = NULL){
+test_unconstrained_aGOE <- function(ms1, ms2 = NULL){
   ms1 <- as_flat(ms1)
   if (inherits(ms1, "TFORGE_kfsm")){
     if (length(ms1) == 2){
