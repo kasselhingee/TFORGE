@@ -168,7 +168,7 @@ test_that("a multisample strongly non-null situation rejects", {
 })
 
 
-test_that("hasfixedtrace() gives TRUE or FALSE values", {
+test_that("has_fixedtrace() gives TRUE or FALSE values", {
   set.seed(13)
   const <- 1.45
   Ysamples <- replicate(5, {
@@ -181,8 +181,8 @@ test_that("hasfixedtrace() gives TRUE or FALSE values", {
   
   expect_equal(sum(diag(Ysamples[[1]][[1]])), const)
 
-  expect_true(hasfixedtrace(as_flat(Ysamples)))
-  expect_true(hasfixedtrace(as_fsm(Ysamples[[1]])))
+  expect_true(has_fixedtrace(as_flat(Ysamples)))
+  expect_true(has_fixedtrace(as_fsm(Ysamples[[1]])))
   
   set.seed(134)
   Ysamples <- replicate(5, {
@@ -190,15 +190,15 @@ test_that("hasfixedtrace() gives TRUE or FALSE values", {
     Y
   }, simplify = FALSE)
   
-  expect_false(hasfixedtrace(Ysamples))
-  expect_false(hasfixedtrace(Ysamples[[1]]))
+  expect_false(has_fixedtrace(Ysamples))
+  expect_false(has_fixedtrace(Ysamples[[1]]))
 })
 
-test_that("projtrace() returns matrices that satisty hasfixedtrace", {
+test_that("projtrace() returns matrices that satisty has_fixedtrace", {
   set.seed(6514) 
   Y <- rsymm_norm(3, diag(c(3,2,-3)/6))
   Y <- projtrace_fsm(Y) #this method of getting the correct trace seems to create narrower distributions than the normalising method
-  expect_true(hasfixedtrace(Y))
+  expect_true(has_fixedtrace(Y))
 })
 
 

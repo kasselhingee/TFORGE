@@ -79,8 +79,8 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
 #' @export
 test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
   x <- as_flat(x)
-  stopifnot(hasss1(x))
-  stopifnot(hasfixedtrace(x))
+  stopifnot(has_ss1(x))
+  stopifnot(has_fixedtrace(x))
   if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}

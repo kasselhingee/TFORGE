@@ -76,12 +76,12 @@ amaral2007Lemma1 <- function(m){
 #' @export
 test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   mss <- as_flat(mss)
-  stopifnot(hasss1(mss))
+  stopifnot(has_ss1(mss))
   if (inherits(mss, "TFORGE_fsm")){mss <- as_flat(list(mss))}
   if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   
-  if (hasfixedtrace(mss)){warning("All tensors the same trace. Consider using test_ss1fixedtrace().")}
+  if (has_fixedtrace(mss)){warning("All tensors the same trace. Consider using test_ss1fixedtrace().")}
   
   t0 <- stat_ss1(mss, evals = evals)
   d0 <- attr(t0, "null_evals")
@@ -119,7 +119,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
 #' @param tolerance Tolerance on the relative difference, passed to `all.equal()`
 #' @export
 #' @return `TRUE` or `FALSE`
-hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
+has_ss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as_flat(x)
   if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
   ss <- apply(x, 1, function(v){

@@ -42,7 +42,7 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 #' @export
 conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE){
   stopifnot(ncol(x) == 6)
-  stopifnot(hasfixedtrace(x))
+  stopifnot(has_fixedtrace(x))
   x <- as_fsm(x)
 
   # sample mean

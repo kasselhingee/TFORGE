@@ -94,34 +94,34 @@ test_that("amaral2007Lemma1() produces correct result for a unit vector", {
   expect_equal(A %*% Conj(t(A)), diag(1, 4))
 })
 
-test_that("hasss1 works for p=3", {
+test_that("has_ss1 works for p=3", {
   set.seed(1333)
   Ysamples <- list(
     rsymm_norm(30, diag(c(3,2,1))),
     rsymm_norm(30, diag(c(6,2,1)))
   )
-  expect_false(hasss1(Ysamples))
+  expect_false(has_ss1(Ysamples))
   expect_error(test_ss1(Ysamples, B = 100))
   
   Ysamples <- lapply(Ysamples, function(Y){
     normL2evals_sst(Y) #replace eigenvalues with normalised ones
   })
   
-  expect_true(hasss1(Ysamples))
+  expect_true(has_ss1(Ysamples))
   
 })
-test_that("hasss1 works for p=4", {
+test_that("has_ss1 works for p=4", {
   set.seed(1333)
   Ysamples <- list(
     rsymm_norm(30, diag(c(4,3,2,1))),
     rsymm_norm(30, diag(c(7,6,2,1)))
   )
-  expect_false(hasss1(Ysamples))
+  expect_false(has_ss1(Ysamples))
   expect_error(test_ss1(Ysamples, B = 100))
   
   Ysamples <- lapply(Ysamples, function(Y){
     normL2evals_sst(Y) #replace eigenvalues with normalised ones
   })
   
-  expect_true(hasss1(Ysamples))
+  expect_true(has_ss1(Ysamples))
 })

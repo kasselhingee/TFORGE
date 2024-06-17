@@ -34,7 +34,7 @@ test_that("OIinnerprod fast matches slow method", {
   expect_equal(fastinnprod_twice, c(fastinnprod2, fastinnprod2))
 })
 
-test_that("estimateOIparams get close really to correct tau and scale", {
+test_that("estimate_OIcov get close really to correct tau and scale", {
   s = 2
   tau = 1/4
   p = 3
@@ -42,7 +42,7 @@ test_that("estimateOIparams get close really to correct tau and scale", {
   set.seed(344)
   ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
   Mhat <- invvech(colMeans(ms))
-  OIparams <- estimateOIparams(ms, Mhat)
+  OIparams <- estimate_OIcov(ms, Mhat)
   expect_equal(OIparams$tau, tau, tolerance = 1E-3, ignore_attr = TRUE)
   expect_equal(OIparams$scalesq, s^2, tolerance = 1E-2)
 })

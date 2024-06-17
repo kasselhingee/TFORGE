@@ -6,7 +6,7 @@
 #' @details Credit to Hadley for much of this function: [https://stackoverflow.com/questions/4752275/test-for-equality-among-all-elements-of-a-single-numeric-vector]
 #' @export
 #' @return `TRUE` or `FALSE`
-hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
+has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as_flat(x)
   if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
   diagels <- isondiag_vech(x[1, ])
@@ -79,7 +79,7 @@ stat_fixedtrace <- function(x, evals = NULL){
 #' @export
 test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   x <- as_flat(x)
-  stopifnot(hasfixedtrace(x))
+  stopifnot(has_fixedtrace(x))
   if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
@@ -89,7 +89,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
     }
   }
 
-  if (hasss1(x)){warning("All tensors have a sum of squared eigenvalues of 1. Consider using test_ss1fixedtrace().")}
+  if (has_ss1(x)){warning("All tensors have a sum of squared eigenvalues of 1. Consider using test_ss1fixedtrace().")}
 
   t0 <- stat_fixedtrace(x, evals = evals)
   estevals <- attr(t0, "null_evals")

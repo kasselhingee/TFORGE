@@ -31,8 +31,8 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
     Y <- projtrace_fsm(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
     Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
-    # hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps))
-    # hasss1(Y)
+    # has_fixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps))
+    # has_ss1(Y)
     stat_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)))
     })
   
@@ -63,8 +63,8 @@ test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
     Y <- projtrace_fsm(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
     Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
-    stopifnot(hasfixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
-    stopifnot(hasss1(Y))
+    stopifnot(has_fixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
+    stopifnot(has_ss1(Y))
     res <- test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = 100, maxit = 1000)
     res$pval
     })

@@ -14,8 +14,8 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   # checks
   x <- as_fsm(x)
   stopifnot(ncol(x) == 6)
-  stopifnot(hasfixedtrace(x))
-  stopifnot(hasss1(x))
+  stopifnot(has_fixedtrace(x))
+  stopifnot(has_ss1(x))
   
   # get sample mean
   av <- mmean(x)
