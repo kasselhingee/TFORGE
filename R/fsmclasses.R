@@ -12,7 +12,7 @@
 #'           list(matrix(c(0.1,0.2,0.3,0.2,0.4,0.5,0.3,0.5,0.6), 3), 
 #'                matrix(c(0.2,0.3,0.4,0.3,0.5,0.6,0.4,0.6,0.7), 3)))
 #' as_kfsm(x)
-#' as_flat(x)
+#' summary(as_flat(x))
 NULL
 
 #' @param x An object. 
@@ -86,3 +86,11 @@ summary.TFORGE_fsm <- function(object, ...){
        "Element Summary" = NextMethod())
 }
 
+#' @export
+summary.TFORGE_kfsm <- function(object, ...){
+  p <- dimfromvech(object[[1]][1, , drop = TRUE])
+  list(c("Number of samples" = length(object),
+    "Unflattened matrix ncol=nrow" = p,
+    "Flattened ncol" = ncol(object[[1]])),
+    "Sample sizes" = vapply(object, nrow, FUN.VALUE = 1))
+}
