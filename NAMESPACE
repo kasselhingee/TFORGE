@@ -2,7 +2,7 @@
 
 S3method(print,TFORGE)
 S3method(summary,TFORGE_fsm)
-export(as.mstorsst)
+export(as_flat)
 export(as_fsm)
 export(autozoom)
 export(bootresampling)
