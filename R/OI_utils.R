@@ -77,7 +77,7 @@ test_OIcov <- function(ms){
 #' @param s The scale \eqn{\sigma}{s} for the covariance matrix.
 #' @param tau The offset \eqn{\tau}{tau} for the covariance related to the diagonal elements of the random matrix.
 #' @export
-covOI <- function(p, s, tau, vectorisor = "vech"){
+OIcov <- function(p, s, tau, vectorisor = "vech"){
   if (tau >= 1/p){warning("tau larger than 1/p and 'covariance' will not be positive definite")}
   offsetc <- tau/(1-tau*p)
   diagcov <- diag(1, p) + offsetc

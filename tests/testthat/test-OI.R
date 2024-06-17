@@ -1,12 +1,12 @@
-test_that("covOI gives correct matrices", {
-  expect_equal(covOI(3, 2, 0, vectorisor = "vecd"),
+test_that("OIcov gives correct matrices", {
+  expect_equal(OIcov(3, 2, 0, vectorisor = "vecd"),
                4 * diag(6))
-  expect_equal(covOI(3, 1, 1/4, vectorisor = "vecd"),
+  expect_equal(OIcov(3, 1, 1/4, vectorisor = "vecd"),
                blockdiag(1 + diag(3), diag(3)))
   
-  vechcovOI <- covOI(3, 1, 1/4, vectorisor = "vech")
-  expect_equal(diag(vechcovOI), c(2,0.5,0.5,2,0.5,2))
-  expect_equal(which(vechcovOI == 1, arr.ind = TRUE, useNames = FALSE),
+  vechOIcov <- OIcov(3, 1, 1/4, vectorisor = "vech")
+  expect_equal(diag(vechOIcov), c(2,0.5,0.5,2,0.5,2))
+  expect_equal(which(vechOIcov == 1, arr.ind = TRUE, useNames = FALSE),
   matrix(c(4,1,
            6,1,
            1,4,
@@ -22,7 +22,7 @@ test_that("OIinnerprod fast matches slow method", {
   A <- invvech(rsymm_norm(1, mean = diag(3))[1, ])
   B <- invvech(rsymm_norm(1, mean = diag(3))[1, ])
   
-  covmat <- covOI(3, s, tau, vectorisor = "vecd")
+  covmat <- OIcov(3, s, tau, vectorisor = "vecd")
   slowinnprod <- drop(vecd(A) %*% solve(covmat) %*% vecd(B))
   fastinnprod <- OIinnerprod(A, B, s, tau)
   expect_equal(slowinnprod, fastinnprod) 
@@ -38,7 +38,7 @@ test_that("estimateOIparams get close really to correct tau and scale", {
   s = 2
   tau = 1/4
   p = 3
-  covmat <- covOI(p, s, tau)
+  covmat <- OIcov(p, s, tau)
   set.seed(344)
   ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
   Mhat <- invvech(colMeans(ms))
@@ -52,7 +52,7 @@ test_that("test_OIcov has uniform p values for a null situation", {
   s = 1
   tau = 1/8
   p = 3
-  covmat <- covOI(p, s, tau, vectorisor = "vech")
+  covmat <- OIcov(p, s, tau, vectorisor = "vech")
   set.seed(344)
   vals <- replicate(1E4,
     {
@@ -93,7 +93,7 @@ test_that("test_multiplicity_OI() on null has uniform p values", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- replicate(1000, {
-    Ysample <- rsymm_norm(1E2, diag(evals), sigma = covOI(length(evals), 1/2, 0, vectorisor = "vech"))
+    Ysample <- rsymm_norm(1E2, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
     test_multiplicity_OI(Ysample, mult = mult)$pval
   })
   
