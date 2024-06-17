@@ -125,11 +125,21 @@ test_that("pvalue close to uniform for non diagonal mean, unequal sample size", 
   C2 <- C1 <- diag(p*(p+1)/2)
   
   # set up distribution means
-  set.seed(348)
-  mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  # set.seed(348)
+  # mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U1 <- matrix(c(
+-0.05468859,  0.8779038,  0.4757037,
+-0.78026045,  0.2597070, -0.5689867,
+-0.62305922, -0.4022899,  0.6707906),
+  p, p, byrow = TRUE)
   mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
-  set.seed(543)
-  mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  # set.seed(543)
+  # mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U2 <- matrix(c(
+  -0.9445741, -0.09624873, -0.3138726,
+  -0.1296416, -0.76900390,  0.6259601,
+  -0.3016171,  0.63195663,  0.7139033),
+  p, p, byrow = TRUE)
   mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
   
   # simulate test statistic
@@ -151,11 +161,21 @@ test_that("pvalue close to uniform when some correlation", {
   diag(C2) <- diag(C1) <- 1
   
   # set up distribution means
-  set.seed(3481)
-  mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  # set.seed(3481)
+  # mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U1 <- matrix(c(
+  -0.4415301, -0.7780023, -0.4469492,
+  -0.3835614, -0.2866602,  0.8778989,
+  -0.8111300,  0.5590512, -0.1718426),
+  p, p, byrow = TRUE)
   mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
-  set.seed(5431)
-  mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  # set.seed(5431)
+  # mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U2 <- matrix(c(
+  -0.8007199,  0.2174407, -0.5581820,
+  -0.4646626, -0.8135303,  0.3496530,
+  -0.3780692,  0.5393404,  0.7524464),
+  p, p, byrow = TRUE)
   mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
   
   # simulate test statistic
