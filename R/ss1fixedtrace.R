@@ -1,11 +1,11 @@
 #' @title Statistic and test of 3-matrices with trace 0 and sum of sq eigenvalues equal to 1
 #' @details Warning: the null distribution of `stat_ss1fixedtrace()` for multisamples does not appear to be chi-sq.
-#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
+#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
 #' @param evals If supplied the eigenvalues of the null hypothesis and `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and is estimated within the function.
 #' @export
 stat_ss1fixedtrace <- function(x, evals = NULL){
-  x <- as.mstorsst(x)
-  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
+  x <- as_flat(x)
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   stopifnot(ncol(x[[1]]) == 6) #corresponds to 3x3 matrix
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
@@ -78,10 +78,10 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
 #' @param maxit Passed to [`emplik()`]
 #' @export
 test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
-  x <- as.mstorsst(x)
+  x <- as_flat(x)
   stopifnot(hasss1(x))
   stopifnot(hasfixedtrace(x))
-  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   

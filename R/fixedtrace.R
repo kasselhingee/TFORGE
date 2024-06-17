@@ -7,7 +7,7 @@
 #' @export
 #' @return `TRUE` or `FALSE`
 hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
-  x <- as.mstorsst(x)
+  x <- as_flat(x)
   if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
   diagels <- isondiag_vech(x[1, ])
   traces <- rowSums(x[, diagels])
@@ -16,12 +16,12 @@ hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 }
 
 #' @title Test for eigenvalues when trace is fixed.
-#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
+#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
 #' @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
 #' @export
 stat_fixedtrace <- function(x, evals = NULL){
-  x <- as.mstorsst(x)
-  if (inherits(x, "TFORGE_fsm")){mss <- as.mstorsst(list(x))}
+  x <- as_flat(x)
+  if (inherits(x, "TFORGE_fsm")){mss <- as_flat(list(x))}
   else {mss <- x}
   if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
@@ -78,9 +78,9 @@ stat_fixedtrace <- function(x, evals = NULL){
 #' @inheritParams stat_ss1fixedtrace
 #' @export
 test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
-  x <- as.mstorsst(x)
+  x <- as_flat(x)
   stopifnot(hasfixedtrace(x))
-  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   if (!is.null(evals)){

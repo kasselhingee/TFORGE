@@ -103,7 +103,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param ms2 Sample of matrices.
 #' @export
 test_unconstrained_Schwartzman <- function(ms1, ms2 = NULL){
-  ms1 <- as.mstorsst(ms1)
+  ms1 <- as_flat(ms1)
   if (inherits(ms1, "TFORGE_kfsm")){
     if (length(ms1) == 2){
       if (!is.null(ms2)){stop("ms1 is a list of samples, so ms2 must be NULL.")}

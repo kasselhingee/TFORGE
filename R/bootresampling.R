@@ -19,7 +19,7 @@
 #' @export
 bootresampling <- function(x, stdx, stat, B,  ...){
   stopifnot(is_single_whole_number(B))
-  x <- as.mstorsst(x)
+  x <- as_flat(x)
   t0 <- stat(x, ...)
   exargs <- list(...)
   if (inherits(x, "TFORGE_kfsm")){

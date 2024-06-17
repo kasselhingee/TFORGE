@@ -1,8 +1,8 @@
 #' @title Methods for testing eigenvalues with sum of squares = 1
-#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as.mstorsst()`] for required structure.
+#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
 stat_ss1 <- function(x, evals = NULL){
-  x <- as.mstorsst(x)
-  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
+  x <- as_flat(x)
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
   
@@ -75,9 +75,9 @@ amaral2007Lemma1 <- function(m){
 #' *Should I require tensors to be 3x3?
 #' @export
 test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
-  mss <- as.mstorsst(mss)
+  mss <- as_flat(mss)
   stopifnot(hasss1(mss))
-  if (inherits(mss, "TFORGE_fsm")){mss <- as.mstorsst(list(mss))}
+  if (inherits(mss, "TFORGE_fsm")){mss <- as_flat(list(mss))}
   if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   
@@ -120,7 +120,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
 #' @export
 #' @return `TRUE` or `FALSE`
 hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
-  x <- as.mstorsst(x)
+  x <- as_flat(x)
   if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
   ss <- apply(x, 1, function(v){
     m <- invvech(v)

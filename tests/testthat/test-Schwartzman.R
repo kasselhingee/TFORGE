@@ -364,7 +364,7 @@ test_that("test_unconstrained_Schwartzman() doesn't reject for simulation of mul
   
   res <- test_unconstrained_Schwartzman(Ysamples[[1]], Ysamples[[2]])
   expect_gt(res$pval, 0.2)
-  res2 <- test_unconstrained_Schwartzman(as.mstorsst(Ysamples))
+  res2 <- test_unconstrained_Schwartzman(as_flat(Ysamples))
   expect_equal(res, res2)
 })
 

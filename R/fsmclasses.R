@@ -11,6 +11,8 @@
 #'                matrix(c(2,3,4,3,5,6,4,6,7), 3)),
 #'           list(matrix(c(0.1,0.2,0.3,0.2,0.4,0.5,0.3,0.5,0.6), 3), 
 #'                matrix(c(0.2,0.3,0.4,0.3,0.5,0.6,0.4,0.6,0.7), 3)))
+#' as_kfsm(x)
+#' as_flat(x)
 NULL
 
 #' @param x An object. 
@@ -19,10 +21,10 @@ NULL
 #' + If `x` is a list of list of equal-sized matrices then it returns
 #' `x` with class `ms` added.
 #' If x is a list of symmetric matrices then it will become an `TFORGE_fsm`.
-#' In the rare case that `x` is a list, and each element is a matrix *vectorised* matrices such that each element of `x` is symmetric then `as.mstorsst()` will mistakenly treat each each element of `x` as a symmetric tensor and return an `TFORGE_fsm` object.
+#' In the rare case that `x` is a list, and each element is a matrix *vectorised* matrices such that each element of `x` is symmetric then `as_flat()` will mistakenly treat each each element of `x` as a symmetric tensor and return an `TFORGE_fsm` object.
 #' @return An object with class `TFORGE_kfsm` or `TFORGE_fsm`.
 #' @export
-as.mstorsst <- function(x, ...){
+as_flat <- function(x, ...){
   if (inherits(x, "TFORGE_kfsm")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (inherits(x, "TFORGE_fsm")){return(x)}
   if (inherits(x, "matrix")){return(as_fsm(x))}

@@ -26,7 +26,7 @@ cov_evals <- function(evecs, mcov){
 # @details If `evecs` is not provided then the eigenvectors \eqn{q_{0i}} are replaced with the eigenvectors of the average of `ms`.
 # @return An estimated covariance matrix for the eigenvalues of `ms`.
 cov_evals_est <- function(ms, evecs = NULL, av = NULL){
-  ms <- as.mstorsst(ms)
+  ms <- as_flat(ms)
   stopifnot(inherits(ms, "TFORGE_fsm"))
   if (is.null(av)){av <- mmean(ms)}
   if (is.null(evecs)){

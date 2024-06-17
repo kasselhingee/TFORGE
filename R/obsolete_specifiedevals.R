@@ -29,7 +29,7 @@ stat_specifiedevals <- function(ms, evals, evecs = NULL){### OBSOLETE ###
 #' @noRd
 #' @param B The number of bootstrap samples
 test_specifiedevals <- function(ms, evals, B){
-  ms <- as.mstorsst(ms)
+  ms <- as_flat(ms)
   ms_std <- standardise_specifiedevals(ms, evals)
   res <- bootresampling(ms, ms_std, 
     stat = stat_specifiedevals,

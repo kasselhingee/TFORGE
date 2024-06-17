@@ -1,17 +1,17 @@
-test_that("as.mstorsst() on list of TFORGE_fsm",{
+test_that("as_flat() on list of TFORGE_fsm",{
   set.seed(134)
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
     Y
   }, simplify = FALSE)
-  expect_silent(as.mstorsst(Ysamples))
-  expect_silent(as.mstorsst(Ysamples[1]))
+  expect_silent(as_flat(Ysamples))
+  expect_silent(as_flat(Ysamples[1]))
   
   expect_error(as_fsm(Ysamples))
   expect_error(as_fsm(matrix(1, 2, 5)), "Number")
 })
 
-test_that("as.mstorsst() on list of list of matrices", {
+test_that("as_flat() on list of list of matrices", {
   set.seed(13)
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -21,7 +21,7 @@ test_that("as.mstorsst() on list of list of matrices", {
     Y
     }, simplify = FALSE)
   
-  expect_s3_class(as.mstorsst(Ysamples), "TFORGE_kfsm")
+  expect_s3_class(as_flat(Ysamples), "TFORGE_kfsm")
   
   Ysamples <- list({
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -36,10 +36,10 @@ test_that("as.mstorsst() on list of list of matrices", {
                simplify = FALSE)
     Y})
   
-  expect_error(as.mstorsst(Ysamples), "different")
+  expect_error(as_flat(Ysamples), "different")
 })
 
-test_that("as.mstorsst() on list of TFORGE_fsm-like matrices", {
+test_that("as_flat() on list of TFORGE_fsm-like matrices", {
   set.seed(13)
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -47,7 +47,7 @@ test_that("as.mstorsst() on list of TFORGE_fsm-like matrices", {
     Y
     }, simplify = FALSE)
   
-  expect_s3_class(as.mstorsst(Ysamples), "TFORGE_kfsm")
+  expect_s3_class(as_flat(Ysamples), "TFORGE_kfsm")
   
   Ysamples <- list({
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -58,15 +58,15 @@ test_that("as.mstorsst() on list of TFORGE_fsm-like matrices", {
     class(Y) <- "matrix"
     Y})
   
-  expect_error(as.mstorsst(Ysamples), "different")
+  expect_error(as_flat(Ysamples), "different")
 })
 
 
-test_that("as.mstorsst() on a matrix-like TFORGE_fsm", {
+test_that("as_flat() on a matrix-like TFORGE_fsm", {
   set.seed(13)
   Y <- rsymm_norm(50, diag(c(3,2,1)))
   class(Y) <- "matrix"
-  Ysst <- as.mstorsst(Y)
+  Ysst <- as_flat(Y)
   expect_s3_class(Ysst, "TFORGE_fsm")
   expect_equal(nrow(Ysst), nrow(Y))
   expect_equal(ncol(Ysst), ncol(Y))
@@ -93,9 +93,9 @@ test_that("matrix generics work for TFORGE_fsm", {
   expect_error(Ysample_sst[[1:2]], "more than one")
 })
 
-test_that("as.mstorsst() works on a list of matrices", {
+test_that("as_flat() works on a list of matrices", {
   x <- rsymm_Schwartzman(10, diag(c(1,2,4)), drop(rWishart(1, 6, diag(6))))
-  res <- as.mstorsst(x)
+  res <- as_flat(x)
   expect_s3_class(res, "TFORGE_fsm")
   expect_equal(dim(res), c(10, 6))
 })

@@ -6,8 +6,8 @@
 #' @return The statistic with the null eigenvalues used as an attribute `null_evals`.
 #' @export
 stat_unconstrained <- function(x, evals = NULL, evecs = NULL){
-  x <- as.mstorsst(x)
-  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
+  x <- as_flat(x)
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
   if (!is.null(evecs) && (length(x) > 1)){warning("evecs supplied to multisample, but stat_unconstrained() does not support providing evecs for a multisample")}
@@ -55,8 +55,8 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL){
 #' @param B Number of bootstrap samples.
 #' @export
 test_unconstrained <- function(x, evals = NULL, evecs = NULL, B){
-  x <- as.mstorsst(x)
-  if (inherits(x, "TFORGE_fsm")){x <- as.mstorsst(list(x))}
+  x <- as_flat(x)
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   if (!is.null(evecs) && (length(x) > 1)){stop("evecs specified for multisample not supported")}
@@ -102,7 +102,7 @@ est_commonevals <- function(mss, Vs, evals){
 #' @describeIn stat_unconstrained Standardise a sample to satisfy the null hypothesis (i.e. the average has eigenvalues equal to `eval`).
 #' @export
 standardise_specifiedevals <- function(ms, evals){
-  ms <- as.mstorsst(ms)
+  ms <- as_flat(ms)
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(ms)
   errs <- merr(ms, mean = av)
