@@ -26,18 +26,24 @@ as.mstorsst <- function(x, ...){
   if (inherits(x, "TFORGE_kfsm")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (inherits(x, "TFORGE_fsm")){return(x)}
   if (inherits(x, "matrix")){return(as_fsm(x))}
-  if (inherits(x, "list")){ #a list of symmetric tensors or a list of TFORGE_fsm like things
-    val <- try(x <- as_fsm(x), silent = TRUE)
-    if (!inherits(val, "try-error")){return(x)}
-    else { #if the TFORGE_fsm fails then...
-      x <- lapply(x, as_fsm, ...) #does nothing if elements already preprocessed
-      dims <- vapply(x, ncol, FUN.VALUE = 3)
-      if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
-      class(x) <- c("TFORGE_kfsm", class(x))
-      return(x)
-    }
+
+  return(as_kfsm(x, ...))
+}
+
+as_kfsm <- function(x, ...){
+  if (inherits(x, "TFORGE_kfsm")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
+  if (!inherits(x, "list")){stop("x must be a list")}
+
+  # try converting each entry to an fsm
+  val <- try(x <- as_fsm(x, ...), silent = TRUE)
+  if (!inherits(val, "try-error")){return(x)}
+  else { #if the TFORGE_fsm fails then...
+    x <- lapply(x, as_fsm, ...) #does nothing if elements already preprocessed
+    dims <- vapply(x, ncol, FUN.VALUE = 3)
+    if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
+    class(x) <- c("TFORGE_kfsm", class(x))
+    return(x)
   }
-  stop("Could not convert to collection of flattened symmetric matrices.")
 }
 
 #' @describeIn fsm For `x` a list of symmetric matrices of the same size, flattens `x` into a 2D array the `i`th row is a flattened version `vech(x[[i]])` of the `i`th matrix of  `x`. If `x` is already flattened then `as_fsm()` will check that the number of columns are consistent with a flattened symmetric matrix.
