@@ -46,7 +46,7 @@ estimateOIparams <- function(ms, Mhat, tau = NULL){
 #' which is opposite to the statement in proposition 3.1 itself.
 #' @return A list of the p value, statistic, and estimated \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
 #' @export
-testOIcov <- function(ms){
+test_OIcov <- function(ms){
   p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
   q <- ncol(ms)
   if (nrow(ms) <= q * (q+3)/2){warning(sprintf("Only %i samples, but more than %i=q(q+3)/2 is usually required.", nrow(ms), q * (q+3)/2))}

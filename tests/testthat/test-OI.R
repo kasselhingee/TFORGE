@@ -47,8 +47,8 @@ test_that("estimateOIparams get close really to correct tau and scale", {
   expect_equal(OIparams$scalesq, s^2, tolerance = 1E-2)
 })
   
-test_that("testOIcov has uniform p values for a null situation", {
-  skip("failing - see report testOIcov_investigation.pdf")
+test_that("test_OIcov has uniform p values for a null situation", {
+  skip("failing - see report test_OIcov_investigation.pdf")
   s = 1
   tau = 1/8
   p = 3
@@ -57,7 +57,7 @@ test_that("testOIcov has uniform p values for a null situation", {
   vals <- replicate(1E4,
     {
     ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
-    res <- testOIcov(ms)
+    res <- test_OIcov(ms)
     unlist(res)
     }, cl = 2)
   # hist(vals["stat", ])
