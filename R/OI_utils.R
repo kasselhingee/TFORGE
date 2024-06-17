@@ -16,8 +16,8 @@ estimateOIparams <- function(ms, Mhat, tau = NULL){
   Yerr <- t(t(ms) - Ybar)
   # estimate tau
   if (is.null(tau)){
-    numerator <- mean(OIinnerprod_sst(Yerr, Yerr, 1, (p+1)/2)) +
-      OIinnerprod_sst(matrix(Ybar - vech(Mhat), nrow = 1), 
+    numerator <- mean(OIinnerprod_fsm(Yerr, Yerr, 1, (p+1)/2)) +
+      OIinnerprod_fsm(matrix(Ybar - vech(Mhat), nrow = 1), 
                                  matrix(Ybar - vech(Mhat), nrow = 1), 1, (p+1)/2)
     ondiag <- isondiag_vech(ncol(ms))
     trYi2Ybar <- rowSums(Yerr[, ondiag])
@@ -26,10 +26,10 @@ estimateOIparams <- function(ms, Mhat, tau = NULL){
   }
   
   # now to estimate scale
-  normYbarMhat <- OIinnerprod_sst(matrix(Ybar - vech(Mhat), nrow = 1),
+  normYbarMhat <- OIinnerprod_fsm(matrix(Ybar - vech(Mhat), nrow = 1),
                                   matrix(Ybar - vech(Mhat), nrow = 1),
                                   1, tau)
-  sYerr2 <- mean(OIinnerprod_sst(Yerr, Yerr, 1, tau))
+  sYerr2 <- mean(OIinnerprod_fsm(Yerr, Yerr, 1, tau))
   q <- p * (p+1)/2
   scalesq <- sYerr2/q + normYbarMhat/q
   return(list(scalesq = scalesq, tau = tau))
@@ -44,7 +44,7 @@ estimateOIparams <- function(ms, Mhat, tau = NULL){
 #'
 #' Should \eqn{\tau < 0}, Schwartzman et al (2008) after the proof of proposition 3.1 says the asymptotic distribution is "guaranteed only if \eqn{\tau < 0}", 
 #' which is opposite to the statement in proposition 3.1 itself.
-#' @returns A list of the p value, statistic, and estimated \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
+#' @return A list of the p value, statistic, and estimated \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
 #' @export
 testOIcov <- function(ms){
   p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
@@ -100,7 +100,7 @@ OIinnerprod <- function(A, B, s, tau){
 }
 
 # Avecs and Bvecs in vech representation, rowwise between each row of A to each row of B
-OIinnerprod_sst <- function(Avecs, Bvecs, s, tau){
+OIinnerprod_fsm <- function(Avecs, Bvecs, s, tau){
   stopifnot(ncol(Avecs) == ncol(Bvecs))
   stopifnot(nrow(Avecs) == nrow(Bvecs))
   isdiag <- isondiag_vech(ncol(Avecs))
