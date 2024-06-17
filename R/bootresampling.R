@@ -56,11 +56,11 @@ bootresampling <- function(x, stdx, stat, B,  ...){
   return(out)
 }
 
-#equivalent of sample, but for multiple samples
+#' @noRd
 #' @title Resample a multisample `TFORGE_kfsm` object
+#' @description equivalent of sample, but for multiple samples
 #' @param x an `TFORGE_kfsm`
 #' @param prob weights. If present, must have the same structure as `x`
-#' @export
 multisample <- function(x, prob = NULL){
   if (is.null(prob)){
     out <- lapply(x, sample_fsm, replace = TRUE)

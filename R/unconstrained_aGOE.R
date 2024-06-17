@@ -141,7 +141,6 @@ test_unconstrained_aGOE <- function(ms1, ms2 = NULL){
 # @details The test statistic computed is (eq 16 Schwartzman 2010), using given population means M1 and M2.
 # @param M1 population expectation for first population
 # @param M2 population expectation for second population
-#' @export
 statstar_schwartzman_eval <- function(ms1, ms2, M1, M2){
   ms1 <- as_fsm(ms1)
   ms2 <- as_fsm(ms2)
