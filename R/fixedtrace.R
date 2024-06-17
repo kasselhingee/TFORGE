@@ -138,7 +138,7 @@ projtrace <- function(m){ #project to have trace 0
   diag(m) <- newdiag
   return(m)
 }
-projtrace_sst <- function(ms){
+projtrace_fsm <- function(ms){
   diagels <- isondiag_vech(ms[1, ])
   H <- helmert(sum(diagels))
   projmat <- t(H) %*% diag(c(0,rep(1, sum(diagels)-1))) %*% H
