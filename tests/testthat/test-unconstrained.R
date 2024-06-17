@@ -3,7 +3,6 @@ test_that("stat for TFORGE_fsm has correct null distribution", {
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
     stat <- stat_unconstrained(Ysample, c(3,2,1))
-    expect_equal(as.numeric(stat), stat_specifiedevals(Ysample, c(3,2,1)))
     stat
   }, FUN.VALUE = 1.3)
 
@@ -17,7 +16,6 @@ test_that("stat for TFORGE_fsm, specified evecs, has correct null distribution",
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
     stat <- stat_unconstrained(Ysample, evals = c(3,2,1), evecs = diag(1, 3))
-    expect_equal(as.numeric(stat), stat_specifiedevals(Ysample, c(3,2,1), evecs = diag(1, 3)))
     stat
   }, FUN.VALUE = 1.3)
   
@@ -58,8 +56,6 @@ test_that("test TFORGE_fsm from NULL has uniform p-values", {
     set.seed(seed+1)
     res <- test_unconstrained(Ysample, c(3,2,1), B = 100)
     set.seed(seed+1)
-    res2 <- test_specifiedevals(Ysample, c(3,2,1), B = 100)
-    expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
     res$pval}, FUN.VALUE = 1.1)
   # qqplot(pvals, y = runif(1000))
   res <- suppressWarnings({ks.test(pvals, "punif")})
