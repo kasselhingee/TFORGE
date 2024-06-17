@@ -32,6 +32,7 @@ as_flat <- function(x, ...){
   return(as_kfsm(x, ...))
 }
 
+#' @export
 as_kfsm <- function(x, ...){
   if (inherits(x, "TFORGE_kfsm")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (!inherits(x, "list")){stop("x must be a list")}
