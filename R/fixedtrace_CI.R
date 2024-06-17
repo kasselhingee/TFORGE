@@ -107,7 +107,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
   } 
   
   if (check){
-    resample_avevals <- t(replicate(100, eigen_desc(mmean(samplesst(x)))$values))
+    resample_avevals <- t(replicate(100, eigen_desc(mmean(sample_fsm(x)))$values))
     inregionvals <- apply(resample_avevals, MARGIN = 1, function(v) {inregion(v)})
     coverage <- mean(inregionvals)
     coverage_sd <- sd(inregionvals)/sqrt(length(inregionvals))

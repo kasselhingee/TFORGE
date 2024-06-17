@@ -30,9 +30,9 @@ bootresampling <- function(x, stdx, stat, B,  ...){
     }
   } else if (inherits(x, "TFORGE_fsm")){
     if (inherits(stdx, "numeric")){#sample with weights cos stdx isn't the same shape as x
-      nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(x, prob = stdx, replace = TRUE)), exargs)), simplify = FALSE)
+      nullt_l <- replicate(B, catch_do.call(stat, c(list(sample_fsm(x, prob = stdx, replace = TRUE)), exargs)), simplify = FALSE)
     } else {
-      nullt_l <- replicate(B, catch_do.call(stat, c(list(samplesst(stdx, replace = TRUE)), exargs)), simplify = FALSE)
+      nullt_l <- replicate(B, catch_do.call(stat, c(list(sample_fsm(stdx, replace = TRUE)), exargs)), simplify = FALSE)
     }
   }
   
@@ -63,21 +63,21 @@ bootresampling <- function(x, stdx, stat, B,  ...){
 #' @export
 multisample <- function(x, prob = NULL){
   if (is.null(prob)){
-    out <- lapply(x, samplesst, replace = TRUE)
+    out <- lapply(x, sample_fsm, replace = TRUE)
     class(out) <- c("TFORGE_kfsm", class(out))
     return(out)
   }
   else {
     stopifnot(length(prob) == length(x))
     stopifnot(all(vapply(x, nrow, 2) == vapply(prob, length, 2)))
-    out <- mapply(samplesst, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
+    out <- mapply(sample_fsm, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
     class(out) <- c("TFORGE_kfsm", class(out))
     return(out)
   }
 }
 
 # an internal version of sample that automatically marks the result as an TFORGE_fsm
-samplesst <- function(x, prob = NULL, replace = TRUE){
+sample_fsm <- function(x, prob = NULL, replace = TRUE){
   stopifnot(inherits(x, "TFORGE_fsm"))
   idx <- sample.int(nrow(x), prob = prob, replace = replace)
   out <- x[idx, ]

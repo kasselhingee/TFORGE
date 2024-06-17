@@ -74,7 +74,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   coverage = NULL
   if (check){
     resample_avevals <- t(replicate(100, {
-      evals <- eigen_desc(mmean(samplesst(x)))$values
+      evals <- eigen_desc(mmean(sample_fsm(x)))$values
       evals/sqrt(sum(evals^2))}
     ))
     inregion <- apply(resample_avevals, MARGIN = 1, 
