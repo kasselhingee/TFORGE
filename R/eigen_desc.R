@@ -1,5 +1,5 @@
 #' @noRd
-#' A wrapper around eigen() that sorts eigenvalues according to decreasing order
+#' @title A wrapper around eigen() that sorts eigenvalues according to decreasing order
 #' @description `base` `eigen()` orders eigenvalues by absolute size. This wrapper sorts the results in decreasing order, positive to negative.
 #' @param ... Passed to [`base::eigen()`].
 #' @return Same as [`base::eigen()`], but eigenvalues sorted in decreasing.

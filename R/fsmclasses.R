@@ -1,5 +1,5 @@
-#' @rdname fsm
-#' @title Flat symmetric matrix classes for storing and checking symmetric matrices
+#' @title Flat storage of symmetric matrices
+#' @name fsm
 #' @description
 #' The `fsm` class, short for 'Flat Symmetric Matrices' is for a collection symmetric matrices with each matrix stored as a row according to [`vech()`].
 #' The `fsm` class is itself a thin wrapper of the matrix class.
@@ -15,13 +15,13 @@
 #' summary(as_flat(x))
 NULL
 
-#' @param x An object. 
-#' @param ... Passed to `isSymmetric()` for testing whether matrices are symmetric.
-#' @details 
+#' @describeIn fsm Automatically convert to either a `kfsm` or a `fsm`.
 #' + If `x` is a list of list of equal-sized matrices then it returns
 #' `x` with class `ms` added.
 #' If x is a list of symmetric matrices then it will become an `TFORGE_fsm`.
 #' In the rare case that `x` is a list, and each element is a matrix *vectorised* matrices such that each element of `x` is symmetric then `as_flat()` will mistakenly treat each each element of `x` as a symmetric tensor and return an `TFORGE_fsm` object.
+#' @param x An object. 
+#' @param ... Passed to `isSymmetric()` for testing whether matrices are symmetric.
 #' @return An object with class `TFORGE_kfsm` or `TFORGE_fsm`.
 #' @export
 as_flat <- function(x, ...){
@@ -32,6 +32,7 @@ as_flat <- function(x, ...){
   return(as_kfsm(x, ...))
 }
 
+#' @describeIn fsm Convert multiple collections of matrices into a `kfsm`. `x` must be a list, with each entry of `x` a separate collection of matrices.
 #' @export
 as_kfsm <- function(x, ...){
   if (inherits(x, "TFORGE_kfsm")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
