@@ -12,3 +12,17 @@ solve_error <- function(A){
   out
 }
 
+descendingordererror <- function(d0){
+  # good help on withRestarts and related here: http://adv-r.had.co.nz/beyond-exception-handling.html
+  withRestarts(
+    stop(structure(
+      class = c("est_evals_not_descending", "error", "condition"),
+      list(message = paste("Estimated common eigenvalues are not in descending order:", paste(d0, collapse = " ")),
+           call = sys.call(-1))
+    )),
+    ignore = function() d0,
+    sort = function() sort(d0, decreasing = TRUE, na.last = TRUE),
+    use_NA = function() NA * d0,
+    use_value = function(xx) xx
+  )
+}
