@@ -2,6 +2,9 @@
 #' @title Flat symmetric matrix classes for storing and checking symmetric matrices
 #' @description
 #' The `fsm` class, short for 'Flat Symmetric Matrices' is for a collection symmetric matrices with each matrix stored as a row according to [`vech()`].
+#' The `fsm` class is itself a thin wrapper of the matrix class.
+#' So, for example, `x[1, ]` will return the flattened-form of the first matrix in the collection, and `invvech(x[1,])` will be the first matrix in non-flat form.
+#'
 #' The `kfsm` class is for a collection of multiple `fsm`.
 #' @examples
 #' x <- list(list(matrix(c(1,2,3,2,4,5,3,5,6), 3), 
