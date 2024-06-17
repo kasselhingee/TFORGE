@@ -41,7 +41,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
   expect_gt(res$p.value, 0.2)
 })
 
-test_that("stat_ss1fixedtrace() on mst from NULL is not inconsistent with chisq on n=300", {
+test_that("stat_ss1fixedtrace() on TFORGE_kfsm from NULL is not inconsistent with chisq on n=300", {
   vals <- vapply(300 + (1:1000), function(seed){
     set.seed(seed)
     Ysamples <- lapply(c(1000, 300), function(n){
@@ -73,7 +73,7 @@ test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
   expect_gt(res$p.value, 0.05)
 })
 
-test_that("test_ss1fixedtrace() uniform pval on NULL mst", {
+test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_kfsm", {
   pvals <- vapply(13131 + (1:100), function(seed){
     set.seed(seed)
     Ysamples <- replicate(2, {

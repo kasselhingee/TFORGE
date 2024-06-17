@@ -8,7 +8,7 @@
 #' @return `TRUE` or `FALSE`
 hasfixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
-  if (inherits(x, "mst")){x <- do.call(rbind, x)}
+  if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
   diagels <- isondiag_vech(x[1, ])
   traces <- rowSums(x[, diagels])
   tracerange <- range(traces)

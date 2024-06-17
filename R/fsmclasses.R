@@ -17,10 +17,10 @@ NULL
 #' `x` with class `ms` added.
 #' If x is a list of symmetric matrices then it will become an `TFORGE_fsm`.
 #' In the rare case that `x` is a list, and each element is a matrix *vectorised* matrices such that each element of `x` is symmetric then `as.mstorsst()` will mistakenly treat each each element of `x` as a symmetric tensor and return an `TFORGE_fsm` object.
-#' @return An object with class `mst` or `TFORGE_fsm`.
+#' @return An object with class `TFORGE_kfsm` or `TFORGE_fsm`.
 #' @export
 as.mstorsst <- function(x, ...){
-  if (inherits(x, "mst")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
+  if (inherits(x, "TFORGE_kfsm")){return(x)}  #isa() requires a match on all elements of the class attribute, so inherits() more suitable
   if (inherits(x, "TFORGE_fsm")){return(x)}
   if (inherits(x, "matrix")){return(as_fsm(x))}
   if (inherits(x, "list")){ #a list of symmetric tensors or a list of TFORGE_fsm like things
@@ -30,7 +30,7 @@ as.mstorsst <- function(x, ...){
       x <- lapply(x, as_fsm, ...) #does nothing if elements already preprocessed
       dims <- vapply(x, ncol, FUN.VALUE = 3)
       if (length(unique(dims)) != 1){stop("Matrices in samples have different sizes.")}
-      class(x) <- c("mst", class(x))
+      class(x) <- c("TFORGE_kfsm", class(x))
       return(x)
     }
   }

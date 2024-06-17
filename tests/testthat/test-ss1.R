@@ -40,7 +40,7 @@ test_that("test_ss1() uniform pval on NULL TFORGE_fsm", {
   expect_gt(res$p.value, 0.05)
 })
 
-test_that("test_ss1() uniform pval on NULL mst", {
+test_that("test_ss1() uniform pval on NULL TFORGE_kfsm", {
   set.seed(1333)
   pvals <- replicate(100, {
     Ysamples <- replicate(2, {
@@ -72,7 +72,7 @@ test_that("test_ss1() reject with warning for single sample with very wrong eval
   expect_equal(res$pval, 0)
 })
 
-test_that("test_ss1() reject for an mst", {
+test_that("test_ss1() reject for an TFORGE_kfsm", {
   set.seed(1333)
   Ysamples <- list(
     rsymm_norm(30, diag(c(3,2,1))),

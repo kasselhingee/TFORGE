@@ -22,7 +22,7 @@ bootresampling <- function(x, stdx, stat, B,  ...){
   x <- as.mstorsst(x)
   t0 <- stat(x, ...)
   exargs <- list(...)
-  if (inherits(x, "mst")){
+  if (inherits(x, "TFORGE_kfsm")){
     if (inherits(stdx[[1]], "numeric")){ #stdx is a vector of weights
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(x, prob = stdx)), exargs)), simplify = FALSE)
     } else { #if stdx isn't a vector of weights, assume it is a standardised version of x
@@ -57,21 +57,21 @@ bootresampling <- function(x, stdx, stat, B,  ...){
 }
 
 #equivalent of sample, but for multiple samples
-#' @title Resample a multisample `mst` object
-#' @param x an `mst`
+#' @title Resample a multisample `TFORGE_kfsm` object
+#' @param x an `TFORGE_kfsm`
 #' @param prob weights. If present, must have the same structure as `x`
 #' @export
 multisample <- function(x, prob = NULL){
   if (is.null(prob)){
     out <- lapply(x, samplesst, replace = TRUE)
-    class(out) <- c("mst", class(out))
+    class(out) <- c("TFORGE_kfsm", class(out))
     return(out)
   }
   else {
     stopifnot(length(prob) == length(x))
     stopifnot(all(vapply(x, nrow, 2) == vapply(prob, length, 2)))
     out <- mapply(samplesst, x, prob = prob, MoreArgs = list(replace = TRUE), SIMPLIFY = FALSE)
-    class(out) <- c("mst", class(out))
+    class(out) <- c("TFORGE_kfsm", class(out))
     return(out)
   }
 }

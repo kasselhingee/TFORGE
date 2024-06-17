@@ -21,7 +21,7 @@ test_that("as.mstorsst() on list of list of matrices", {
     Y
     }, simplify = FALSE)
   
-  expect_s3_class(as.mstorsst(Ysamples), "mst")
+  expect_s3_class(as.mstorsst(Ysamples), "TFORGE_kfsm")
   
   Ysamples <- list({
     Y <- rsymm_norm(50, diag(c(3,2,1)))
@@ -47,7 +47,7 @@ test_that("as.mstorsst() on list of TFORGE_fsm-like matrices", {
     Y
     }, simplify = FALSE)
   
-  expect_s3_class(as.mstorsst(Ysamples), "mst")
+  expect_s3_class(as.mstorsst(Ysamples), "TFORGE_kfsm")
   
   Ysamples <- list({
     Y <- rsymm_norm(50, diag(c(3,2,1)))

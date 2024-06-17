@@ -125,7 +125,7 @@ test_that("test of NULL has uniform p values for TFORGE_fsm", {
   expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.2)
 })
 
-test_that("test of NULL has uniform p values for mst", {
+test_that("test of NULL has uniform p values for TFORGE_kfsm", {
   set.seed(1333)
   pvals <- replicate(100, {
     Ysamples <- replicate(5, {

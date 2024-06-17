@@ -121,7 +121,7 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
 #' @return `TRUE` or `FALSE`
 hasss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as.mstorsst(x)
-  if (inherits(x, "mst")){x <- do.call(rbind, x)}
+  if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
   ss <- apply(x, 1, function(v){
     m <- invvech(v)
     sum(diag(m%*%m))
