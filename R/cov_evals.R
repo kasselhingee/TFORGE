@@ -1,9 +1,14 @@
-#' General function for computing covariance of eigenvalues.
-#' @param evecs Matrix of eigenvectors of the mean as columns.
+#' Eigenvalue covariance from eigenvectors and element-wise covariance
+#' @description
+#' For a random symmetric matrix `Y`, the covariance of the eigenvalues of `Y` is calculated from the covariance of the elements and the eigenvectors of the mean of `Y`.
+#' This calculation is valid when the eigenvalues are distinct.
+#' @param evecs Matrix of eigenvectors of the mean of `Y`. Eigenvectors as columns and ordered according to descending eigenvalue.
 #' @param mcov Covariance of `vech(Y)`, where `Y` is the random matrix.
-#' @details Computes equation (11) of `tensors_4` with \eqn{C_0}.
+#' @details Uses `RcppArmadillo` for a slight increase in speed.
+# Computes equation (11) of `tensors_4` with \eqn{C_0}.
 #' @useDynLib TFORGE, .registration=TRUE
 #' @importFrom Rcpp evalCpp
+#' @return A covariance matrix corresponding to the eigenvalues of the mean of `Y` in descending order.
 #' @export
 cov_evals <- function(evecs, mcov){
   # the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
