@@ -18,14 +18,14 @@
 #' + *include an option (`repair` say) to use common evals that aren't descending by reordering?*
 #' @return
 #' A list of
-#'  + `pval` the given p-value
-#'  + `t0` the statistic for the observations `x`,
-#'  + `nullt` The statistics for the resampled (and possibly tranformed) data
+#'  + `pval` the `p`-value from the test
+#'  + `t0` the statistic for the observations `x`
+#'  + `nullt` The statistic evaluated on the resamples
 #'  + `stdx` The `stdx` passed into `bootresampling()`
 #'  + `B` The number of resamples requested
 #'  + `nullt_messages` Any error messages for the corresponding resample
 #'
-#' The object has bespoke class `TFORGE` for easy use of `print()`
+#' The returned object has a bespoke class `TFORGE` for easy use of `print()`.
 #' @export
 bootresampling <- function(x, stdx, stat, B,  ...){
   stopifnot(is_single_whole_number(B))
