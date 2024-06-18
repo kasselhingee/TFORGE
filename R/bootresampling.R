@@ -1,11 +1,20 @@
 #' @title A function for helping perform single-sample and k-sample bootstrap tests
-#' @param x Observations as a list of matices, or list of list of matrices.
-#' @param stdx List of matrices standardized to satisfy the null OR sampling weights for each matrix in `x`, in the same structure as `x`.
-#' @param stat Function to compute the statistic
-#' @param B The number of bootstrap samples to use
+#' @description
+#' Performs bootstrap resampling, calculation of a statistic and returns `p`-value of a hypothesis test. 
+#' Resampling is conducted as if the null hypothesis holds by using the `stdx` argument which contains either standardised matrices or weights.
+#' @param x Symmetric matrix observations compatible as a list of matrices, or list of list of matrices (see [`as_flat()`]).
+#' @param stdx A (multi)sample of matrices stored in flat form ([`as_flat()`]) and standardized to satisfy the null hypothesis OR sampling weights for each matrix in `x`, in the same structure as `x`.
+#' @param stat Function to compute the statistic.
+#' @param B The number of bootstrap samples to use.
 #' @param ... Passed to `stat`
-#' @details Resamples that lead to an error will have NA values with error message returned in the `nullt_messages` slot.
-#' *include an option to use common evals that aren't descending by reordering?*
+#' @details
+#' The function `stat` is applied to `x` and all resamples. The statistic values are returned in the `t0` and `nullt` elements respectively.
+#' 
+#' Errors in evaluating the statistic `stat` on resamples are recorded in the `nullt_messages` and lead to `NA` values for the statistic.
+#' 
+#' The `p`-value is the fraction of non-`NA` resample statistic values that are greater than the `stat` applied to `x`.
+#' 
+#' + *include an option (`repair` say) to use common evals that aren't descending by reordering?*
 #' @return
 #' A list of
 #'  + `pval` the given p-value
