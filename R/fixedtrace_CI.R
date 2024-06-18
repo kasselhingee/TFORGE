@@ -27,8 +27,13 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
   return(locsplanearoundcenter)
 }
 
-#' @title Confidence region for 3x3 Tensors with Fixed Trace Constraint
-#' @param x A sample of 3x3 tensors.
+#' @title Eigenvalue confidence region under fixed trace constraint
+#' @description When a 3x3 symmetric matrices has a fixed-trace constraint, the vector of its eigenvalues lies within a 2D plane within 3D space.
+#' This 2D plane can be used to plot confidence regions for the eigenvalues of a population mean.
+#' @details
+#' Uses the same statistic as [`test_fixedtrace()`] and bootstrap resampling to obtain approximate bounds on the eigenvalues of a population mean.
+#' A warning will be generated if the confidence region leaves the space of distinct descending-order eigenvalues.
+#' @param x A single sample of 3x3 tensors (see [`as_fsm()])
 #' @param alpha Significance level
 #' @param B Number of bootstrap resamples.
 #' @param pts Number of points on the boundary of the region to compute.
