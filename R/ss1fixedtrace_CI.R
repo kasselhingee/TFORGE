@@ -1,14 +1,14 @@
-#' @title Confidence interval for 3x3 Tensors with trace 0 and sum of sq eigenvalues equal to 1
-#' @param x A sample of 3x3 tensors.
-#' @param alpha Significance level
-#' @param B Number of bootstrap resamples.
-#' @param check If `TRUE`, then the mean of 100 new resamples will be used to check the coverage of the interval.
+#' @title Eigenvalue confidence interval under trace=0 and sum of square constraint
+#' @description When a 3x3 symmetric matrix has a trace of zero and the sum of squared eigenvalues is one, then the eigenvalues of the matrix lie on a circle in 3D space.
+#' Under these situations, this function calculates a confidence region (i.e. intervals) for the population mean's eigenvalues.
+#' The confidence interval can be easily described on this circle.
+#' The function `conf_ss1fixedtrace_inregion()` returns whether a set of eigenvalues is inside a confidence region returned by `conf_fixedtrace()`.
+#' @inheritParams conf_fixedtrace
 #' @return A list:
-#' + `est`: point estimate of eigenvalues of the mean tensor
-#' + `lower`: lower end of the confidence interval
-#' + `upper`: upper end of the confidence interval
+#' + `est`: the eigenvalues of the mean matrix
+#' + `lower` and `upper`: the two ends of the confidence interval
 #' + `Omega`: The estimated covariance of the (projected) eigenvalues
-#' + `threshold`: The threshold on the statistic used.
+#' + `threshold`: The threshold (estimated via resampling) on the statistic
 #' @export
 conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   # checks
@@ -94,8 +94,9 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   
 
 # and a test function - see if lower and upper points project to either side of the tangent at the test evals
-#' @describeIn conf_ss1fixedtrace Test whether a particular set of eigenvalues `evals` lies in the confidence region returned by [conf_ss1fixedtrace()].
-#' @param evals A set of eigenvalues with trace of zero and sum of squares of 1.
+# @describeIn conf_ss1fixedtrace Test whether a particular set of eigenvalues `evals` lies in the confidence region returned by [conf_ss1fixedtrace()].
+#' @rdname conf_ss1fixedtrace
+#' @param evals A set of eigenvalues with trace of zero and sum of squares of one.
 #' @param cr A confidence region returned by [conf_ss1fixedtrace()].
 #' @export
 conf_ss1fixedtrace_inregion <- function(evals, cr){

@@ -41,7 +41,7 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 #' @param npts Number of points on the boundary of the region to compute.
 #' @param check If `TRUE`, then the mean of 100 new resamples will be used to check the coverage of the region.
 #' @return A list:
-#' + `est`: the eigenvalues of the mean matrices.
+#' + `est`: the eigenvalues of the mean matrix.
 #' + `boundary`: A matrix with 3 columns and `npts` rows giving the boundary of the region. Each row corresponds to a point on the boundary and the columns are the first, second and final eigenvalue.
 #' + `Omega`: The estimated covariance of the (projected) eigenvalues
 #' + `threshold`: The threshold (estimated via resampling) on the statistic.
