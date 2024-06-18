@@ -28,22 +28,23 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 }
 
 #' @title Eigenvalue confidence region under fixed trace constraint
-#' @description When a 3x3 symmetric matrices has a fixed-trace constraint, the vector of its eigenvalues lies within a 2D plane within 3D space.
-#' This 2D plane can be used to plot confidence regions for the eigenvalues of a population mean.
+#' @description When a 3x3 symmetric matrix has a fixed-trace constraint, the vector of its eigenvalues lies on a 2D plane within 3D space.
+#' This function calculates the boundary of an approximate confidence region in this 2D plane using the same statistic as [`test_fixedtrace()`].
+#' The boundary can be used to plot the confidence region.
 #' @details
 #' Uses the same statistic as [`test_fixedtrace()`] and bootstrap resampling to obtain approximate bounds on the eigenvalues of a population mean.
-#' A warning will be generated if the confidence region leaves the space of distinct descending-order eigenvalues.
-#' @param x A single sample of 3x3 tensors (see [`as_fsm()`])
-#' @param alpha Significance level
+#' The statistic has a quadratic form so that the boundary of the confidence region is an ellipse, but for plotting simplicity the ellipse is returned as a dense set of `npts` points.
+#' A warning will be generated if the confidence region leaves the space of distinct descending-order eigenvalues and a check of coverage of bootstrap resamples is available.
+#' @param x A single sample of 3x3 symmetric matrices (passed to [`as_fsm()`])
+#' @param alpha Desired significance level of the approximate confidence region.
 #' @param B Number of bootstrap resamples.
-#' @param pts Number of points on the boundary of the region to compute.
-#' @param check If `TRUE`, then the mean of 100 new resamples will be used to check the coverage of the interval.
+#' @param npts Number of points on the boundary of the region to compute.
+#' @param check If `TRUE`, then the mean of 100 new resamples will be used to check the coverage of the region.
 #' @return A list:
-#' + `est`: the eigenvalues of the mean tensor
-#' + `boundary`: npts x 3 matrix giving the boundary of the region (each row corresponds to a point on the boundary and the columns are the first, second and final eigenvalue).
-#' + `inregion`: A function that accepts a vector of eigenvalues and returns `TRUE` when the eigenvalues are in the confidence region and `FALSE` otherwise. *This function may not survive being saved as an .rds because it looks at the environment it was created in. - Need to check.*
+#' + `est`: the eigenvalues of the mean matrices.
+#' + `boundary`: A matrix with 3 columns and `npts` rows giving the boundary of the region. Each row corresponds to a point on the boundary and the columns are the first, second and final eigenvalue.
 #' + `Omega`: The estimated covariance of the (projected) eigenvalues
-#' + `threshold`: The threshold on the statistic used.
+#' + `threshold`: The threshold (estimated via resampling) on the statistic.
 #' @export
 conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE){
   stopifnot(ncol(x) == 6)
@@ -127,7 +128,6 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
   return(list(
     est = av_eval,
     boundary = bdrypts,
-    inregion = inregion,
     Omega = Omega,
     threshold = statthreshold,
     bootstat = res$nullt
