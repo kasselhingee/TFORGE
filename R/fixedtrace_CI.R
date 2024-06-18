@@ -33,7 +33,7 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 #' @details
 #' Uses the same statistic as [`test_fixedtrace()`] and bootstrap resampling to obtain approximate bounds on the eigenvalues of a population mean.
 #' A warning will be generated if the confidence region leaves the space of distinct descending-order eigenvalues.
-#' @param x A single sample of 3x3 tensors (see [`as_fsm()])
+#' @param x A single sample of 3x3 tensors (see [`as_fsm()`])
 #' @param alpha Significance level
 #' @param B Number of bootstrap resamples.
 #' @param pts Number of points on the boundary of the region to compute.
