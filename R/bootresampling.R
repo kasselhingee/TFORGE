@@ -1,8 +1,9 @@
 #' @title A function for helping perform single-sample and k-sample bootstrap tests
 #' @description
+#' Designed for internal use.
 #' Performs bootstrap resampling, calculation of a statistic and returns `p`-value of a hypothesis test. 
 #' Resampling is conducted as if the null hypothesis holds by using the `stdx` argument which contains either standardised matrices or weights.
-#' @param x Symmetric matrix observations compatible as a list of matrices, or list of list of matrices (see [`as_flat()`]).
+#' @param x Symmetric matrix observations as a list of matrices, or list of list of matrices (see [`as_flat()`]).
 #' @param stdx A (multi)sample of matrices stored in flat form ([`as_flat()`]) and standardized to satisfy the null hypothesis OR sampling weights for each matrix in `x`, in the same structure as `x`.
 #' @param stat Function to compute the statistic.
 #' @param B The number of bootstrap samples to use.
