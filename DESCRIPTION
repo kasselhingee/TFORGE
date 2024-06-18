@@ -6,7 +6,7 @@ Authors@R:
     c(person(given = "Kassel Liam", family = "Hingee", email = "kassel.hingee@anu.edu.au", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9894-2407")),
     person("Art B.", "Owen", role = c("cph"))
     )
-Description: When observations are symmetric matrices (also called tensors) there is often interest in properties of the eigenvalues. For a single sample the eigenvalues or eigenvalue multiplicity of the population mean can be tested. For k-samples, equal eigenvalues between the samples can be tested. The matrices may also have certain constraints common to geophysical tensors (constant trace, sum of squared eigenvalues, or both). The most flexible tests use pivotal bootstrap methods. Other tests can use a Gaussian orthogonal ensemble approximation or orthogonally-invariant covariance. The package name is given by Tests FOR Geophysical Eigenvalues.
+Description: When observations are symmetric matrices (also called tensors) there is often interest in properties of the eigenvalues. For a single sample the eigenvalues or eigenvalue-multiplicity of the population mean can be tested. For k-samples, equal eigenvalues between the samples can be tested. The matrices may also have certain constraints common to geophysical tensors (constant trace, sum of squared eigenvalues, or both). The most flexible tests use pivotal bootstrap methods. Also available are a 2-sample test using a Gaussian orthogonal ensemble approximation and a eigenvalue-multiplicity tests assuming orthogonally-invariant covariance. The package name is short for Tests FOR Geophysical Eigenvalues.
 Imports:
   mvtnorm,
   purrr,
