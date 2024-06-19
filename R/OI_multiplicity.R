@@ -1,5 +1,10 @@
-#' @title Test of multiplicity given in Corllary 4.3 Schwartzman et al 2008
-#' @details An estimate of the scale of the covariance is required, which uses [`estimate_OIcov()`] and the MLE under the null hypothesis given by Theorem 4.2 of Schwartzman 2008
+#' @title Test of eigenvalue multiplicity assuming orthogonally invariant covariance
+#' @description 
+#' Given a sample from a population of symmetric matrices with Gaussian-distributed elements and orthogonally-invariant covariance, corollary 4.3 by \insertCite{schwartzman2008in;textual}{TFORGE} provides a method to test the eigenvalue multiplicity of the mean matrix.
+#' Orthogonally-invariant covariance is a strong assumption and may not be valid; consider using [`test_multiplicity()`] if you are unsure.
+#' @inheritParams test_multiplicity
+#' @details 
+#' The orthogonally invariant covariance matrix is estimated [`estimate_OIparams()`]. The maximum-likilihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
 #' @export
 test_multiplicity_OI <- function(Ysample, mult){
   mn <- colMeans(Ysample)
