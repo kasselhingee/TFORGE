@@ -6,29 +6,34 @@
 #' Any orthogonally-invariant covariance can be specified by just two parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
 #' For a Gaussian-distributed elements, the parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} can be estimated by maximum-likelihood if provided the data and the maximum-likelihood estimate of the population mean \insertCite{@Lemma 3.3, @schwartzman2008in}{TFORGE}.
 #' @param Mhat A maximum-likelihood estimate of the population mean
-#' @param ms A single sample of symmetric matrices (passed to [`as_fsm()`]).
+#' @param x A single sample of symmetric matrices (passed to [`as_fsm()`]).
 #' @param tau If supplied only \eqn{\sigma^2}{s^2} will be estimated.
 #' @returns A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
 #' @details
 #' # Orthoganally-Invariant Covariance
-#' A random matrix `Y` with a Gaussian distribution has orthogonally-invariant covariance if and only if `Q %*% Y %*% t(Q)` has the same distribution as `Y` for any orthogonal matrix `Q`.
+#' A symmetric random matrix \eqn{Y} with a Gaussian distribution has orthogonally-invariant covariance if and only if \eqn{Q Y Q^T} has the same distribution as \eqn{Y} for any orthogonal matrix \eqn{Q}.
+#' 
+#' Using the parameterisation of \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} by \insertCite{schwartzman2008in;textual}{TFORGE}:
+#'  + the covariance of the off-diagonal elements of \eqn{Y} is \eqn{I\sigma^2/2}{Is^2/2} where \eqn{I} is the identity matrix of the correct size.
+#'  + the covariance of the diagonal elements of \eqn{Y} is \eqn{\sigma^2 (I + 1 1^T \tau/(1-\tau p) )}{s^2 (I + 1 1^T \tau/(1-\tau p) )} where \eqn{p} is the number of columns of \eqn{Y} and \eqn{1} is the vector of ones.
+#'  + the covariance between diagonal elements and non-diagonal elements is zero (i.e. they are independent).
 #' @references
 #' \insertAllCited{}
 #' @export
-estimate_OIcov <- function(ms, Mhat, tau = NULL){
-  ms <- as_fsm(ms)
-  p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
+estimate_OIcov <- function(x, Mhat, tau = NULL){
+  x <- as_fsm(x)
+  p <- as.integer((-1 + sqrt(8*ncol(x) + 1))/2)
   q <- p * (p+1)/2
-  Ybar <- colMeans(ms)
-  Yerr <- t(t(ms) - Ybar)
+  Ybar <- colMeans(x)
+  Yerr <- t(t(x) - Ybar)
   # estimate tau
   if (is.null(tau)){
     numerator <- mean(OIinnerprod_fsm(Yerr, Yerr, 1, (p+1)/2)) +
       OIinnerprod_fsm(matrix(Ybar - vech(Mhat), nrow = 1), 
                                  matrix(Ybar - vech(Mhat), nrow = 1), 1, (p+1)/2)
-    ondiag <- isondiag_vech(ncol(ms))
+    ondiag <- isondiag_vech(ncol(x))
     trYi2Ybar <- rowSums(Yerr[, ondiag])
-    denominator <- (ncol(ms) - 1) * (mean(trYi2Ybar^2) + sum((Ybar - vech(Mhat))[ondiag])^2)
+    denominator <- (ncol(x) - 1) * (mean(trYi2Ybar^2) + sum((Ybar - vech(Mhat))[ondiag])^2)
     tau <- -numerator/denominator
   }
   
@@ -53,15 +58,15 @@ estimate_OIcov <- function(ms, Mhat, tau = NULL){
 #' which is opposite to the statement in proposition 3.1 itself.
 #' @return A list of the p value, statistic, and estimated \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
 #' @export
-test_OIcov <- function(ms){
-  p <- as.integer((-1 + sqrt(8*ncol(ms) + 1))/2)
-  q <- ncol(ms)
-  if (nrow(ms) <= q * (q+3)/2){warning(sprintf("Only %i samples, but more than %i=q(q+3)/2 is usually required.", nrow(ms), q * (q+3)/2))}
-  Ybar <- colMeans(ms)
-  OIparams <- estimate_OIcov(ms, Ybar)
+test_OIcov <- function(x){
+  p <- as.integer((-1 + sqrt(8*ncol(x) + 1))/2)
+  q <- ncol(x)
+  if (nrow(x) <= q * (q+3)/2){warning(sprintf("Only %i samples, but more than %i=q(q+3)/2 is usually required.", nrow(x), q * (q+3)/2))}
+  Ybar <- colMeans(x)
+  OIparams <- estimate_OIcov(x, Ybar)
   if (OIparams$tau < 0){warning(sprintf("Estimated tau=%f is smaller than 0. The distribution of the test statistic is only valid when tau > 0.", OIparams$tau))}
-  covhat <- S_mcovar(t(t(ms)-Ybar))
-  stat <- nrow(ms) * (q * log(OIparams$scalesq) - log(1-p*OIparams$tau) - determinant(covhat, logarithm = TRUE)$modulus)
+  covhat <- S_mcovar(t(t(x)-Ybar))
+  stat <- nrow(x) * (q * log(OIparams$scalesq) - log(1-p*OIparams$tau) - determinant(covhat, logarithm = TRUE)$modulus)
   stat <- as.numeric(stat)
   pval <- 1-pchisq(stat, df = q*(q+1)/2 - 2)
   return(list(
