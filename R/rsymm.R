@@ -12,7 +12,7 @@
 rsymm_norm <- function(n, mean, sigma = diag(length(vech(mean)))){
   stopifnot(isSymmetric(mean))
   tmp <- mvtnorm::rmvnorm(n, mean = vech(mean), sigma = sigma)
-  class(tmp) <- c("TFORGE_fsm", class(tmp))
+  class(tmp) <- c("TFORGE_fsm", "array")
   return(tmp)
 }
 #' @export
