@@ -94,7 +94,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   
 
 # and a test function - see if lower and upper points project to either side of the tangent at the test evals
-# @describeIn conf_ss1fixedtrace Test whether a particular set of eigenvalues `evals` lies in the confidence region returned by [conf_ss1fixedtrace()].
+# @describeIn conf_ss1fixedtrace Return whether a particular set of eigenvalues `evals` lies in the confidence region returned by [conf_ss1fixedtrace()].
 #' @rdname conf_ss1fixedtrace
 #' @param evals A set of eigenvalues with trace of zero and sum of squares of one.
 #' @param cr A confidence region returned by [conf_ss1fixedtrace()].

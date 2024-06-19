@@ -23,7 +23,7 @@ test_that("conf_fixedtrace() contains population mean about 95% of the time", {
      ms <- rsymm_norm(n = 30, mean = diag(c(4,2,1)))
      ms <- normalise_trace(ms)
      cr <- suppressWarnings(conf_fixedtrace(ms, alpha = 0.05, B = 100, npts = 1000))
-     cr$inregion(c(4,2,1)/7)})
+     conf_fixedtrace_inregion(c(4,2,1)/7, cr)})
   expect_lt(abs(mean(popmeanincr) - 0.95),
             2*sd(popmeanincr)/sqrt(length(popmeanincr)))
 })

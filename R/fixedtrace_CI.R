@@ -130,6 +130,19 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
     boundary = bdrypts,
     Omega = Omega,
     threshold = statthreshold,
-    bootstat = res$nullt
+    bootstat = res$nullt,
+    samplesize = size
   ))
+}
+
+# @describeIn conf_fixedtrace Return whether a particular set of eigenvalues `evals` lies in the confidence region returned by [conf_fixedtrace()].
+#' @rdname conf_fixedtrace
+#' @param evals A set of eigenvalues.
+#' @param cr A confidence region returned by [conf_fixedtrace()].
+#' @export
+conf_fixedtrace_inregion <- function(evals, cr){
+  H <- helmertsub(length(cr$est))
+  Omega_ess <- eigen_desc(cr$Omega)
+  statval <- cr$samplesize * t(cr$est - evals) %*% t(H) %*% Omega_ess$vectors %*% diag(1/Omega_ess$values) %*% t(Omega_ess$vectors) %*% H %*% (cr$est - evals)
+  return(drop(statval) <= cr$threshold)
 }
