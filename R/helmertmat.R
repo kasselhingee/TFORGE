@@ -1,5 +1,5 @@
-#' @title Create the Helmert matrix
-#' @param p Dimension
+# @title Create the Helmert matrix
+# @param p Dimension
 helmert <- function(p){
   stopifnot(p>1)
   m <- diag(c(1, -(1:(p-1))))

@@ -1,5 +1,5 @@
-#' @title The sample mean, difference to the mean and covariance of elements for a set of matrices.
-#' @param ms Set of matrices as a list or a 3-array.
+# @title The sample mean, difference to the mean and covariance of elements for a set of matrices.
+# @param ms Set of matrices as a list or a 3-array.
 mmean <- function(ms){
   stopifnot(inherits(ms, "TFORGE_fsm"))
   invvech(colMeans(ms))
