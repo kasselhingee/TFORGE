@@ -1,12 +1,19 @@
 # File for Single Sample Schwartzman 2008 Methods
 
-#' @title Estimate of Orthogonally Invariant Covariance Parameters
+#' @title Estimate parameters of orthogonally invariant covariance
 #' @description
-#' Implements MLE for \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} given in Lemma 3.3 of Schwartzman et (2008). The MLE for the population mean is required.
-#' @param Mhat An MLE for the population mean (typically under a hypothesis)
-#' @param ms A single sample in [`TFORGE_fsm()`] format.
+#' Orthogonally-invariant covariance is a restrictive structure, but if it holds then a suite of tools is available \insertCite{schwartzman2008in}{TFORGE}.
+#' Any orthogonally-invariant covariance can be specified by just two parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
+#' For a Gaussian-distributed elements, the parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} can be estimated by maximum-likelihood if provided the data and the maximum-likelihood estimate of the population mean \insertCite{@Lemma 3.3, @schwartzman2008in}{TFORGE}.
+#' @param Mhat A maximum-likelihood estimate of the population mean
+#' @param ms A single sample of symmetric matrices (passed to [`as_fsm()`]).
 #' @param tau If supplied only \eqn{\sigma^2}{s^2} will be estimated.
 #' @returns A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
+#' @details
+#' # Orthoganally-Invariant Covariance
+#' A random matrix `Y` with a Gaussian distribution has orthogonally-invariant covariance if and only if `Q %*% Y %*% t(Q)` has the same distribution as `Y` for any orthogonal matrix `Q`.
+#' @references
+#' \insertAllCited{}
 #' @export
 estimate_OIcov <- function(ms, Mhat, tau = NULL){
   ms <- as_fsm(ms)
