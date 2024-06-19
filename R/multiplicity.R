@@ -5,15 +5,15 @@
 #' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satistfy the null hypothesis by `standardise_multiplicity()`.
 #' @details
 #' Due to the random rotation of the eigenvectors, use [`set.seed()`] before `stat_multiplicity()` if you want the answer to be fixed.
-#' @param ms Sample of matrices
+#' @param x A single sample of matrices (passed to [`as_fsm()`].
 #' @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
-
 #' @param B The number of bootstrap samples
+#' @examples
 #' @export
-test_multiplicity <- function(ms, mult, B){
-  ms <- as_flat(ms)
-  ms_std <- standardise_multiplicity(ms, mult)
-  res <- bootresampling(ms, ms_std, 
+test_multiplicity <- function(x, mult, B){
+  x <- as_flat(x)
+  ms_std <- standardise_multiplicity(x, mult)
+  res <- bootresampling(x, ms_std, 
     stat = stat_multiplicity,
     B = B,
     mult = mult)
@@ -23,8 +23,8 @@ test_multiplicity <- function(ms, mult, B){
 #' @rdname test_multiplicity
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
 #' @export
-stat_multiplicity <- function(ms, mult, evecs = NULL){
-  av <- mmean(ms)
+stat_multiplicity <- function(x, mult, evecs = NULL){
+  av <- mmean(x)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
   }
@@ -54,8 +54,8 @@ stat_multiplicity <- function(ms, mult, evecs = NULL){
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
   xi <- xiget(es$values, mult, idxs)
 
-  C0 <- mcovar(merr(ms, mean = av)) # the covariance between elements of xi
-  covar <- xicovar(mult, idxs, es$vectors, C0/nrow(ms))
+  C0 <- mcovar(merr(x, mean = av)) # the covariance between elements of xi
+  covar <- xicovar(mult, idxs, es$vectors, C0/nrow(x))
 
   return(drop(t(xi) %*% solve_error(covar) %*% xi))
 }
@@ -118,8 +118,8 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
 
 #' @rdname test_multiplicity
 #' @export
-standardise_multiplicity <- function(ms, mult){
-  av <- mmean(ms)
+standardise_multiplicity <- function(x, mult){
+  av <- mmean(x)
   stopifnot(sum(mult) == ncol(av))
   stopifnot(all(mult > 0))
   stopifnot(any(mult != 1))
@@ -147,7 +147,7 @@ standardise_multiplicity <- function(ms, mult){
   # make new sample out of newM and errors
   newM <- vech(newM)
   av <- vech(av)
-  out <- t(t(ms) - av + newM)
+  out <- t(t(x) - av + newM)
   class(out) <- c("TFORGE_fsm", class(out))
   return(out)
 }
