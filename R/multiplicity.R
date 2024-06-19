@@ -1,16 +1,23 @@
 #' @title Test eigenvalue multiplicity
 #' @description
-#' Uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues, given a sample from the population.
+#' Given a sample from a population, uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues.
 #' The test statistic is computed by `stat_multiplicity()`, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue of multiplicity greater than 1.
-#' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satistfy the null hypothesis by `standardise_multiplicity()`.
+#' The null hypothesis is the multiplicity of eigenvalues of the population mean.
+#' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`.
 #' @details
-#' Due to the random rotation of the eigenvectors, use [`set.seed()`] before `stat_multiplicity()` if you want the answer to be fixed.
-#' @param x A single sample of matrices (passed to [`as_fsm()`].
-#' @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
+#' This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace. It may work poorly on matrices with other constraints, on samples smaller than 15, or samples of multimodal populations.
+#' 
+#' Due to the random rotation of the eigenvectors, use [`set.seed()`] before `stat_multiplicity()` or `test_multiplicity()` if you want the answer to be repeatable.
+#' @param x A single sample of matrices (passed to [`as_fsm()`]).
+#' @param mult A vector specifying the eigenvalue multiplicity under the null hypothesis in descending order of eigenvalue size.
 #' @param B The number of bootstrap samples
 #' @examples
+#' x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))
+#' test_multiplicity(x, mult = c(1, 2, 1))
+#' @return
+#' + `test_multiplicity()` returns a `TFORGE` object including the p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). See [`bootresampling()`].
 #' @export
-test_multiplicity <- function(x, mult, B){
+test_multiplicity <- function(x, mult, B = 1000){
   x <- as_flat(x)
   ms_std <- standardise_multiplicity(x, mult)
   res <- bootresampling(x, ms_std, 
@@ -22,6 +29,8 @@ test_multiplicity <- function(x, mult, B){
 
 #' @rdname test_multiplicity
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
+#' @return
+#' + `stat_multiplicity()` returns a single value.
 #' @export
 stat_multiplicity <- function(x, mult, evecs = NULL){
   av <- mmean(x)
@@ -117,8 +126,11 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
 }
 
 #' @rdname test_multiplicity
+#' @return
+#' + `standardise_multiplicity()` returns a sample of matrices stored in flattened form (a `TFORGE_fsm`).
 #' @export
 standardise_multiplicity <- function(x, mult){
+  x <- as_fsm(x)
   av <- mmean(x)
   stopifnot(sum(mult) == ncol(av))
   stopifnot(all(mult > 0))
@@ -148,7 +160,6 @@ standardise_multiplicity <- function(x, mult){
   newM <- vech(newM)
   av <- vech(av)
   out <- t(t(x) - av + newM)
-  class(out) <- c("TFORGE_fsm", class(out))
   return(out)
 }
 
