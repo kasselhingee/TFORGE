@@ -1,12 +1,13 @@
-#' @name multiplicity
-#' @title Tools for testing a specified multiplicity for a single sample
+#' @title Test eigenvalue multiplicity
+#' @description
+#' Uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues, given a sample from the population.
+#' The test statistic is computed by `stat_multiplicity()`, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue of multiplicity greater than 1.
+#' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satistfy the null hypothesis by `standardise_multiplicity()`.
 #' @details
 #' Due to the random rotation of the eigenvectors, use [`set.seed()`] before `stat_multiplicity()` if you want the answer to be fixed.
 #' @param ms Sample of matrices
 #' @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
-NULL
 
-#' @describeIn multiplicity Bootstrap test
 #' @param B The number of bootstrap samples
 #' @export
 test_multiplicity <- function(ms, mult, B){
@@ -19,7 +20,7 @@ test_multiplicity <- function(ms, mult, B){
   return(res)
 }
 
-#' @describeIn multiplicity Test statistic (including uniformly random rotation of eigenvectors associated with each eigenvalue)
+#' @rdname test_multiplicity
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
 #' @export
 stat_multiplicity <- function(ms, mult, evecs = NULL){
@@ -115,7 +116,7 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
   return(At) # this is actually the transpose of whats in my notes (where rows correspond to idxk)
 }
 
-#' @describeIn multiplicity Standardise a sample to satisfy the (null) hypothesis of the given eigenvalue multiplicity in `mult`.
+#' @rdname test_multiplicity
 #' @export
 standardise_multiplicity <- function(ms, mult){
   av <- mmean(ms)
