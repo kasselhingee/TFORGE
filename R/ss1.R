@@ -114,7 +114,8 @@ test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
   return(res)
 }
 
-#' @title Test whether the supplied sample(s) have ss1
+#' @title Check whether the supplied sample(s) have equal sum of squared eigenvalues
+#' @description Compares whether the sum of the squared eigenvalues of the supplied matrices match each other using the property that the sum of the squared eigenvalues of `Y` equals the trace of `Y %*% Y`.
 #' @param x Either a list of samples, each sample being a list of matrices, or a single sample as a list of matrices.
 #' @param tolerance Tolerance on the relative difference, passed to `all.equal()`
 #' @export

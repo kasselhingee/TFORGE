@@ -1,8 +1,9 @@
 # functions for testing eigenvalues when the trace of the matrices are fixed
 
-#' @title Test whether the supplied sample(s) have fixed trace
-#' @param x Either a list of samples, each sample being a list of matrices, or a single sample as a list of matrices.
-#' @param tolerance Tolerance on the relative difference, passed to `all.equal()`
+#' @title Check if the supplied sample(s) have fixed trace
+#' @description Compares the trace of all the supplied matrices to check that they are equal.
+#' @param x A sample or multiple samples of matrices suitable for [`as_flat()`].
+#' @param tolerance Tolerance on the relative difference, passed to [`all.equal()`]
 #' @details Credit to Hadley for much of this function: [https://stackoverflow.com/questions/4752275/test-for-equality-among-all-elements-of-a-single-numeric-vector]
 #' @export
 #' @return `TRUE` or `FALSE`
