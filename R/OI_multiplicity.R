@@ -4,14 +4,14 @@
 #' Orthogonally-invariant covariance is a strong assumption and may not be valid; consider using [`test_multiplicity()`] if you are unsure.
 #' @inheritParams test_multiplicity
 #' @details 
-#' The orthogonally invariant covariance matrix is estimated [`estimate_OIparams()`]. The maximum-likilihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
+#' The orthogonally invariant covariance matrix is estimated by [`estimate_OIparams()`]. The maximum-likilihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
 #' @export
-test_multiplicity_OI <- function(Ysample, mult){
-  mn <- colMeans(Ysample)
+test_multiplicity_OI <- function(x, mult){
+  mn <- colMeans(x)
   es_mn <- eigen_desc(invvech(mn))
   Mhat <- es_mn$vectors %*% diag(blk(es_mn$values, mult)) %*% t(es_mn$vectors)
-  OIparams <- estimate_OIcov(Ysample, Mhat)
-  stat <- (nrow(Ysample)/OIparams$scalesq) * sum((es_mn$values - blk(es_mn$values, mult))^2)
+  OIparams <- estimate_OIcov(x, Mhat)
+  stat <- (nrow(x)/OIparams$scalesq) * sum((es_mn$values - blk(es_mn$values, mult))^2)
   pval <- 1 - pchisq(stat, df =  0.5 * sum(mult * (mult + 1)) - length(mult))
   return(list(
     pval = pval,
