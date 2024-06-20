@@ -27,10 +27,15 @@ has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
 #'
 #' Eigenvalues must be distinct.
+#' # Hypotheses
+#' For a single sample the null hypothesis is that the population mean has eigenvalues of `evals`; the alternative hypothesis is that the eigenvalues are not `evals`.
+#' For multiple samples, `evals` must be omitted and the null hypothesis is that the population means of each sample have the same eigenvalues.
 #' @references \insertAllCited{}
 #' @inherit test_unconstrained return
 # @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
 # @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
+#' @param maxit The maximum number of Newton steps allowed in empirical likelihood optimisation \insertCite{owen:2013}{TFORGE}.
+#' @references \insertAllCited{}
 #' @inheritParams test_unconstrained
 #' @export
 test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){

@@ -1,5 +1,58 @@
-#' @title Methods for testing eigenvalues with sum of squares = 1
-#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
+#' @title Test for eigenvalues when sum of squared eigenvalues is 1
+#' @description 
+#' For a single sample of symmetric matrices where sum of squared eigenvalues  = 1, test eigenvalues of the population mean.
+#' For multiple samples of symmetric matrices where sum of squared eigenvalues  = 1, test for equality of the eigenvalues of the population means.
+#' @details
+#' The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere (or circle).
+#' The test statistic accounts for this constraint by projecting onto a plane perpendicular to the direction of the sample average's eigenvalues.
+#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+#'
+#' Eigenvalues must be distinct.
+#' @inheritParams test_unconstrained
+#' @inheritParams test_fixedtrace
+#' @inheritSection test_fixedtrace Hypotheses
+#' @references \insertAllCited{}
+#' @export
+test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
+  x <- as_flat(x)
+  stopifnot(has_ss1(x))
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
+  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
+  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  
+  if (has_fixedtrace(x)){warning("All tensors the same trace. Consider using test_ss1fixedtrace().")}
+  
+  t0 <- stat_ss1(x, evals = evals)
+  d0 <- attr(t0, "null_evals")
+  
+  # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0)
+  # also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
+  nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
+  
+  # compute corresponding weights that lead to emp.lik.
+
+  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
+  
+  #check the weights
+  if (!wtsokay(wts)){
+    out <- list(
+      pval = 0,
+      t0 = t0,
+      nullt = NA,
+      stdx = wts,
+      B = NA
+    )
+    class(out) <- c("TFORGE", class(out))
+    return(out)
+  }
+  
+  res <- bootresampling(x, wts, 
+                        stat = stat_ss1,
+                        B = B,
+                        evals = evals)
+  return(res)
+}
+
 stat_ss1 <- function(x, evals = NULL){
   x <- as_flat(x)
   if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
@@ -69,50 +122,6 @@ amaral2007Lemma1 <- function(m){
   return(A)
 }
 
-#' @describeIn stat_ss1 Bootstrap test.
-#' @param maxit The maximum number of iterations to use in finding the weights. Passed to `[emplik()]`.
-#' @details The test did not perform well when the dispersion was very high (e.g. Normal entries with mean diagonal c(3,2,1) and variance of 1) - more studying needed.
-#' *Should I require tensors to be 3x3?
-#' @export
-test_ss1 <- function(mss, evals = NULL, B, maxit = 25){
-  mss <- as_flat(mss)
-  stopifnot(has_ss1(mss))
-  if (inherits(mss, "TFORGE_fsm")){mss <- as_flat(list(mss))}
-  if (is.null(evals) && (length(mss) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
-  if (!is.null(evals) && (length(mss) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
-  
-  if (has_fixedtrace(mss)){warning("All tensors the same trace. Consider using test_ss1fixedtrace().")}
-  
-  t0 <- stat_ss1(mss, evals = evals)
-  d0 <- attr(t0, "null_evals")
-  
-  # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0)
-  # also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
-  nullmeans <- lapply(mss, elnullmean, d0 = d0, getcbound = TRUE)
-  
-  # compute corresponding weights that lead to emp.lik.
-
-  wts <- mapply(opt_el.test, ms = mss, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
-  
-  #check the weights
-  if (!wtsokay(wts)){
-    out <- list(
-      pval = 0,
-      t0 = t0,
-      nullt = NA,
-      stdx = wts,
-      B = NA
-    )
-    class(out) <- c("TFORGE", class(out))
-    return(out)
-  }
-  
-  res <- bootresampling(mss, wts, 
-                        stat = stat_ss1,
-                        B = B,
-                        evals = evals)
-  return(res)
-}
 
 #' @title Check whether the supplied sample(s) have equal sum of squared eigenvalues
 #' @description Compares whether the sum of the squared eigenvalues of the supplied matrices match each other using the property that the sum of the squared eigenvalues of `Y` equals the trace of `Y %*% Y`.
