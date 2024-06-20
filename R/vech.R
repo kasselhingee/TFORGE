@@ -1,13 +1,17 @@
-#' @title Stack elements of a symmetric matrix into a vector.
+#' @title Flattend a symmetric matrix into a vector.
 #' @description
-#' The `vech` operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE}.
+#' The `vech` operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE} flatten symmetric matrices into vectors. Columns are extracted from left to right with entries above the diagonal ignored.
+#' The function `invvech()` is the inverse of `vech()`.
+#' The dimension of the matrix can be obtained from it flattened form by `dimfromvech()`.
 #' @details
-#' Columns are stacked in order from left to right, entries above the diagonal are ignored.
-#' Matrix is not checked for symmetry.
-#' `vech` uses [`lower.tri()`].
-#' `invvech` is the opposite of `vech`. It could be much more efficient with memory and operations.
+#' The extraction is conveniently performed by `m[lower.tri(m), diag = TRUE]`.
+#' The matrix `m` is not checked for symmetry.
 #' @param m A symmetric matrix
 #' @param name If TRUE vector elements are named `eij` where `i` is the row ang `j` is the column.
+#' @examples
+#' m <- invvech(1:6)
+#' dimfromvech(1:6)
+#' vech(m)
 #' @export
 vech <- function(m, name = FALSE){
   out <- m[lower.tri(m, diag = TRUE)]
@@ -19,7 +23,7 @@ vech <- function(m, name = FALSE){
   return(out)
 }
 
-#' @describeIn vech The inverse of vech.
+#' @rdname vech
 #' @export
 invvech <- function(x,...){
   n <- dimfromvech(x)
@@ -29,7 +33,7 @@ invvech <- function(x,...){
   return(m)
 }
 
-#' @describeIn vech Dimension of matrix represented as a vector by `vech()`
+#' @rdname vech
 #' @export
 dimfromvech <- function(x){
   # n is s.t. l = 0.5 n (n+1) --> n = 0.5(-1 + sqrt(4l+1))
