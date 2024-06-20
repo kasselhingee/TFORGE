@@ -207,7 +207,7 @@ test_that("convergence of S_anv() with increasing sample size", {
   mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
   # set.seed(54311)
   # mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
-  mn_U2 <- matric(c(
+  mn_U2 <- matrix(c(
      -0.5421502, -0.2101642, -0.8135750,
      -0.6010323, -0.5796421,  0.5502502,
      -0.5872252,  0.7873030,  0.1879376),
