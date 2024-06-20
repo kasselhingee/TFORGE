@@ -16,9 +16,78 @@ has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   isTRUE(all.equal(tracerange[1], tracerange[2], tolerance = tolerance))
 }
 
-#' @title Test for eigenvalues when trace is fixed.
-#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
-#' @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
+ 
+#' @title Test for eigenvalues when trace is fixed
+#' @description 
+#' For a single sample of symmetric matrices with fixed trace, test eigenvalues of the population mean.
+#' For multilpe samples of symmetric matrices with fixed trace, test for equality of the eigenvalues of the population means.
+#' @details
+#' The fixed trace constraint forces the set of eigenvalues to lie in a plane.
+#' The test statistic accounts for this constraint by using an orthonormal basis in the plane.
+#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+#'
+#' Eigenvalues must be distinct.
+#' @references \insertAllCited{}
+#' @inherit test_unconstrained return
+# @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
+# @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
+#' @inheritParams test_unconstrained
+#' @export
+test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
+  x <- as_flat(x)
+  stopifnot(has_fixedtrace(x))
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
+  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
+  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  if (!is.null(evals)){
+    if (all(abs(evals - evals[1]) < sqrt(.Machine$double.eps))){
+      warning("Supplied evals are equal to each other so test is testing for isotropy. test_multiplicity() usually has better behaviour for testing isotropy.")
+    }
+  }
+
+  if (has_ss1(x)){warning("All tensors have a sum of squared eigenvalues of 1. Consider using test_ss1fixedtrace().")}
+
+  t0 <- stat_fixedtrace(x, evals = evals)
+  estevals <- attr(t0, "null_evals")
+  
+  # compute means that satisfy the NULL hypothesis (eigenvalues equal to estevals)
+  nullmeans <- lapply(x, function(ms){
+    av <- mmean(ms)
+    evecs <- eigen_desc(av)$vectors
+    evecs %*% diag(estevals) %*% t(evecs)
+  })
+  
+  # compute corresponding weights that lead to emp.lik.
+  wts <- mapply(function(ms, nullmean){
+    scelres <- emplik(ms, vech(nullmean), itermax = maxit)
+    if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
+    wts <- as.vector(scelres$wts) * nrow(ms)
+    wts
+  }, ms = x, nullmean = nullmeans, SIMPLIFY = FALSE)
+
+  #check the weights
+  if (!wtsokay(wts)){
+    out <- list(
+      pval = 0,
+      t0 = t0,
+      nullt = NA,
+      stdx = wts,
+      B = NA
+    )
+    class(out) <- c("TFORGE", class(out))
+    return(out)
+  }
+
+  res <- bootresampling(x, wts, 
+                        stat = stat_fixedtrace,
+                        B = B,
+                        evals = evals)
+  return(res)
+}
+
+#' @rdname test_fixedtrace
+#' @details 
+#' The test statistic is calculated by `stat_fixedtrace()`. 
 #' @export
 stat_fixedtrace <- function(x, evals = NULL){
   x <- as_flat(x)
@@ -74,61 +143,6 @@ stat_fixedtrace <- function(x, evals = NULL){
   return(stat)
 }
  
- 
-#' @describeIn stat_fixedtrace Bootstrap test
-#' @inheritParams stat_ss1fixedtrace
-#' @export
-test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
-  x <- as_flat(x)
-  stopifnot(has_fixedtrace(x))
-  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
-  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
-  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
-  if (!is.null(evals)){
-    if (all(abs(evals - evals[1]) < sqrt(.Machine$double.eps))){
-      warning("Supplied evals are equal to each other so test is testing for isotropy. test_multiplicity() usually has better behaviour for testing isotropy.")
-    }
-  }
-
-  if (has_ss1(x)){warning("All tensors have a sum of squared eigenvalues of 1. Consider using test_ss1fixedtrace().")}
-
-  t0 <- stat_fixedtrace(x, evals = evals)
-  estevals <- attr(t0, "null_evals")
-  
-  # compute means that satisfy the NULL hypothesis (eigenvalues equal to estevals)
-  nullmeans <- lapply(x, function(ms){
-    av <- mmean(ms)
-    evecs <- eigen_desc(av)$vectors
-    evecs %*% diag(estevals) %*% t(evecs)
-  })
-  
-  # compute corresponding weights that lead to emp.lik.
-  wts <- mapply(function(ms, nullmean){
-    scelres <- emplik(ms, vech(nullmean), itermax = maxit)
-    if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
-    wts <- as.vector(scelres$wts) * nrow(ms)
-    wts
-  }, ms = x, nullmean = nullmeans, SIMPLIFY = FALSE)
-
-  #check the weights
-  if (!wtsokay(wts)){
-    out <- list(
-      pval = 0,
-      t0 = t0,
-      nullt = NA,
-      stdx = wts,
-      B = NA
-    )
-    class(out) <- c("TFORGE", class(out))
-    return(out)
-  }
-
-  res <- bootresampling(x, wts, 
-                        stat = stat_fixedtrace,
-                        B = B,
-                        evals = evals)
-  return(res)
-}
 
 #' Diagonal elements projected onto hyperplane through origin orthogonal to (1,1,..., 1)
 #' m A symmetric matrix
