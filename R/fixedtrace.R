@@ -150,15 +150,12 @@ stat_fixedtrace <- function(x, evals = NULL){
 }
  
 
-#' Diagonal elements projected onto hyperplane through origin orthogonal to (1,1,..., 1)
-#' m A symmetric matrix
-projtrace <- function(m){ #project to have trace 0
-  diags <- diag(m)
-  ones <- rep(1, length(diags))/sqrt(length(diags))
-  newdiag <- diags - drop(diags %*% ones) * ones
-  diag(m) <- newdiag
-  return(m)
-}
+#' @title Project diagonal elements to have trace of zero
+#' @description
+#' Projects the diagonal elements of a symmetric matrices onto a plane through the origin orthogonal to the vector (1,1,1,....,1).
+#' The trace of the symmetric matrices is then zero.
+#' @inheritParams test_multiplicity
+#' @export
 projtrace_fsm <- function(ms){
   diagels <- isondiag_vech(ms[1, ])
   H <- helmert(sum(diagels))
@@ -167,13 +164,19 @@ projtrace_fsm <- function(ms){
   ms[, diagels] <- diags %*% t(projmat)
   return(ms)
 }
+projtrace <- function(m){ #project to have trace 0
+  diags <- diag(m)
+  ones <- rep(1, length(diags))/sqrt(length(diags))
+  newdiag <- diags - drop(diags %*% ones) * ones
+  diag(m) <- newdiag
+  return(m)
+}
 
-#' @title Scale tensors to have trace of one.
-#' @description Scales tensors by their trace, so that resulting tensors have a trace of one.
+#' @title Scale symmetric matrices to have trace of one
+#' @description Scales symmetric matrices by their trace, so that resulting matrices have a trace of one.
+#' @inheritParams test_multiplicity
+#' @details
 #' The method will create `Inf` values for tensors that have a trace of zero.
-# This is how magnetic susceptibility tensors are scaled to examine isotropy in paleomagnetism (Tauxe, 2010 Essentials of Paleomagnetism, p248).
-# I think will usually break the symmetry of the eigenvalues about their mean.
-#' @param x A symmetric tensor, or a set of symmetric tensors as an `TFORGE_fsm`.
 #' @export
 normalise_trace <- function(x){
   if (inherits(x, "TFORGE_fsm")){

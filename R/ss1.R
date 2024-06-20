@@ -214,6 +214,7 @@ wtsokay <- function(wts){
 }
 
 
+#' @noRd
 #' Eigenvalues divided to have squared sum 1 
 #' Uses the fact that A*A squares the eigenvalues of A, and the trace of a matrix is the sum of the eigenvalues.
 #' m A symmetric matric
@@ -227,8 +228,7 @@ normL2evals <- function(m){
 #' @title Normalise so that Sum of Squared Eigenvalues is One
 #' @description
 #' Scales symmetric tensors so that the square of the eigenvalues sum to one.
-#' Designed to be applied to an `TFORGE_fsm` object.
-#' For 3x3 tensors a method using tensor invariants avoids calculating eigenvalues.
+#' @inheritParams test_multiplicity
 #' @export
 normalise_ss1 <- function(x){
   x <- as_fsm(x)
