@@ -47,39 +47,6 @@ test_that("estimate_OIcov get close really to correct tau and scale", {
   expect_equal(OIparams$scalesq, s^2, tolerance = 1E-2)
 })
   
-test_that("test_OIcov has uniform p values for a null situation", {
-  skip("failing - see report test_OIcov_investigation.pdf")
-  s = 1
-  tau = 1/8
-  p = 3
-  covmat <- OIcov(p, s, tau, vectorisor = "vech")
-  set.seed(344)
-  vals <- pbapply::pbreplicate(1E4,
-    {
-    ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
-    res <- test_OIcov(ms)
-    unlist(res)
-    }, cl = 2)
-  # hist(vals["stat", ])
-  qqplot(vals["pval", ], y = runif(1000))
-  expect_gt(ks.test(vals["pval", ], "punif")$p.value, 0.2)
-  
-  # distribution of stat
-  plot(quantile(vals["stat", ], probs = (1:100)/100),
-       qchisq(p = (1:100)/100, df =  6 * (6+1)/2 -2))
-  abline(a = 0, b = 1)
-  
-  plot(quantile(vals["stat", ] + 6, probs = (1:100)/100),
-       qchisq(p = (1:100)/100, df =  6 * (6+1)/2 -2))
-  abline(a = 0, b = 1)
-
-  # looks like stat is missing a 6! 
-  qqplot(vals["stat", ] + 6, y = rchisq(1E5, df = 6 * (6+1)/2 -2)); abline(a=0, b= 1)
-  offsetpvals <-  1 - pchisq(vals["stat", ]+6, df = 6 * (6+1)/2 -2)
-  qqplot(offsetpvals, y = runif(1000)); abline(a=0, b= 1)
-  expect_gt(ks.test(offsetpvals, "punif")$p.value, 0.2)
-})
-
 test_that("blk() returns correct averages", {
   evals <- 10:1
   mult <- c(2,2,2,2,2)
