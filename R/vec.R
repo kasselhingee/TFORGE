@@ -1,3 +1,4 @@
+#' @noRd
 #' @title Stack elements of a matrix into a vector.
 #' @description
 #' The `vec` operator as defined by \insertCite{@Section 2.4 @magnus2019ma}{TFORGE}.
