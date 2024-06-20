@@ -32,9 +32,9 @@ test_that("Results are consistent with the simulation check at the start of Schw
     # simulate Sigma
     Sigma <- drop(rWishart(1, 6, diag(6)))
     #simulate samples
-    ms1 <- rsymm_Schwartzman(n1, M0, Sigma)
-    ms2 <- rsymm_Schwartzman(n2, M0, Sigma)
-    res <- test_unconstrained_aGOE(ms1, ms2)
+    x1 <- rsymm_Schwartzman(n1, M0, Sigma)
+    x2 <- rsymm_Schwartzman(n2, M0, Sigma)
+    res <- test_unconstrained_aGOE(x1, x2)
     return(unlist(res))
   }
   
@@ -64,9 +64,9 @@ test_that("Results are consistent with the simulation check at the start of Schw
   
   simulatestat <- function(n1, n2, M0){
     #simulate samples
-    ms1 <- rsymm_Schwartzman(n1, M0, Sigma)
-    ms2 <- rsymm_Schwartzman(n2, M0, Sigma)
-    res <- test_unconstrained_aGOE(ms1, ms2)
+    x1 <- rsymm_Schwartzman(n1, M0, Sigma)
+    x2 <- rsymm_Schwartzman(n2, M0, Sigma)
+    res <- test_unconstrained_aGOE(x1, x2)
     return(unlist(res))
   }
   
@@ -144,9 +144,9 @@ test_that("pvalue close to uniform for non diagonal mean, unequal sample size", 
   
   # simulate test statistic
   simulateTstat <- function(n1, n2){
-    ms1 <- rsymm(n1, mn1, C1)
-    ms2 <- rsymm(n2, mn2, C2)
-    res <- test_unconstrained_aGOE(ms1, ms2)
+    x1 <- rsymm(n1, mn1, C1)
+    x2 <- rsymm(n2, mn2, C2)
+    res <- test_unconstrained_aGOE(x1, x2)
     return(unlist(res))
   }
   set.seed(231654)
@@ -180,9 +180,9 @@ test_that("pvalue close to uniform when some correlation", {
   
   # simulate test statistic
   simulateTstat <- function(n1, n2){
-    ms1 <- rsymm(n1, mn1, C1)
-    ms2 <- rsymm(n2, mn2, C2)
-    res <- test_unconstrained_aGOE(ms1, ms2)
+    x1 <- rsymm(n1, mn1, C1)
+    x2 <- rsymm(n2, mn2, C2)
+    res <- test_unconstrained_aGOE(x1, x2)
     return(unlist(res))
   }
   set.seed(22)
@@ -250,9 +250,9 @@ test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar has momen
   
   # simulate statstar, result should have mean and var given by anv
   simulateTstatstar <- function(n1, n2){
-    ms1 <- rsymm(n1, mn1, C1)
-    ms2 <- rsymm(n2, mn2, C2)
-    res <- statstar_schwartzman_eval(ms1, ms2, mn1, mn2)
+    x1 <- rsymm(n1, mn1, C1)
+    x2 <- rsymm(n2, mn2, C2)
+    res <- statstar_schwartzman_eval(x1, x2, mn1, mn2)
     return(unlist(res))
     }
   set.seed(31456)
@@ -301,9 +301,9 @@ test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar has momen
   
   # simulate statstar, result should have mean and var given by anv
   simulateTstatstar <- function(n1, n2){
-    ms1 <- rsymm(n1, mn1, C1)
-    ms2 <- rsymm(n2, mn2, C2)
-    res <- statstar_schwartzman_eval(ms1, ms2, mn1, mn2)
+    x1 <- rsymm(n1, mn1, C1)
+    x2 <- rsymm(n2, mn2, C2)
+    res <- statstar_schwartzman_eval(x1, x2, mn1, mn2)
     return(unlist(res))
   }
   set.seed(31456)

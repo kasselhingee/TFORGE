@@ -70,13 +70,13 @@ Omega_eval <- function(n1, n2, U1, U2){
 
 #compute estimates Schwartzman's a and v for the test statistic distribution
 # These are defined in the final equation of Section 2.4 of Schwartzman 2010
-#ms1 and ms2 are the two samples
+#x1 and x2 are the two samples
 #M1 and M2 are the means
 #C1 and C2 are the covariances (Schwartzman style)
 #n1 and n2 are the sample sizes
 S_anv <- function(n1, n2, M1, M2, C1, C2){
-  # cov1 <- S_mcovar(merr(ms1))
-  # cov2 <- S_mcovar(merr(ms2))
+  # cov1 <- S_mcovar(merr(x1))
+  # cov2 <- S_mcovar(merr(x2))
   Sigma <- blockdiag(C1/n1, C2/n2)
   
   es1 <- eigen_desc(M1)
@@ -105,8 +105,9 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @details 
 #' The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
 #' The p value of the test is computed using the approximate distribution reached at the end of section 2.4 \insertCite{schwartzman2010gr}{TFORGE}.
-#' @param ms1 Sample of matrices or a list of samples.
-#' @param ms2 Sample of matrices.
+#' @param x1 A single sample of matrices (passed to [`as_fsm()`]) or
+#' a list of two samples of matrices (passed to [`as_kfsm()`]).
+#' @param x2 If `x1` is a single sample then `x2` must be the second sample. Otherwise `x2` should be `NULL`.
 #' @references
 #' \insertAllCited{}
 #' @return
@@ -117,30 +118,30 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman's \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 
 #' @export
-test_unconstrained_aGOE <- function(ms1, ms2 = NULL){
-  ms1 <- as_flat(ms1)
-  if (inherits(ms1, "TFORGE_kfsm")){
-    if (length(ms1) == 2){
-      if (!is.null(ms2)){stop("ms1 is a list of samples, so ms2 must be NULL.")}
-      ms2 <- ms1[[2]]
-      ms1 <- ms1[[1]]
-    } else if (length(ms1 > 2)){
+test_unconstrained_aGOE <- function(x1, x2 = NULL){
+  x1 <- as_flat(x1)
+  if (inherits(x1, "TFORGE_kfsm")){
+    if (length(x1) == 2){
+      if (!is.null(x2)){stop("x1 is a list of samples, so x2 must be NULL.")}
+      x2 <- x1[[2]]
+      x1 <- x1[[1]]
+    } else if (length(x1 > 2)){
       stop("Must be exactly two samples")
     }
   }
-  ms2 <- as_fsm(ms2)
-  n1 <- nrow(ms1)
-  n2 <- nrow(ms2)
-  M1 <- mmean(ms1)
-  M2 <- mmean(ms2)
+  x2 <- as_fsm(x2)
+  n1 <- nrow(x1)
+  n2 <- nrow(x2)
+  M1 <- mmean(x1)
+  M2 <- mmean(x2)
   L1 <- eigen_desc(M1)$values
   L2 <- eigen_desc(M2)$values
   Tstat <- sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
 
   #now for the distribution
   anv <- S_anv(n1, n2, M1, M2, 
-        C1 = S_mcovar(merr(ms1, mean = M1)),
-        C2 = S_mcovar(merr(ms2, mean = M2)))
+        C1 = S_mcovar(merr(x1, mean = M1)),
+        C2 = S_mcovar(merr(x2, mean = M2)))
   pval <- 1-pchisq(Tstat / anv$a, df = anv$v)
   return(list(
     pval = pval,
@@ -155,14 +156,14 @@ test_unconstrained_aGOE <- function(ms1, ms2 = NULL){
 # @details The test statistic computed is (eq 16 Schwartzman 2010), using given population means M1 and M2.
 # @param M1 population expectation for first population
 # @param M2 population expectation for second population
-statstar_schwartzman_eval <- function(ms1, ms2, M1, M2){
-  ms1 <- as_fsm(ms1)
-  ms2 <- as_fsm(ms2)
-  Z1 <- mmean(ms1) - M1
-  Z2 <- mmean(ms2) - M2
+statstar_schwartzman_eval <- function(x1, x2, M1, M2){
+  x1 <- as_fsm(x1)
+  x2 <- as_fsm(x2)
+  Z1 <- mmean(x1) - M1
+  Z2 <- mmean(x2) - M2
   U1 <- eigen_desc(M1)$vectors
   U2 <- eigen_desc(M2)$vectors
-  Omega <- Omega_eval(nrow(ms1), nrow(ms2), U1, U2)
+  Omega <- Omega_eval(nrow(x1), nrow(x2), U1, U2)
   Tstatstar <- t(c(vecd(Z1), vecd(Z2))) %*% Omega %*% c(vecd(Z1), vecd(Z2))
   return(drop(Tstatstar))
 }
