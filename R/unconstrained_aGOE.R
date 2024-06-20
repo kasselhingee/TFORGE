@@ -69,6 +69,7 @@ Omega_eval <- function(n1, n2, U1, U2){
 }
 
 #compute estimates Schwartzman's a and v for the test statistic distribution
+# These are defined in the final equation of Section 2.4 of Schwartzman 2010
 #ms1 and ms2 are the two samples
 #M1 and M2 are the means
 #C1 and C2 are the covariances (Schwartzman style)
@@ -96,12 +97,25 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
   ))
 }
 
-#' @title Schwartzman et. al. Two Sample Eigenvalue Test 
-#' @description Computes the citeSchwartzman test statistic for equality between eigenvalues (eq 11 Schwartzman 2010) and corresponding approximate p value.
-#' @details The test statistic computed is (eq 11 Schwartzman 2010).
-#' The p value computed uses the approximate distribution reached at the end of section 2.4 Schwartzman: the distribution is chi-squared with first two moments approximating the first two moments of a statistic (eq 16 Schwartzman), that approximates (eq 11 Schwartzman 2010) for large samples.
+#' @title Two Sample Test of Equal Eigenvalues Using GOE Approximation
+#' @description Applies the equal-eigenvalue hypothesis test between two samples by \insertCite{schwartzman2010gr;textual}{TFORGE}.
+#' The null hypothesis is that the population means of each sample have the same eigenvalues, regardless of eigenvectors.
+#' The test uses a statistic from the situation that both populations are Gaussian Orthogonal Ensembles (Gaussian-distributed independent elements with the variance on the off diagonal elements half that of the diagonal elements).
+#' The distribution of this statistic for more general populations is approximated using a tangent space and the Welch-Satterthwaite approximation.
+#' @details 
+#' The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
+#' The p value of the test is computed using the approximate distribution reached at the end of section 2.4 \insertCite{schwartzman2010gr}{TFORGE}.
 #' @param ms1 Sample of matrices or a list of samples.
 #' @param ms2 Sample of matrices.
+#' @references
+#' \insertAllCited{}
+#' @return
+#' A list:
+#' + `pval` The p-value.
+#' + `t` Value of the statistic \insertCite{@Eq. 11, @schwartzman2010gr}{TFORGE}.
+#' + `a` Plug-in estimate of the \eqn{a} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
+#' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
+#' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman's \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 
 #' @export
 test_unconstrained_aGOE <- function(ms1, ms2 = NULL){
   ms1 <- as_flat(ms1)
@@ -133,7 +147,7 @@ test_unconstrained_aGOE <- function(ms1, ms2 = NULL){
     t = Tstat,
     a = anv$a,
     v = anv$v,
-    var_SigmaOmega_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2
+    var_Lambda_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2
   ))
 }
 
