@@ -214,10 +214,10 @@ wtsokay <- function(wts){
 }
 
 
-#' @noRd
 #' Eigenvalues divided to have squared sum 1 
 #' Uses the fact that A*A squares the eigenvalues of A, and the trace of a matrix is the sum of the eigenvalues.
 #' m A symmetric matric
+#' @noRd
 normL2evals <- function(m){
   ssq <- sum(diag(m %*% m))
   newm <- m / sqrt(ssq)
