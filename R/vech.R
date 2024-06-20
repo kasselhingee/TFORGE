@@ -7,11 +7,12 @@
 #' The extraction is conveniently performed by `m[lower.tri(m), diag = TRUE]`.
 #' The matrix `m` is not checked for symmetry.
 #' @param m A symmetric matrix
-#' @param name If TRUE vector elements are named `eij` where `i` is the row ang `j` is the column.
+#' @param name If TRUE vector elements are named `eij` where `i` is the row and `j` is the column.
 #' @examples
 #' m <- invvech(1:6)
 #' dimfromvech(1:6)
 #' vech(m)
+#' @references \insertAllCited{}
 #' @export
 vech <- function(m, name = FALSE){
   out <- m[lower.tri(m, diag = TRUE)]
