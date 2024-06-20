@@ -58,7 +58,7 @@ test_that("stat single sample has correct NULL distribution for projected trace"
   set.seed(6514)
   vals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1) - 2))
-    Y <- projtrace_fsm(Y) #this method of getting the correct trace seems to create narrower distributions than the normalising method
+    Y <- project_trace(Y) #this method of getting the correct trace seems to create narrower distributions than the normalising method
     stat_fixedtrace(Y, c(3,2,1) - 2)
   })
 
@@ -85,7 +85,7 @@ test_that("stat on multi sample has correct NULL distribution", {
   vals <- replicate(100, {
     Ysamples <- lapply(c(2000, 100, 100, 100), function(n){
       Y <- rsymm_norm(n, diag(c(3,2,1)))
-      Y <- projtrace_fsm(Y)
+      Y <- project_trace(Y)
       Y
     })
     stat_fixedtrace(Ysamples)
@@ -117,7 +117,7 @@ test_that("test of NULL has uniform p values for TFORGE_fsm", {
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1) - 2), sigma = diag(rep(0.1, 6)))
-    Y <- projtrace_fsm(Y)
+    Y <- project_trace(Y)
     res <- test_fixedtrace(Y, c(3,2,1) - 2, 100, maxit = 100)
     res$pval
   })
@@ -130,7 +130,7 @@ test_that("test of NULL has uniform p values for TFORGE_kfsm", {
   pvals <- replicate(100, {
     Ysamples <- replicate(5, {
       Y <- rsymm_norm(50, diag(c(3,2,1)))
-      Y <- projtrace_fsm(Y)
+      Y <- project_trace(Y)
       Y
     }, simplify = FALSE)
     res <- test_fixedtrace(Ysamples, B = 100, maxit = 100)
@@ -143,7 +143,7 @@ test_that("test of NULL has uniform p values for TFORGE_kfsm", {
 test_that("test rejects for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(1,0,-1)), sigma = diag(rep(0.1, 6)))
-  Y <- projtrace_fsm(Y)
+  Y <- project_trace(Y)
   
   badevals <- c(1,1,-2)
   expect_error(res <- test_fixedtrace(Y, evals = badevals+1, B = 100))
@@ -156,7 +156,7 @@ test_that("a multisample strongly non-null situation rejects", {
   set.seed(13)
   symm <- function(n, mn){
     Y <- rsymm_norm(n, mn)
-    projtrace_fsm(Y)
+    project_trace(Y)
   }
   Y1 <- symm(50, diag(c(3,2,1)))
   # lapply(Y1, function(m) sum(diag(m)))
@@ -194,10 +194,10 @@ test_that("has_fixedtrace() gives TRUE or FALSE values", {
   expect_false(has_fixedtrace(Ysamples[[1]]))
 })
 
-test_that("projtrace() returns matrices that satisty has_fixedtrace", {
+test_that("projtrace_matrix() returns matrices that satisty has_fixedtrace", {
   set.seed(6514) 
   Y <- rsymm_norm(3, diag(c(3,2,-3)/6))
-  Y <- projtrace_fsm(Y) #this method of getting the correct trace seems to create narrower distributions than the normalising method
+  Y <- project_trace(Y) #this method of getting the correct trace seems to create narrower distributions than the normalising method
   expect_true(has_fixedtrace(Y))
 })
 
