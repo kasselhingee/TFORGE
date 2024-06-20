@@ -54,7 +54,7 @@ test_that("test_OIcov has uniform p values for a null situation", {
   p = 3
   covmat <- OIcov(p, s, tau, vectorisor = "vech")
   set.seed(344)
-  vals <- replicate(1E4,
+  vals <- pbapply::pbreplicate(1E4,
     {
     ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
     res <- test_OIcov(ms)
