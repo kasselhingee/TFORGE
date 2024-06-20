@@ -16,9 +16,8 @@
 #' @inheritParams test_fixedtrace
 #' @inheritSection test_fixedtrace Hypotheses
 #' @references \insertAllCited{}
-#' @param sc 
 #' @export
-test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25, sc = TRUE){
+test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25){
   x <- as_flat(x)
   stopifnot(has_ss1(x))
   stopifnot(has_fixedtrace(x))
