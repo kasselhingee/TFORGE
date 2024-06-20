@@ -1,7 +1,61 @@
-#' @title Statistic and test of 3-matrices with trace 0 and sum of sq eigenvalues equal to 1
-#' @details Warning: the null distribution of `stat_ss1fixedtrace()` for multisamples does not appear to be chi-sq.
-#' @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
-#' @param evals If supplied the eigenvalues of the null hypothesis and `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and is estimated within the function.
+#' @title Test eigenvalues when trace=0 and sum of square eigenvalues = 1
+#' @description
+#' This function is for 3x3 symmetric matrices with trace of zero and sum of squared eigenvalues is one.
+#' These constraints combine so that the space of possible sets of (ordered) eigenvalues is 1 dimensional.
+#' For a single sample, test eigenvalues of the population mean.
+#' For multiple samples, test for equality of the eigenvalues of the population means.
+#' @details
+#' The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere and the trace constraint forces eigenvalues onto a plane.
+#' Combined the constraints force eigenvalues onto a circle in 3D Euclidean space.
+#' The test statistic accounts for these constraints by projecting eigenvalues onto a line in the plane and orthogonal to the null-hypothesis eigenvalues.
+#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+#'
+#' Eigenvalues must be distinct.
+
+#' @inheritParams test_unconstrained
+#' @inheritParams test_fixedtrace
+#' @inheritSection test_fixedtrace Hypotheses
+#' @references \insertAllCited{}
+#' @param sc 
+#' @export
+test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25, sc = TRUE){
+  x <- as_flat(x)
+  stopifnot(has_ss1(x))
+  stopifnot(has_fixedtrace(x))
+  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
+  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
+  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  
+  t0 <- stat_ss1fixedtrace(x, evals = evals)
+  d0 <- attr(t0, "null_evals")
+  
+  # means corresponding to NULL and d0
+  nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
+  
+  # el weights
+  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
+  
+  #check the weights
+  if (!wtsokay(wts)){
+    out <- list(
+      pval = 0,
+      t0 = t0,
+      nullt = NA,
+      stdx = wts,
+      B = NA
+    )
+    class(out) <- c("TFORGE", class(out))
+    return(out)
+  }
+  
+  res <- bootresampling(x, wts, 
+                        stat = stat_ss1fixedtrace,
+                        B = B,
+                        evals = evals)
+  return(res)
+}
+
+#' @rdname test_ss1fixedtrace
 #' @export
 stat_ss1fixedtrace <- function(x, evals = NULL){
   x <- as_flat(x)
@@ -74,42 +128,3 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   return(stat)
 }
 
-#' @describeIn stat_ss1fixedtrace Bootstrap test using `stat_ss1fixedtrace()`.
-#' @param maxit Passed to [`emplik()`]
-#' @export
-test_ss1fixedtrace <- function(x, evals = NULL, B, maxit = 25, sc = TRUE){
-  x <- as_flat(x)
-  stopifnot(has_ss1(x))
-  stopifnot(has_fixedtrace(x))
-  if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
-  if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
-  if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
-  
-  t0 <- stat_ss1fixedtrace(x, evals = evals)
-  d0 <- attr(t0, "null_evals")
-  
-  # means corresponding to NULL and d0
-  nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
-  
-  # el weights
-  wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
-  
-  #check the weights
-  if (!wtsokay(wts)){
-    out <- list(
-      pval = 0,
-      t0 = t0,
-      nullt = NA,
-      stdx = wts,
-      B = NA
-    )
-    class(out) <- c("TFORGE", class(out))
-    return(out)
-  }
-  
-  res <- bootresampling(x, wts, 
-                        stat = stat_ss1fixedtrace,
-                        B = B,
-                        evals = evals)
-  return(res)
-}
