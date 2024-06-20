@@ -1,9 +1,10 @@
 #' @title Test eigenvalues when trace=0 and sum of square eigenvalues = 1
 #' @description
-#' This function is for 3x3 symmetric matrices with trace of zero and sum of squared eigenvalues is one.
-#' These constraints combine so that the space of possible sets of (ordered) eigenvalues is 1 dimensional.
 #' For a single sample, test eigenvalues of the population mean.
 #' For multiple samples, test for equality of the eigenvalues of the population means.
+#' This function is for 3x3 symmetric matrices with trace of zero and sum of squared eigenvalues of one.
+#' These constraints combine so that the space of possible sets of (ordered) eigenvalues is 1 dimensional.
+#' The test statistic is calculated by `stat_ss1fixedtrace()`.
 #' @details
 #' The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere and the trace constraint forces eigenvalues onto a plane.
 #' Combined the constraints force eigenvalues onto a circle in 3D Euclidean space.

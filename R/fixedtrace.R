@@ -21,6 +21,7 @@ has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @description 
 #' For a single sample of symmetric matrices with fixed trace, test eigenvalues of the population mean.
 #' For multilpe samples of symmetric matrices with fixed trace, test for equality of the eigenvalues of the population means.
+#' The test statistic is calculated by `stat_fixedtrace()`.
 #' @details
 #' The fixed trace constraint forces the set of eigenvalues to lie in a plane.
 #' The test statistic accounts for this constraint by using an orthonormal basis in the plane.
