@@ -1,11 +1,16 @@
 #' @title Simulate Symmetric Matrices with Multivariate Normal Elements
 #' @description
 #' Simulate symmetric matrices with elements from a multivariate Normal distribution.
-#' @param n Number of matrices
-#' @param mean Centre of distribution. Must be symmetric.
-#' @param sigma The covariance of the matrix elements arranged by [`vech()`]. `sigma` is passed to [`mvtnorm::rmvnorm()`] without any transformation.
-#' @return A list of matrices.
-#' @details The `mean` is vectorised (with [`vech()`]) and then [`mvtnorm::rmvnorm()`] is called.
+#' @param n Number of matrices to generate
+#' @param mean A symmetric matrix specifying the mean of the distribution.
+#' @param sigma 
+#' A covariance matrix for the vectorized lower triangular elements (arranged by [`vech()`]) of the symmetric matrix. 
+#' It is passed to [`mvtnorm::rmvnorm()`] without any transformation. 
+#' @return A `TFORGE_fsm` object. See [`as_fsm()`].
+#' @details 
+#' The function `rsymm_norm` generates `n` symmetric matrices whose elements are drawn from a multivariate Normal distribution.
+#' The mean matrix is vectorized using the [`vech()`] function (which extracts the lower triangular part of the matrix, including the diagonal) 
+#' and then used as the mean vector in the [`mvtnorm::rmvnorm()`] function. The covariance matrix `sigma` is passed unchanged to [`mvtnorm::rmvnorm()`].
 #' @examples 
 #' rsymm(100, diag(c(3,2,1)))
 #' @export
