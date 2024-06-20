@@ -197,11 +197,21 @@ test_that("convergence of S_anv() with increasing sample size", {
   C2 <- C1 <- matrix(0.6, 6, 6)
   diag(C2) <- diag(C1) <- 1
   # set up distribution means
-  set.seed(34811)
-  mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  # set.seed(34811)
+  # mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U1 <- matrix(c(
+     -0.99668028,  0.06128182, -0.05359993,
+     -0.07666774, -0.92798936,  0.36463380,
+     -0.02739474,  0.36753270,  0.92960704),
+  p, p, byrow = TRUE)
   mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
-  set.seed(54311)
-  mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  # set.seed(54311)
+  # mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U2 <- matric(c(
+     -0.5421502, -0.2101642, -0.8135750,
+     -0.6010323, -0.5796421,  0.5502502,
+     -0.5872252,  0.7873030,  0.1879376),
+  p, p, byrow = TRUE)
   mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
   
   # population parameters factored out
