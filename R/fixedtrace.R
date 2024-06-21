@@ -4,7 +4,6 @@
 #' @description Compares the trace of all the supplied matrices to check that they are equal.
 #' @param x A sample or multiple samples of matrices suitable for [`as_flat()`].
 #' @param tolerance Tolerance on the relative difference, passed to [`all.equal()`]
-#' @details Credit to Hadley for much of this function: [https://stackoverflow.com/questions/4752275/test-for-equality-among-all-elements-of-a-single-numeric-vector]
 #' @export
 #' @return `TRUE` or `FALSE`
 has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
