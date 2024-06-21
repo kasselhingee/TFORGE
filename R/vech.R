@@ -26,7 +26,7 @@ vech <- function(m, name = FALSE){
 
 #' @rdname vech
 #' @export
-invvech <- function(x,...){
+invvech <- function(x){
   n <- dimfromvech(x)
   m <- matrix(NA, nrow = n, ncol = n)
   m[lower.tri(m, diag = TRUE)] <- x
