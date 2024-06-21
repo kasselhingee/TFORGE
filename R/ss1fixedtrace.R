@@ -74,7 +74,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   
   # The Omegas
   Omegas <- mapply(function(ms, av, ess){
-    covar_unconstrained <- cov_evals_est(ms = ms, evecs = ess$vectors, av = av)
+    covar_unconstrained <- cov_evals_est(x = ms, evecs = ess$vectors, av = av)
     projmat <- (diag(1, nrow(av)) - (ess$values %*% t(ess$values)/sum(ess$values^2)))/sqrt(sum(ess$values^2))
     projmat %*% covar_unconstrained %*% projmat
     },

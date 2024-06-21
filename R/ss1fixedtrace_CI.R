@@ -28,7 +28,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   statthreshold <- stats::quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
   
   # get V from x
-  covar_unconstrained <- cov_evals_est(ms = x, evecs = es$vectors, av = av)
+  covar_unconstrained <- cov_evals_est(x = x, evecs = es$vectors, av = av)
   
   
   # get lower and upper bound by solving quadratic formula
