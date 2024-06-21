@@ -3,7 +3,6 @@
 S3method(print,TFORGE)
 S3method(summary,TFORGE_fsm)
 S3method(summary,TFORGE_kfsm)
-export(OIcov)
 export(as_flat)
 export(as_fsm)
 export(as_kfsm)
