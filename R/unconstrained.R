@@ -74,7 +74,7 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL){
   }
 
   # covariance of evals (V matrices)
-  Vs <- mapply(cov_evals_est, ms = x, evecs = avevecs, av = avs , SIMPLIFY = FALSE)
+  Vs <- mapply(cov_evals_est, x = x, evecs = avevecs, av = avs , SIMPLIFY = FALSE)
   
   # null evals
   if (is.null(evals)){
@@ -117,11 +117,11 @@ est_commonevals <- function(mss, Vs, evals){
 
 #' @rdname test_unconstrained
 #' @export
-standardise_specifiedevals <- function(ms, evals){
-  ms <- as_flat(ms)
+standardise_specifiedevals <- function(x, evals){
+  x <- as_flat(x)
   evals <- sort(evals, decreasing = TRUE)
-  av <- mmean(ms)
-  errs <- merr(ms, mean = av)
+  av <- mmean(x)
+  errs <- merr(x, mean = av)
   av_eigenspace <- eigen_desc(av, symmetric = TRUE)
   av_evecs <- av_eigenspace$vectors
   cen <- vech(av_evecs %*% diag(evals) %*% t(av_evecs))
