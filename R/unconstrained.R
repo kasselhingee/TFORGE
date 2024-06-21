@@ -19,7 +19,7 @@
 #' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1))
 #' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1), evecs = diag(3))
 #' test_unconstrained(list(rsymm_norm(15, diag(c(3,2,1))),
-#'                         rsymm_norm(15, diag(c(3,2,1))))
+#'                         rsymm_norm(15, diag(c(3,2,1)))))
 #' @export
 test_unconstrained <- function(x, evals = NULL, evecs = NULL, B = 1000){
   x <- as_flat(x)
