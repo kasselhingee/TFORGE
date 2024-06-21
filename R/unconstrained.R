@@ -16,10 +16,9 @@
 #' @param B Number of bootstrap samples.
 #' @return A `TFORGE` object with the eigenvalues of the null hypothesis in the `null_evals` attribute for `t0`. See [`bootresampling()`].
 #' @examples
-#' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1))
-#' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1), evecs = diag(3))
+#' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1), B = 100)
 #' test_unconstrained(list(rsymm_norm(15, diag(c(3,2,1))),
-#'                         rsymm_norm(15, diag(c(3,2,1)))))
+#'                         rsymm_norm(15, diag(c(3,2,1)))), B = 100)
 #' @export
 test_unconstrained <- function(x, evals = NULL, evecs = NULL, B = 1000){
   x <- as_flat(x)
