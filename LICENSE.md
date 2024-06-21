@@ -1,3 +1,7 @@
+This R package is licensed under GPL (>=3).
+
+The portion of the package in `./R/scel.R` is written by Art B. Owen and licensed under the BSD-3-Clause license.
+
 GNU General Public License
 ==========================
 
