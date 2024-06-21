@@ -26,18 +26,18 @@ cov_evals <- function(evecs, mcov){
 }
 
 
-# @param ms A single sample (list of matrices)
+# @param x A single sample (list of matrices)
 # @param av To save computation, `av` can be passed if it is already computed.
-# @details If `evecs` is not provided then the eigenvectors \eqn{q_{0i}} are replaced with the eigenvectors of the average of `ms`.
-# @return An estimated covariance matrix for the eigenvalues of `ms`.
-cov_evals_est <- function(ms, evecs = NULL, av = NULL){
-  ms <- as_flat(ms)
-  stopifnot(inherits(ms, "TFORGE_fsm"))
-  if (is.null(av)){av <- mmean(ms)}
+# @details If `evecs` is not provided then the eigenvectors \eqn{q_{0i}} are replaced with the eigenvectors of the average of `x`.
+# @return An estimated covariance matrix for the eigenvalues of `x`.
+cov_evals_est <- function(x, evecs = NULL, av = NULL){
+  x <- as_flat(x)
+  stopifnot(inherits(x, "TFORGE_fsm"))
+  if (is.null(av)){av <- mmean(x)}
   if (is.null(evecs)){
     evecs <- eigen_desc(av, symmetric = TRUE)$vectors
   }
-  mcov <- mcovar(merr(ms, mean = av))
+  mcov <- mcovar(merr(x, mean = av))
   if (all(mcov == 0)){
     stop(structure(
       class = c("zerocovariance", "error", "condition"),
