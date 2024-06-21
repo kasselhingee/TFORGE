@@ -10,7 +10,7 @@
 #' @param tau If supplied only \eqn{\sigma^2}{s^2} will be estimated.
 #' @returns A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
 #' @details
-#' # Orthoganally-Invariant Covariance
+#' # Orthogonally-Invariant Covariance
 #' A symmetric random matrix \eqn{Y} with a Gaussian distribution has orthogonally-invariant covariance if and only if \eqn{Q Y Q^T} has the same distribution as \eqn{Y} for any orthogonal matrix \eqn{Q}.
 #' 
 #' Using the parameterisation of \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} by \insertCite{schwartzman2008in;textual}{TFORGE}:

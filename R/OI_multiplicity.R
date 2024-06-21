@@ -4,7 +4,7 @@
 #' Orthogonally-invariant covariance is a strong assumption and may not be valid; consider using [`test_multiplicity()`] if you are unsure.
 #' @inheritParams test_multiplicity
 #' @details 
-#' The orthogonally invariant covariance matrix is estimated by [`estimate_OIcov()`]. The maximum-likilihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
+#' The orthogonally invariant covariance matrix is estimated by [`estimate_OIcov()`]. The maximum-likelihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
 #' @export
 test_multiplicity_OI <- function(x, mult){
   mn <- colMeans(x)

@@ -1,4 +1,4 @@
-#' @title Flattend a symmetric matrix into a vector.
+#' @title Flatten a symmetric matrix into a vector.
 #' @description
 #' The `vech` operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE} flattens symmetric matrices into vectors. Columns are extracted from left to right with entries above the diagonal ignored.
 #' The function `invvech()` is the inverse of `vech()`.

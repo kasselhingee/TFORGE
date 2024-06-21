@@ -1,7 +1,7 @@
 #' @title Simulate Symmetric Matrices with Multivariate t Elements
 #' @description
 #' Simulate symmetric matrices with elements from a multivariate t distribution.
-#' @param sigma The scale paramater matrix for the elements arranged by [`vech()`]. `sigma` is passed to [`mvtnorm::rmvt()`] without any transformation.
+#' @param sigma The scale parameter matrix for the elements arranged by [`vech()`]. `sigma` is passed to [`mvtnorm::rmvt()`] without any transformation.
 #' @return A `TFORGE_fsm` object. See [`as_fsm()`].
 #' @examples 
 #' Ys <- rsymm_t(100, mean = matrix(1, nrow = 3, ncol = 3), df = 10, sigma = diag(c(3,2,1,1,1,1)))
