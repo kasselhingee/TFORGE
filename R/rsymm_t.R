@@ -32,6 +32,6 @@ rsymm_t <- function(n, mean, df = 1, sigma = diag(length(vech(mean)))){
   out <- do.call(rbind, sim_l)
   out <- t(t(out) + mean)
   colnames(out) <- names(mean)
-  class(out) <- c("TFORGE_fsm", class(out))
+  class(out) <- c("TFORGE_fsm", "array")
   return(out)
 }
