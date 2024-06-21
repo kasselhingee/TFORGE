@@ -25,6 +25,7 @@ vech <- function(m, name = FALSE){
 }
 
 #' @rdname vech
+#' @param x A flattened symmetric matrix (as a vector).
 #' @export
 invvech <- function(x){
   n <- dimfromvech(x)

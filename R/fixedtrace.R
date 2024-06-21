@@ -156,13 +156,13 @@ stat_fixedtrace <- function(x, evals = NULL){
 #' The trace of the symmetric matrices is then zero.
 #' @inheritParams test_multiplicity
 #' @export
-project_trace <- function(ms){
-  diagels <- isondiag_vech(ms[1, ])
+project_trace <- function(x){
+  diagels <- isondiag_vech(x[1, ])
   H <- helmert(sum(diagels))
   projmat <- t(H) %*% diag(c(0,rep(1, sum(diagels)-1))) %*% H
-  diags <- ms[, diagels, drop = FALSE]
-  ms[, diagels] <- diags %*% t(projmat)
-  return(ms)
+  diags <- x[, diagels, drop = FALSE]
+  x[, diagels] <- diags %*% t(projmat)
+  return(x)
 }
 projtrace_matrix <- function(m){ #project to have trace 0
   diags <- diag(m)
