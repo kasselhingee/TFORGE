@@ -12,7 +12,7 @@ test_multiplicity_OI <- function(x, mult){
   Mhat <- es_mn$vectors %*% diag(blk(es_mn$values, mult)) %*% t(es_mn$vectors)
   OIparams <- estimate_OIcov(x, Mhat)
   stat <- (nrow(x)/OIparams$scalesq) * sum((es_mn$values - blk(es_mn$values, mult))^2)
-  pval <- 1 - pchisq(stat, df =  0.5 * sum(mult * (mult + 1)) - length(mult))
+  pval <- 1 - stats::pchisq(stat, df =  0.5 * sum(mult * (mult + 1)) - length(mult))
   return(list(
     pval = pval,
     stat = stat,

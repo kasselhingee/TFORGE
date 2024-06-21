@@ -178,7 +178,7 @@ opt_el.test <- function(ms, mu, maxit = 25){
   if (attr(mu, "c_range")[["min"]] > attr(mu, "c_range")[["max"]]){
     return(rep(0, nrow(ms))) #no pluasible values of c - avoids error triggered in optimise
   }
-  bestmult <- optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
+  bestmult <- stats::optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
     scelres <- emplik(ms, x*vech(mu), itermax = maxit)
     return(-scelres$logelr)
   },

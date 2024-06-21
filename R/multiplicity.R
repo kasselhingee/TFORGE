@@ -174,7 +174,7 @@ standardise_multiplicity <- function(x, mult){
 # @param p the nrows and columns
 runifortho <- function(p){
   # rstiefel::rustiefel(p,p)
-  m <- matrix(rnorm(p * p),
+  m <- matrix(stats::rnorm(p * p),
          nrow = p,
          ncol = p)
   out <- qr.Q(qr(t(m), LAPACK = TRUE))

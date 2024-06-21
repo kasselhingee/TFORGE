@@ -188,6 +188,7 @@ normalise_trace <- function(x){
   }
   return(newx)
 }
+#' @rdname normalise_trace
 #' @export
 normalize_trace <- normalise_trace
 

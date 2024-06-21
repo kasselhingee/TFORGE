@@ -1,3 +1,4 @@
+#' @importFrom Rdpack reprompt
 #' @details
 #' Functions for conducting hypothesis tests start with `test_`.
 #' The following can conduct single sample and \eqn{k}-sample tests of eigenvalues using pivotal bootstap methods:

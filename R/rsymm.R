@@ -20,5 +20,6 @@ rsymm_norm <- function(n, mean, sigma = diag(length(vech(mean)))){
   class(tmp) <- c("TFORGE_fsm", "array")
   return(tmp)
 }
+#' @rdname rsymm_norm
 #' @export
 rsymm <- rsymm_norm

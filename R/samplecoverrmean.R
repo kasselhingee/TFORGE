@@ -15,7 +15,7 @@ merr <- function(ms, mean = mmean(ms)){
 
 mcovar <- function(merr){
   stopifnot(inherits(merr, "TFORGE_fsm"))
-  out <- cov(merr)
+  out <- stats::cov(merr)
   indx <- which(lower.tri(invvech(merr[1, ]), diag = TRUE), arr.ind = TRUE)
   nam <- paste0("e", indx[, "row"], indx[, "col"])
   colnames(out) <- rownames(out) <- nam

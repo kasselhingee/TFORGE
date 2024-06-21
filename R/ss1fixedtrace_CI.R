@@ -25,7 +25,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   # resample and get statistic each time
   res <- bootresampling(x, x, stat = stat_ss1fixedtrace, B = B, evals = naveval)
   # get 1-alpha quantile of the resampled statistics
-  statthreshold <- quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
+  statthreshold <- stats::quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
   
   # get V from x
   covar_unconstrained <- cov_evals_est(ms = x, evecs = es$vectors, av = av)
@@ -80,7 +80,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
     inregion <- apply(resample_avevals, MARGIN = 1, 
                       function(v) {conf_ss1fixedtrace_inregion(v, cr)})
     coverage <- mean(inregion)
-    coverage_sd <- sd(inregion)/sqrt(length(inregion))
+    coverage_sd <- stats::sd(inregion)/sqrt(length(inregion))
     if (coverage + 2 * coverage_sd < 1-alpha){
       warning(sprintf("Interval covers only %0.0f%% of resample means.", coverage * 100))
     }

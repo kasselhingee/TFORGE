@@ -8,7 +8,7 @@
 #'
 #' For multiple samples, `evals` and `evecs` must be omitted. The null hypothesis is that the population means of each sample have the same eigenvalues.
 #'
-#' Bootstrap resampling is conducted from a population that satisfies the null hypothesis by transforming `x` with `standardise_specifiedevals()`.
+#' Bootstrap resampling is conducted from a population that satisfies the null hypothesis by transforming each sample in `x` with `standardise_specifiedevals()`.
 #' The test statistic is calculated by `stat_unconstrained()`. 
 #' @param x A single sample of symmetric matrices or multiple samples of symmetric matrices. See [`as_flat()`].
 #' @param evals When `x` is a single sample, the null hypothesis is that the population mean has eigenvalues `evals`.
@@ -118,7 +118,7 @@ est_commonevals <- function(mss, Vs, evals){
 #' @rdname test_unconstrained
 #' @export
 standardise_specifiedevals <- function(x, evals){
-  x <- as_flat(x)
+  x <- as_fsm(x)
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(x)
   errs <- merr(x, mean = av)

@@ -59,7 +59,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
 
   # resampling and computing stat_fixedtrace()
   res <- bootresampling(x, x, stat = stat_fixedtrace, B = B, evals = av_eval)
-  statthreshold <- quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
+  statthreshold <- stats::quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
 
   # now compute boundary of region
   Omega <- cov_evals_ft(x, evecs = av_ess$vectors, av = av)
@@ -71,7 +71,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
                          a = a,
                          b = b,
                          evecs = Omega_ess$vectors,
-                         ctreval = av_eval
+                         ctrevals = av_eval
                          )
 
   # also create a function that tests whether inside the region using the statistic directly
@@ -116,7 +116,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
     resample_avevals <- t(replicate(100, eigen_desc(mmean(sample_fsm(x)))$values))
     inregionvals <- apply(resample_avevals, MARGIN = 1, function(v) {inregion(v)})
     coverage <- mean(inregionvals)
-    coverage_sd <- sd(inregionvals)/sqrt(length(inregionvals))
+    coverage_sd <- stats::sd(inregionvals)/sqrt(length(inregionvals))
     if (coverage + 2 * coverage_sd < 1-alpha){
       warning(sprintf("Interval covers only %0.0f%% of resample means.", coverage * 100))
     }

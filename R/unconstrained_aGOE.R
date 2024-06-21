@@ -142,7 +142,7 @@ test_unconstrained_aGOE <- function(x1, x2 = NULL){
   anv <- S_anv(n1, n2, M1, M2, 
         C1 = S_mcovar(merr(x1, mean = M1)),
         C2 = S_mcovar(merr(x2, mean = M2)))
-  pval <- 1-pchisq(Tstat / anv$a, df = anv$v)
+  pval <- 1-stats::pchisq(Tstat / anv$a, df = anv$v)
   return(list(
     pval = pval,
     t = Tstat,

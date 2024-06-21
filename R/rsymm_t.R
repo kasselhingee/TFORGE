@@ -24,7 +24,7 @@ rsymm_t <- function(n, mean, df = 1, sigma = diag(length(vech(mean)))){
   stopifnot(isSymmetric(mean))
   mean <- vech(mean, name = TRUE)
   zeros <- rep(0, length(mean))
-  nuS2 <- rchisq(n, df)
+  nuS2 <- stats::rchisq(n, df)
   S2 <- nuS2/df
   sim_l <- lapply(S2, function(x){
     mvtnorm::rmvnorm(n = 1, mean = zeros, sigma = sigma / x)
