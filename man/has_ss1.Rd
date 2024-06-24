@@ -15,5 +15,5 @@ has_ss1(x, tolerance = sqrt(.Machine$double.eps))
 \code{TRUE} or \code{FALSE}
 }
 \description{
-Compares whether the sum of the squared eigenvalues of the supplied matrices match each other using the property that the sum of the squared eigenvalues of \code{Y} equals the trace of \code{Y \%*\% Y}.
+Compares whether the sum of the squared eigenvalues of the supplied symmetric matrices match each other using the property that the sum of the squared eigenvalues of \code{Y} equals the trace of \code{Y \%*\% Y}.
 }

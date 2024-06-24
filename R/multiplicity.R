@@ -1,8 +1,8 @@
 #' @title Test eigenvalue multiplicity
 #' @description
 #' Given a sample from a population, uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues.
-#' The test statistic is computed by `stat_multiplicity()`, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue of multiplicity greater than 1.
-#' The null hypothesis is the multiplicity of eigenvalues of the population mean.
+#' The test statistic is computed by `stat_multiplicity()`, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue with multiplicity greater than 1.
+#' The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
 #' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`.
 #' @details
 #' This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace. It may work poorly on matrices with other constraints, on samples smaller than 15, or samples of multimodal populations.
@@ -15,7 +15,7 @@
 #' x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))
 #' test_multiplicity(x, mult = c(1, 2, 1))
 #' @return
-#' + `test_multiplicity()` returns a `TFORGE` object including the p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). See [`bootresampling()`].
+#' A `TFORGE` object including the p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). See [`bootresampling()`].
 #' @export
 test_multiplicity <- function(x, mult, B = 1000){
   x <- as_flat(x)
@@ -29,8 +29,6 @@ test_multiplicity <- function(x, mult, B = 1000){
 
 #' @rdname test_multiplicity
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
-#' @return
-#' + `stat_multiplicity()` returns a single value.
 #' @export
 stat_multiplicity <- function(x, mult, evecs = NULL){
   av <- mmean(x)
@@ -126,8 +124,6 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
 }
 
 #' @rdname test_multiplicity
-#' @return
-#' + `standardise_multiplicity()` returns a sample of matrices stored in flattened form (a `TFORGE_fsm`).
 #' @export
 standardise_multiplicity <- function(x, mult){
   x <- as_fsm(x)

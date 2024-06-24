@@ -22,22 +22,12 @@ standardise_multiplicity(x, mult)
 \item{evecs}{For debugging only. Supply eigenvectors of population mean.}
 }
 \value{
-\itemize{
-\item \code{test_multiplicity()} returns a \code{TFORGE} object including the p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}). See \code{\link[=bootresampling]{bootresampling()}}.
-}
-
-\itemize{
-\item \code{stat_multiplicity()} returns a single value.
-}
-
-\itemize{
-\item \code{standardise_multiplicity()} returns a sample of matrices stored in flattened form (a \code{TFORGE_fsm}).
-}
+A \code{TFORGE} object including the p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}). See \code{\link[=bootresampling]{bootresampling()}}.
 }
 \description{
 Given a sample from a population, uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues.
-The test statistic is computed by \code{stat_multiplicity()}, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue of multiplicity greater than 1.
-The null hypothesis is the multiplicity of eigenvalues of the population mean.
+The test statistic is computed by \code{stat_multiplicity()}, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue with multiplicity greater than 1.
+The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
 Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by \code{standardise_multiplicity()}.
 }
 \details{

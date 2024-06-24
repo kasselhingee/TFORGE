@@ -27,7 +27,6 @@ The covariance of the vectors is \code{sigma * df / (df - 2)}.
 The mean matrix \code{mean} is vectorized using the \code{\link[=vech]{vech()}} function.
 }
 \examples{
-Ys <- rsymm_t(100, mean = matrix(1, nrow = 3, ncol = 3), df = 10, sigma = diag(c(3,2,1,1,1,1)))
 rsymm_t(100, mean = matrix(1, nrow = 3, ncol = 3), df = 10, sigma = diag(c(3,2,1,1,1,1)))
 
 }

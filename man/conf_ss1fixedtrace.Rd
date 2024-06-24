@@ -34,6 +34,5 @@ A list:
 \description{
 When a 3x3 symmetric matrix has a trace of zero and the sum of squared eigenvalues is one, then the eigenvalues of the matrix lie on a circle in 3D space.
 Under these situations, this function calculates a confidence region (i.e. intervals) for the population mean's eigenvalues.
-The confidence interval can be easily described on this circle.
 The function \code{conf_ss1fixedtrace_inregion()} returns whether a set of eigenvalues is inside a confidence region returned by \code{conf_fixedtrace()}.
 }

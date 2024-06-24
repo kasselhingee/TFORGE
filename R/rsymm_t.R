@@ -3,8 +3,6 @@
 #' Simulate symmetric matrices with elements from a multivariate t distribution.
 #' @param sigma The scale parameter matrix for the elements arranged by [`vech()`]. `sigma` is passed to [`mvtnorm::rmvt()`] without any transformation.
 #' @return A `TFORGE_fsm` object. See [`as_fsm()`].
-#' @examples 
-#' Ys <- rsymm_t(100, mean = matrix(1, nrow = 3, ncol = 3), df = 10, sigma = diag(c(3,2,1,1,1,1)))
 #' @param n Number of matrices to generate.
 #' @param mean A symmetric matrix specifying the mean of the distribution.
 #' @param df Degrees of freedom for the t distribution.

@@ -15,18 +15,18 @@ standardise_specifiedevals(x, evals)
 \arguments{
 \item{x}{A single sample of symmetric matrices or multiple samples of symmetric matrices. See \code{\link[=as_flat]{as_flat()}}.}
 
-\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues \code{evals}.}
+\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues equal to \code{evals}.}
 
 \item{evecs}{For a single sample, specify eigenvectors to test under the assumption that the population mean's eigenvectors are the columns of \code{evecs}. The order of these eigenvectors matters and should be such that eigenvalues are in descending order.}
 
 \item{B}{Number of bootstrap samples.}
 }
 \value{
-A \code{TFORGE} object with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}. See \code{\link[=bootresampling]{bootresampling()}}.
+A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.
 }
 \description{
 For a single sample of symmetric matrices, test eigenvalues of the population mean.
-For multilpe samples of symmetric matrices, test for equality of the eigenvalues of the population means.
+For multiple samples of symmetric matrices, test for equality of the eigenvalues of the population means.
 Eigenvalues must be distinct.
 }
 \details{

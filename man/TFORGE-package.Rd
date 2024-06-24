@@ -6,7 +6,7 @@
 \alias{TFORGE-package}
 \title{TFORGE: Tests for Geophysical Eigenvalues}
 \description{
-When observations are symmetric matrices (also called tensors) there is often interest in properties of the eigenvalues. For a single sample the eigenvalues or eigenvalue-multiplicity of the population mean can be tested. For k-samples, equal eigenvalues between the samples can be tested. The matrices may also have certain constraints common to geophysical tensors (constant trace, sum of squared eigenvalues, or both). The most flexible tests use pivotal bootstrap methods. Also available are a 2-sample test using a Gaussian orthogonal ensemble approximation and a eigenvalue-multiplicity tests assuming orthogonally-invariant covariance. The package name is short for Tests FOR Geophysical Eigenvalues.
+When observations are symmetric matrices (also called tensors) the eigenvalues are often of interest. This package offers single sample tests for the eigenvalues of the population mean or the eigenvalue-multiplicity of the population mean. For k-samples this package offers tests for equal eigenvalues between samples. Included is support for matrices with constraints common to geophysical tensors (constant trace, sum of squared eigenvalues, or both). The most flexible tests in this package use pivotal bootstrap methods. Also available is a 2-sample test using a Gaussian orthogonal ensemble approximation and an eigenvalue-multiplicity test assuming orthogonally-invariant covariance.
 }
 \details{
 Functions for conducting hypothesis tests start with \code{test_}.
@@ -20,23 +20,23 @@ For single sample tests the null hypothesis is a user-provided set of eigenvalue
 For \eqn{k}-sample tests the null hypothesis is that the eigenvalues of the population means are equal.
 }
 
-Additionally \code{\link[=test_unconstrained_aGOE]{test_unconstrained_aGOE()}} can perform \eqn{2}-sample tests using an approximation of the Gaussian Orthogonal Ensemble \insertCite{schwartzman2010gr}{TFORGE}.
+Additionally \code{\link[=test_unconstrained_aGOE]{test_unconstrained_aGOE()}} can perform \eqn{2}-sample tests using Gaussian Orthogonal Ensemble approximation \insertCite{schwartzman2010gr}{TFORGE}.
 
-The above tests all require that the eigenvalues of the population mean are distinct (with decreasing performance as eigenvalues get closer to each other).
+The above tests all require that the eigenvalues of the population mean are distinct (with decreasing performance when eigenvalues are very close).
 Use \code{\link[=test_multiplicity]{test_multiplicity()}} to test the eigenvalue-multiplicity of the population mean of a single sample (for unconstrained or fixed trace matrices).
 A test of the same hypothesis that requires orthogonally-invariant covariance is also available through \code{\link[=test_multiplicity_OI]{test_multiplicity_OI()}} \insertCite{schwartzman2008in}{TFORGE}.
 
 In this package matrices within the same sample are considered independently and identically distributed.
-Matrices are stored in their flattened form according to \code{\link[=vech]{vech()}}. See \code{\link{fsm}} for details.
+Matrices are stored in their flattened form according to \code{\link[=vech]{vech()}} - see \code{\link{fsm}} for details.
 Samples may be provided as lists of matrices or in their flattened from so long as the column order matches that of \code{\link[=vech]{vech()}}.
 Eigenvalues, when distinct, are assumed to be in descending order.
 }
 \section{Acknowledgements}{
 Colleagues Andrew T. A. Wood and Janice Scealy played crucial roles in developing the statistical concepts and theory.
 
-The package includes \code{scel.R} for empirical likelihood by  \insertCite{owen:2013;textual}{TFORGE}, which is used for bootstrap resampling weights when the sum of squared eigenvalues is constrained.
+The package includes \code{scel.R} for empirical likelihood by  \insertCite{owen:2013;textual}{TFORGE}, which is used to estimate optimal non-uniform sampling weights for samples of constrained matrices.
 
-This package on Ngunnawal and Ngambri Country. I thank the Country for its influence.
+This package was written on Ngunnawal and Ngambri Country. I thank the Country for its support.
 }
 
 \references{

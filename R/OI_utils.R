@@ -4,10 +4,10 @@
 #' @description
 #' Orthogonally-invariant covariance is a restrictive structure, but if it holds then a suite of tools is available \insertCite{schwartzman2008in}{TFORGE}.
 #' Any orthogonally-invariant covariance can be specified by just two parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
-#' For a Gaussian-distributed elements, the parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} can be estimated by maximum-likelihood if provided the data and the maximum-likelihood estimate of the population mean \insertCite{@Lemma 3.3, @schwartzman2008in}{TFORGE}.
+#' For a Gaussian-distributed elements, the parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} can be estimated by maximum-likelihood from the data and a maximum-likelihood estimate of the population mean \insertCite{@Lemma 3.3, @schwartzman2008in}{TFORGE}.
 #' @param Mhat A maximum-likelihood estimate of the population mean
 #' @param x A single sample of symmetric matrices (passed to [`as_fsm()`]).
-#' @param tau If supplied only \eqn{\sigma^2}{s^2} will be estimated.
+#' @param tau The parameter \eqn{\tau}{tau}. If supplied only \eqn{\sigma^2}{s^2} will be estimated.
 #' @returns A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
 #' @details
 #' # Orthogonally-Invariant Covariance

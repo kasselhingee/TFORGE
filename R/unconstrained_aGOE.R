@@ -104,7 +104,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' The distribution of this statistic for more general populations is approximated using a tangent space and the Welch-Satterthwaite approximation.
 #' @details 
 #' The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
-#' The p value of the test is computed using the approximate distribution reached at the end of section 2.4 \insertCite{schwartzman2010gr}{TFORGE}.
+#' The p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' @param x1 A single sample of matrices (passed to [`as_fsm()`]) or
 #' a list of two samples of matrices (passed to [`as_kfsm()`]).
 #' @param x2 If `x1` is a single sample then `x2` must be the second sample. Otherwise `x2` should be `NULL`.

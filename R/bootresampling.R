@@ -14,8 +14,6 @@
 #' Errors in evaluating the statistic `stat` on resamples are recorded in the `nullt_messages` and lead to `NA` values for the statistic.
 #' 
 #' The `p`-value is the fraction of non-`NA` resample statistic values that are greater than the `stat` applied to `x`.
-#' 
-#' + *include an option (`repair` say) to use common evals that aren't descending by reordering?*
 #' @return
 #' A list of
 #'  + `pval` the `p`-value from the test

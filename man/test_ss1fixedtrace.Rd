@@ -12,7 +12,7 @@ stat_ss1fixedtrace(x, evals = NULL)
 \arguments{
 \item{x}{A single sample of symmetric matrices or multiple samples of symmetric matrices. See \code{\link[=as_flat]{as_flat()}}.}
 
-\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues \code{evals}.}
+\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues equal to \code{evals}.}
 
 \item{B}{Number of bootstrap samples.}
 
@@ -28,13 +28,13 @@ The test statistic is calculated by \code{stat_ss1fixedtrace()}.
 \details{
 The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere and the trace constraint forces eigenvalues onto a plane.
 Combined the constraints force eigenvalues onto a circle in 3D Euclidean space.
-The test statistic accounts for these constraints by projecting eigenvalues onto a line in the plane and orthogonal to the null-hypothesis eigenvalues.
-Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+The test statistic accounts for these constraints by projecting eigenvalues onto a line tangential to this circle and orthogonal to the null-hypothesis eigenvalues.
+Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
 
 Eigenvalues must be distinct.
 }
 \section{Hypotheses}{
-For a single sample the null hypothesis is that the population mean has eigenvalues of \code{evals}; the alternative hypothesis is that the eigenvalues are not \code{evals}.
+For a single sample the null hypothesis is that the population mean has eigenvalues of \code{evals}; the alternative hypothesis is that the eigenvalues are not equal to \code{evals}.
 For multiple samples, \code{evals} must be omitted and the null hypothesis is that the population means of each sample have the same eigenvalues.
 }
 

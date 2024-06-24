@@ -10,6 +10,6 @@ project_trace(x)
 \item{x}{A single sample of matrices (passed to \code{\link[=as_fsm]{as_fsm()}}).}
 }
 \description{
-Projects the diagonal elements of a symmetric matrices onto a plane through the origin orthogonal to the vector (1,1,1,....,1).
+Projects the diagonal elements of symmetric matrices onto the plane through the origin and orthogonal to the vector (1,1,1,....,1).
 The trace of the symmetric matrices is then zero.
 }

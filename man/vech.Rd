@@ -22,7 +22,7 @@ dimfromvech(x)
 \description{
 The \code{vech} operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE} flattens symmetric matrices into vectors. Columns are extracted from left to right with entries above the diagonal ignored.
 The function \code{invvech()} is the inverse of \code{vech()}.
-The dimension of the matrix can be obtained from it flattened form by \code{dimfromvech()}.
+The dimension of the matrix can be obtained from its flattened form by \code{dimfromvech()}.
 }
 \details{
 The extraction is conveniently performed by \code{m[lower.tri(m), diag = TRUE]}.

@@ -2,7 +2,7 @@
 #' @description
 #' The `vech` operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE} flattens symmetric matrices into vectors. Columns are extracted from left to right with entries above the diagonal ignored.
 #' The function `invvech()` is the inverse of `vech()`.
-#' The dimension of the matrix can be obtained from it flattened form by `dimfromvech()`.
+#' The dimension of the matrix can be obtained from its flattened form by `dimfromvech()`.
 #' @details
 #' The extraction is conveniently performed by `m[lower.tri(m), diag = TRUE]`.
 #' The matrix `m` is not checked for symmetry.

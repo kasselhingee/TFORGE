@@ -41,7 +41,4 @@ The function \code{stat} is applied to \code{x} and all resamples. The statistic
 Errors in evaluating the statistic \code{stat} on resamples are recorded in the \code{nullt_messages} and lead to \code{NA} values for the statistic.
 
 The \code{p}-value is the fraction of non-\code{NA} resample statistic values that are greater than the \code{stat} applied to \code{x}.
-\itemize{
-\item \emph{include an option (\code{repair} say) to use common evals that aren't descending by reordering?}
-}
 }

@@ -19,23 +19,22 @@ has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' @title Test for eigenvalues when trace is fixed
 #' @description 
 #' For a single sample of symmetric matrices with fixed trace, test eigenvalues of the population mean.
-#' For multilpe samples of symmetric matrices with fixed trace, test for equality of the eigenvalues of the population means.
+#' For multiple samples of symmetric matrices with fixed trace, test for equality of the eigenvalues of the population means.
 #' The test statistic is calculated by `stat_fixedtrace()`.
 #' @details
 #' The fixed trace constraint forces the set of eigenvalues to lie in a plane.
 #' The test statistic accounts for this constraint by using an orthonormal basis in the plane.
-#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
 #'
 #' Eigenvalues must be distinct.
 #' # Hypotheses
-#' For a single sample the null hypothesis is that the population mean has eigenvalues of `evals`; the alternative hypothesis is that the eigenvalues are not `evals`.
+#' For a single sample the null hypothesis is that the population mean has eigenvalues of `evals`; the alternative hypothesis is that the eigenvalues are not equal to `evals`.
 #' For multiple samples, `evals` must be omitted and the null hypothesis is that the population means of each sample have the same eigenvalues.
 #' @references \insertAllCited{}
 #' @inherit test_unconstrained return
 # @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.
 # @param evals If supplied the eigenvalues of the null hypothesis. When supplied `evals` must sum to the trace of the matrices. For the multisample statistic this should be `NULL` and the null evals estimated by the function.
 #' @param maxit The maximum number of Newton steps allowed in empirical likelihood optimisation \insertCite{owen:2013}{TFORGE}.
-#' @references \insertAllCited{}
 #' @inheritParams test_unconstrained
 #' @export
 test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
@@ -151,7 +150,7 @@ stat_fixedtrace <- function(x, evals = NULL){
 
 #' @title Project diagonal elements to have trace of zero
 #' @description
-#' Projects the diagonal elements of a symmetric matrices onto a plane through the origin orthogonal to the vector (1,1,1,....,1).
+#' Projects the diagonal elements of symmetric matrices onto the plane through the origin and orthogonal to the vector (1,1,1,....,1).
 #' The trace of the symmetric matrices is then zero.
 #' @inheritParams test_multiplicity
 #' @export

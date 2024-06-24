@@ -12,36 +12,34 @@ stat_fixedtrace(x, evals = NULL)
 \arguments{
 \item{x}{A single sample of symmetric matrices or multiple samples of symmetric matrices. See \code{\link[=as_flat]{as_flat()}}.}
 
-\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues \code{evals}.}
+\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues equal to \code{evals}.}
 
 \item{B}{Number of bootstrap samples.}
 
 \item{maxit}{The maximum number of Newton steps allowed in empirical likelihood optimisation \insertCite{owen:2013}{TFORGE}.}
 }
 \value{
-A \code{TFORGE} object with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}. See \code{\link[=bootresampling]{bootresampling()}}.
+A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.
 }
 \description{
 For a single sample of symmetric matrices with fixed trace, test eigenvalues of the population mean.
-For multilpe samples of symmetric matrices with fixed trace, test for equality of the eigenvalues of the population means.
+For multiple samples of symmetric matrices with fixed trace, test for equality of the eigenvalues of the population means.
 The test statistic is calculated by \code{stat_fixedtrace()}.
 }
 \details{
 The fixed trace constraint forces the set of eigenvalues to lie in a plane.
 The test statistic accounts for this constraint by using an orthonormal basis in the plane.
-Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
 
 Eigenvalues must be distinct.
 
 The test statistic is calculated by \code{stat_fixedtrace()}.
 }
 \section{Hypotheses}{
-For a single sample the null hypothesis is that the population mean has eigenvalues of \code{evals}; the alternative hypothesis is that the eigenvalues are not \code{evals}.
+For a single sample the null hypothesis is that the population mean has eigenvalues of \code{evals}; the alternative hypothesis is that the eigenvalues are not equal to \code{evals}.
 For multiple samples, \code{evals} must be omitted and the null hypothesis is that the population means of each sample have the same eigenvalues.
 }
 
 \references{
-\insertAllCited{}
-
 \insertAllCited{}
 }

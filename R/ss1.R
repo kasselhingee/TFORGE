@@ -6,7 +6,7 @@
 #' @details
 #' The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere (or circle).
 #' The test statistic accounts for this constraint by projecting eigenvalues onto a plane perpendicular to the direction of the sample average's eigenvalues.
-#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
 #'
 #' Eigenvalues must be distinct.
 #' @inheritParams test_unconstrained
@@ -54,6 +54,8 @@ test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
   return(res)
 }
 
+#' @rdname test_ss1
+#' @export
 stat_ss1 <- function(x, evals = NULL){
   x <- as_flat(x)
   if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
@@ -125,7 +127,7 @@ amaral2007Lemma1 <- function(m){
 
 
 #' @title Check whether the supplied sample(s) have equal sum of squared eigenvalues
-#' @description Compares whether the sum of the squared eigenvalues of the supplied matrices match each other using the property that the sum of the squared eigenvalues of `Y` equals the trace of `Y %*% Y`.
+#' @description Compares whether the sum of the squared eigenvalues of the supplied symmetric matrices match each other using the property that the sum of the squared eigenvalues of `Y` equals the trace of `Y %*% Y`.
 #' @param x Either a list of samples, each sample being a list of matrices, or a single sample as a list of matrices.
 #' @param tolerance Tolerance on the relative difference, passed to `all.equal()`
 #' @export

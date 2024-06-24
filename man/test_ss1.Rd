@@ -2,14 +2,17 @@
 % Please edit documentation in R/ss1.R
 \name{test_ss1}
 \alias{test_ss1}
+\alias{stat_ss1}
 \title{Test for eigenvalues when sum of squared eigenvalues is 1}
 \usage{
 test_ss1(x, evals = NULL, B = 1000, maxit = 25)
+
+stat_ss1(x, evals = NULL)
 }
 \arguments{
 \item{x}{A single sample of symmetric matrices or multiple samples of symmetric matrices. See \code{\link[=as_flat]{as_flat()}}.}
 
-\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues \code{evals}.}
+\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues equal to \code{evals}.}
 
 \item{B}{Number of bootstrap samples.}
 
@@ -23,12 +26,12 @@ The test statistic is calculated by \code{stat_ss1()}.
 \details{
 The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere (or circle).
 The test statistic accounts for this constraint by projecting eigenvalues onto a plane perpendicular to the direction of the sample average's eigenvalues.
-Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
 
 Eigenvalues must be distinct.
 }
 \section{Hypotheses}{
-For a single sample the null hypothesis is that the population mean has eigenvalues of \code{evals}; the alternative hypothesis is that the eigenvalues are not \code{evals}.
+For a single sample the null hypothesis is that the population mean has eigenvalues of \code{evals}; the alternative hypothesis is that the eigenvalues are not equal to \code{evals}.
 For multiple samples, \code{evals} must be omitted and the null hypothesis is that the population means of each sample have the same eigenvalues.
 }
 

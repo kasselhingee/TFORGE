@@ -8,8 +8,8 @@
 #' @details
 #' The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere and the trace constraint forces eigenvalues onto a plane.
 #' Combined the constraints force eigenvalues onto a circle in 3D Euclidean space.
-#' The test statistic accounts for these constraints by projecting eigenvalues onto a line in the plane and orthogonal to the null-hypothesis eigenvalues.
-#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find probability mass weights for each matrix in the original sample.
+#' The test statistic accounts for these constraints by projecting eigenvalues onto a line tangential to this circle and orthogonal to the null-hypothesis eigenvalues.
+#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
 #'
 #' Eigenvalues must be distinct.
 

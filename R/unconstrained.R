@@ -1,6 +1,6 @@
 #' @title Pivotal bootstrap test of mean eigenvalues
 #' @description For a single sample of symmetric matrices, test eigenvalues of the population mean.
-#' For multilpe samples of symmetric matrices, test for equality of the eigenvalues of the population means.
+#' For multiple samples of symmetric matrices, test for equality of the eigenvalues of the population means.
 #' Eigenvalues must be distinct.
 #' @details
 #' For a single sample with `evecs` omitted, the null hypothesis is that the population mean has eigenvalues of `evals` without restriction on the eigenvectors. The alternative hypothesis here is that the eigenvalues are not `evals`.
@@ -11,10 +11,10 @@
 #' Bootstrap resampling is conducted from a population that satisfies the null hypothesis by transforming each sample in `x` with `standardise_specifiedevals()`.
 #' The test statistic is calculated by `stat_unconstrained()`. 
 #' @param x A single sample of symmetric matrices or multiple samples of symmetric matrices. See [`as_flat()`].
-#' @param evals When `x` is a single sample, the null hypothesis is that the population mean has eigenvalues `evals`.
+#' @param evals When `x` is a single sample, the null hypothesis is that the population mean has eigenvalues equal to `evals`.
 #' @param evecs For a single sample, specify eigenvectors to test under the assumption that the population mean's eigenvectors are the columns of `evecs`. The order of these eigenvectors matters and should be such that eigenvalues are in descending order.
 #' @param B Number of bootstrap samples.
-#' @return A `TFORGE` object with the eigenvalues of the null hypothesis in the `null_evals` attribute for `t0`. See [`bootresampling()`].
+#' @return A `TFORGE` object (see [`bootresampling()`]) with the eigenvalues of the null hypothesis in the `null_evals` attribute for `t0`.
 #' @examples
 #' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1), B = 100)
 #' test_unconstrained(list(rsymm_norm(15, diag(c(3,2,1))),

@@ -36,7 +36,7 @@ A list:
 \description{
 When a 3x3 symmetric matrix has a fixed-trace constraint, the vector of its eigenvalues lies on a 2D plane within 3D space.
 This function calculates the boundary of an approximate confidence region in this 2D plane using the same statistic as \code{\link[=test_fixedtrace]{test_fixedtrace()}}.
-The boundary can be used to plot the confidence region.
+The returned boundary can be used to plot the confidence region.
 }
 \details{
 Uses the same statistic as \code{\link[=test_fixedtrace]{test_fixedtrace()}} and bootstrap resampling to obtain approximate bounds on the eigenvalues of a population mean.

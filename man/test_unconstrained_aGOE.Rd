@@ -30,7 +30,7 @@ The distribution of this statistic for more general populations is approximated 
 }
 \details{
 The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
-The p value of the test is computed using the approximate distribution reached at the end of section 2.4 \insertCite{schwartzman2010gr}{TFORGE}.
+The p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 }
 \references{
 \insertAllCited{}

@@ -36,7 +36,7 @@ The function \code{as_flat()} automatically chooses between a \code{TFORGE_kfsm}
 \item If \code{x} is a list of symmetric matrices then it will return a \code{TFORGE_fsm}.
 \item If \code{x} is a list of lists of equal-sized matrices then it returns a \code{TFORGE_kfsm}, with each element of the larger list a \code{TFORGE_fsm}.
 \item If \code{x} is a list of 2D arrays, each satisfying \code{as_fsm()}, then \code{as_flat()} will return a \code{TFORGE_kfsm}.
-\item In the rare case that \code{x} is a list of 2D arrays of flattened matrices, but the 2D arrays happen to be perfectly symmetric (requires size of collections to perfectly relate to the size of the matrix observations) then \code{as_flat()} will mistakenly treat each element of \code{x} as a symmetric matrix and return a \code{TFORGE_fsm}.
+\item In the rare case that \code{x} is a list of 2D arrays of flattened matrices, but the 2D arrays happen to be perfectly symmetric (requires size of collections to perfectly relate to the dimension of the matrix observations) then \code{as_flat()} will mistakenly treat each element of \code{x} as a symmetric matrix and return a \code{TFORGE_fsm}.
 }
 }
 \section{Functions}{

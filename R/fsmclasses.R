@@ -24,7 +24,7 @@ NULL
 #' + If `x` is a list of symmetric matrices then it will return a `TFORGE_fsm`.
 #' + If `x` is a list of lists of equal-sized matrices then it returns a `TFORGE_kfsm`, with each element of the larger list a `TFORGE_fsm`.
 #' + If `x` is a list of 2D arrays, each satisfying `as_fsm()`, then `as_flat()` will return a `TFORGE_kfsm`.
-#' + In the rare case that `x` is a list of 2D arrays of flattened matrices, but the 2D arrays happen to be perfectly symmetric (requires size of collections to perfectly relate to the size of the matrix observations) then `as_flat()` will mistakenly treat each element of `x` as a symmetric matrix and return a `TFORGE_fsm`.
+#' + In the rare case that `x` is a list of 2D arrays of flattened matrices, but the 2D arrays happen to be perfectly symmetric (requires size of collections to perfectly relate to the dimension of the matrix observations) then `as_flat()` will mistakenly treat each element of `x` as a symmetric matrix and return a `TFORGE_fsm`.
 #' @param x For `as_fsm()` a list of symmetric matrices, or a 2D array of flattened matrices. For `as_kfsm()` a list of objects that can be passed to `as_fsm()` (i.e. a list of a lists of matrices, or a list of 2D arrays). For `as_flat()`, `x` can be suitable for either `as_fsm()` or `as_kfsm()`.
 #' @param ... Passed to [`isSymmetric()`] for testing whether matrices are symmetric.
 #' @return An object with class `TFORGE_kfsm` or `TFORGE_fsm`.
