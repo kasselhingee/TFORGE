@@ -50,6 +50,11 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   }
 
   if (has_ss1(x)){warning("All tensors have a sum of squared eigenvalues of 1. Consider using test_ss1fixedtrace().")}
+  
+  if (B == "chisq"){
+    df <- (dim_fsm_kfsm(x) - 1) * (length(x) - is.null(evals))
+    return(chisq_calib(x, stat_fixedtrace, df = df, evals = evals))
+  }
 
   t0 <- stat_fixedtrace(x, evals = evals)
   estevals <- attr(t0, "null_evals")

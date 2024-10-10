@@ -125,6 +125,19 @@ test_that("test of NULL has uniform p values for TFORGE_fsm", {
   expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.2)
 })
 
+test_that("chisq: test of NULL has uniform p values for TFORGE_fsm", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Y <- rsymm_norm(50, diag(c(3,2,1) - 2), sigma = diag(rep(0.1, 6)))
+    Y <- project_trace(Y)
+    res <- test_fixedtrace(Y, c(3,2,1) - 2, "chisq", maxit = 100)
+    res$pval
+  })
+  # qqplot(pvals, y = runif(100))
+  expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.2)
+})
+
+
 test_that("test of NULL has uniform p values for TFORGE_kfsm", {
   set.seed(1333)
   pvals <- replicate(100, {
@@ -134,6 +147,21 @@ test_that("test of NULL has uniform p values for TFORGE_kfsm", {
       Y
     }, simplify = FALSE)
     res <- test_fixedtrace(Ysamples, B = 100, maxit = 100)
+    res$pval
+  })
+  # qqplot(pvals, y = runif(100))
+  expect_gt(suppressWarnings(ks.test(pvals, "punif")$p.value), 0.2)
+})
+
+test_that("chisq: test of NULL has uniform p values for TFORGE_kfsm", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Ysamples <- replicate(5, {
+      Y <- rsymm_norm(50, diag(c(3,2,1)))
+      Y <- project_trace(Y)
+      Y
+    }, simplify = FALSE)
+    res <- test_fixedtrace(Ysamples, B = "chisq", maxit = 100)
     res$pval
   })
   # qqplot(pvals, y = runif(100))
