@@ -64,7 +64,9 @@ stat_multiplicity <- function(x, mult, evecs = NULL){
   C0 <- mcovar(merr(x, mean = av)) # the covariance between elements of xi
   covar <- xicovar(mult, idxs, es$vectors, C0/nrow(x))
 
-  return(drop(t(xi) %*% solve_error(covar) %*% xi))
+  stat <- drop(t(xi) %*% solve_error(covar) %*% xi)
+  attr(stat, "df") <- sum(mult) - length(mult)
+  return(stat)
 }
 
 #this function turns the qYbarq into vectors perpendicular to 1,1,1,1,1,1...
