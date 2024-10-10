@@ -19,6 +19,9 @@
 #' @export
 test_multiplicity <- function(x, mult, B = 1000){
   x <- as_flat(x)
+  if (B == "chisq"){
+    return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult))
+  }
   ms_std <- standardise_multiplicity(x, mult)
   res <- bootresampling(x, ms_std, 
     stat = stat_multiplicity,
