@@ -70,7 +70,7 @@ test_that("chisq_calib: test TFORGE_fsm from NULL has uniform p-values", {
     res <- test_unconstrained(Ysample, c(3,2,1), B = "chisq")
     set.seed(seed+1)
     res$pval}, FUN.VALUE = 1.1)
-  qqplot(pvals, y = runif(1000))
+  # qqplot(pvals, y = runif(1000))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
 })

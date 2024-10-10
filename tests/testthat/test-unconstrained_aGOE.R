@@ -114,7 +114,7 @@ test_that("Schwartzman statistic for iid elements is chisq under H0 and pvals un
   expect_equal(mean(unlist(vals["v", ])), 3, tolerance = 0.1)
   expect_equal(max(unlist(vals["v", ])), 3, tolerance = 1E-2)
   
-  qqplot(unlist(vals["pval", ]), y = runif(1000)); abline(0, 1, lty = "dotted") #it looks very uniform!
+  # qqplot(unlist(vals["pval", ]), y = runif(1000)); abline(0, 1, lty = "dotted") #it looks very uniform!
   res <- ks.test(unlist(vals["pval", ]), "punif")
   expect_gt(res$p.value, 0.2)
 })
