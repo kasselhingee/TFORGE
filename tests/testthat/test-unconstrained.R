@@ -70,7 +70,7 @@ test_that("chisq_calib: test TFORGE_fsm from NULL has uniform p-values", {
     res <- test_unconstrained(Ysample, c(3,2,1), B = "chisq")
     set.seed(seed+1)
     res$pval}, FUN.VALUE = 1.1)
-  qqplot(pvals, y = runif(1000))
+  # qqplot(pvals, y = runif(1000))
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
 })
@@ -82,6 +82,23 @@ test_that("test from NULL TFORGE_kfsm has uniform p-values", {
     Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
     set.seed(seed+1)
     res <- test_unconstrained(Ysamples, B = 100)
+    # set.seed(seed+1)
+    # res2 <- test_commonevals(Ysamples, B = 100)
+    # expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
+    res$pval
+  }, FUN.VALUE = 1.3)
+  # qqplot(pvals, y = runif(1000))
+  res <- suppressWarnings({ks.test(pvals, "punif")})
+  expect_gt(res$p.value, 0.05)
+})
+
+test_that("chisq_calib: test from NULL TFORGE_kfsm has uniform p-values", {
+  set.seed(13)
+  pvals <- vapply(13 + (1:100), function(seed){
+    set.seed(seed)
+    Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
+    set.seed(seed+1)
+    res <- test_unconstrained(Ysamples, B = "chisq")
     # set.seed(seed+1)
     # res2 <- test_commonevals(Ysamples, B = 100)
     # expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
