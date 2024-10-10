@@ -26,6 +26,12 @@ test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25){
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   
+  # chisq calibration quick exit
+  if (B == "chisq"){
+    df <- (dim_fsm_kfsm(x) - 2) * (length(x) - is.null(evals))
+    return(chisq_calib(x, stat_ss1fixedtrace, df = df, evals = evals))
+  }
+  
   t0 <- stat_ss1fixedtrace(x, evals = evals)
   d0 <- attr(t0, "null_evals")
   

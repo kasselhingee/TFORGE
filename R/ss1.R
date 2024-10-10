@@ -23,6 +23,11 @@ test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
   
   if (has_fixedtrace(x)){warning("All tensors the same trace. Consider using test_ss1fixedtrace().")}
   
+  if (B == "chisq"){
+    df <- (dim_fsm_kfsm(x) - 1) * (length(x) - is.null(evals))
+    return(chisq_calib(x, stat_ss1, df = df, evals = evals))
+  }
+  
   t0 <- stat_ss1(x, evals = evals)
   d0 <- attr(t0, "null_evals")
   

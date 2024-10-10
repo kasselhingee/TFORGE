@@ -40,6 +40,19 @@ test_that("test_ss1() uniform pval on NULL TFORGE_fsm", {
   expect_gt(res$p.value, 0.05)
 })
 
+test_that("chisq: test_ss1() uniform pval on NULL TFORGE_fsm", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Y <- rsymm_norm(30, diag(c(3,2,1)), sigma = diag(1, 6))
+    Y <- normL2evals_sst(Y)
+    res <- test_ss1(Y, c(3,2,1), "chisq", maxit = 1000)
+    res$pval
+  })
+  # qqplot(pvals, y = runif(100))
+  res <- suppressWarnings({ks.test(pvals, "punif")})
+  expect_gt(res$p.value, 0.05)
+})
+
 test_that("test_ss1() uniform pval on NULL TFORGE_kfsm", {
   set.seed(1333)
   pvals <- replicate(100, {
@@ -48,6 +61,21 @@ test_that("test_ss1() uniform pval on NULL TFORGE_kfsm", {
       Y <- normL2evals_sst(Y)
     }, simplify = FALSE)
     res <- test_ss1(Ysamples, B = 100, maxit = 1000)
+    res$pval
+  })
+  # qqplot(pvals, y = runif(100))
+  res <- suppressWarnings({ks.test(pvals, "punif")})
+  expect_gt(res$p.value, 0.05)
+})
+
+test_that("chisq: test_ss1() uniform pval on NULL TFORGE_kfsm", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Ysamples <- replicate(2, {
+      Y <- rsymm_norm(30, diag(c(3,2,1)))
+      Y <- normL2evals_sst(Y)
+    }, simplify = FALSE)
+    res <- test_ss1(Ysamples, B = "chisq", maxit = 1000)
     res$pval
   })
   # qqplot(pvals, y = runif(100))

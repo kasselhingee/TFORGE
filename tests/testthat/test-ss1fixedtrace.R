@@ -73,6 +73,22 @@ test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
   expect_gt(res$p.value, 0.05)
 })
 
+test_that("chisq: test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
+  set.seed(1333)
+  pvals <- replicate(100, {
+    Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
+    Y <- project_trace(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
+    Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
+    stopifnot(has_fixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
+    stopifnot(has_ss1(Y))
+    res <- test_ss1fixedtrace(Y, evals = c(1/sqrt(2), 0, -1/sqrt(2)), B = "chisq", maxit = 1000)
+    res$pval
+  })
+  # qqplot(pvals, y = runif(1000))
+  res <- suppressWarnings({ks.test(pvals, "punif")})
+  expect_gt(res$p.value, 0.05)
+})
+
 test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_kfsm", {
   pvals <- vapply(13131 + (1:100), function(seed){
     set.seed(seed)
@@ -82,6 +98,22 @@ test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_kfsm", {
       Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
     }, simplify = FALSE)
     res <- test_ss1fixedtrace(Ysamples, B = 100, maxit = 1000)
+    res$pval
+  }, FUN.VALUE = 1.3)
+  # qqplot(pvals, y = runif(100))
+  res <- suppressWarnings({ks.test(pvals, "punif")})
+  expect_gt(res$p.value, 0.2)
+})
+
+test_that("chisq: test_ss1fixedtrace() uniform pval on NULL TFORGE_kfsm", {
+  pvals <- vapply(13131 + (1:100), function(seed){
+    set.seed(seed)
+    Ysamples <- replicate(2, {
+      Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
+      Y <- project_trace(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
+      Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
+    }, simplify = FALSE)
+    res <- test_ss1fixedtrace(Ysamples, B = "chisq", maxit = 1000)
     res$pval
   }, FUN.VALUE = 1.3)
   # qqplot(pvals, y = runif(100))
