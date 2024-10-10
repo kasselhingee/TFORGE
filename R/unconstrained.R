@@ -37,7 +37,8 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B = 1000){
   
   # chisq calibration quick exit
   if (B == "chisq"){
-    return(chisq_calib(x, stat_unconstrained, df = dim_fsm_kfsm(x), evals = evals, evecs = evecs))
+    df <- dim_fsm_kfsm(x) * (length(x) - is.null(evals))
+    return(chisq_calib(x, stat_unconstrained, df = df, evals = evals, evecs = evecs))
   }
   
   if (is.null(evals)){#estimate common evals using stat_unconstrained()
