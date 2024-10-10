@@ -7,6 +7,7 @@ chisq_calib <- function(x, stat, df, ...){
   x <- as_flat(x)
   t0 <- stat(x, ...)
   pval <- 1-stats::pchisq(t0, df)
+  attributes(pval) <- NULL
   
   out <- list(
     pval = pval,
