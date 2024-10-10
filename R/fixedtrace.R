@@ -100,7 +100,7 @@ stat_fixedtrace <- function(x, evals = NULL){
   if (is.null(evals) && (length(mss) == 1)){warning("evals must be supplied for a meaningful statistic since x is a single sample")}
   if (!is.null(evals) && (length(mss) > 1)){warning("evals supplied, returned statistic is not a statistic for common eigenvalues between groups")}
 
-  H <- helmertsub(dimfromvech(mss[[1]][1,]))
+  H <- helmertsub(dim_fsm_kfsm(mss))
   avs <- lapply(mss, mmean)
   ess <- lapply(avs, function(av){eigen_desc(av)})
   ns <- lapply(mss, nrow)
@@ -191,7 +191,7 @@ normalise_trace <- function(x){
 normalize_trace <- normalise_trace
 
 cov_evals_ft <- function(ms, H = NULL, evecs = NULL, av = NULL){
-  if (is.null(H)){H <- helmertsub(dimfromvech(ms[1, ]))}
+  if (is.null(H)){H <- helmertsub(dim_fsm_kfsm(ms))}
   H %*% cov_evals_est(ms, evecs = evecs, av = av) %*% t(H)
 }
 

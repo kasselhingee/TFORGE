@@ -86,7 +86,7 @@ as_fsm <- function(x, ...){
 
 #' @export
 summary.TFORGE_fsm <- function(object, ...){
-  p <- dimfromvech(object[1, , drop = TRUE])
+  p <- dim_fsm_kfsm(object)
   list(Size = c("Number of matrices" = nrow(object), "Unflattened matrix ncol=nrow" = p, "Flattened ncol" = ncol(object)),
        #sprintf("%i flattened symmetric %i x %i matrices", nrow(object), p, p),
        "Element Summary" = NextMethod())
@@ -94,9 +94,15 @@ summary.TFORGE_fsm <- function(object, ...){
 
 #' @export
 summary.TFORGE_kfsm <- function(object, ...){
-  p <- dimfromvech(object[[1]][1, , drop = TRUE])
+  p <- dim_fsm_kfsm(object)
   list(c("Number of samples" = length(object),
     "Unflattened matrix ncol=nrow" = p,
     "Flattened ncol" = ncol(object[[1]])),
     "Sample sizes" = vapply(object, nrow, FUN.VALUE = 1))
+}
+
+dim_fsm_kfsm <- function(object){
+  if (inherits(object, "TFORGE_fsm")){return(dimfromvech(object[1, , drop = TRUE]))}
+  if (inherits(object, "TFORGE_kfsm")){return(dimfromvech(object[[1]][1, , drop = TRUE]))}
+  else {stop("object needs to have class TFORGE_fsm or TFORGE_kfsm")}
 }

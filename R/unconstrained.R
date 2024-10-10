@@ -35,6 +35,11 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B = 1000){
      NULL
      )
   
+  # chisq calibration quick exit
+  if (B == "chisq"){
+    chisq_calib(x, stat_unconstrained, df = dimfromvech(x), evals = evals, evecs = evecs)
+  }
+  
   if (is.null(evals)){#estimate common evals using stat_unconstrained()
     t0info <- stat_unconstrained(x, evecs = evecs)
     estevals <- attr(t0info, "null_evals") #estevals name here because don't pass estimated evals to bootresampling

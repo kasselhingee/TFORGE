@@ -62,6 +62,19 @@ test_that("test TFORGE_fsm from NULL has uniform p-values", {
   expect_gt(res$p.value, 0.05)
 })
 
+test_that("chisq_calib: test TFORGE_fsm from NULL has uniform p-values", {
+  pvals <- vapply(13 + (1:100), function(seed){
+    set.seed(seed)
+    Ysample <- rsymm(50, diag(c(3,2,1)))
+    set.seed(seed+1)
+    res <- test_unconstrained(Ysample, c(3,2,1), B = 100)
+    set.seed(seed+1)
+    res$pval}, FUN.VALUE = 1.1)
+  # qqplot(pvals, y = runif(1000))
+  res <- suppressWarnings({ks.test(pvals, "punif")})
+  expect_gt(res$p.value, 0.05)
+})
+
 test_that("test from NULL TFORGE_kfsm has uniform p-values", {
   set.seed(13)
   pvals <- vapply(13 + (1:100), function(seed){
