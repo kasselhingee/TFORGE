@@ -36,9 +36,8 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B = 1000){
      )
   
   # chisq calibration quick exit
-  # degrees of freedom is (k-1) * p
   if (B == "chisq"){
-    return(chisq_calib(x, stat_unconstrained, evals = evals, evecs = evecs))
+    return(chisq_calib(x, stat_unconstrained, df = dim_fsm_kfsm(x), evals = evals, evecs = evecs))
   }
   
   if (is.null(evals)){#estimate common evals using stat_unconstrained()
@@ -68,7 +67,6 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL){
 
   avs <- lapply(x, mmean)
   ess <- lapply(avs, eigen_desc)
-  df <- dim_fsm_kfsm(x)
 
   #mean evals of samples
   if (is.null(evecs)){
@@ -84,7 +82,6 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL){
   
   # null evals
   if (is.null(evals)){
-    df <- df * (length(x) - 1)
     d0 <- est_commonevals(x, Vs = Vs, evals = avevals)
     if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
       d0 <- descendingordererror(d0)
@@ -104,7 +101,6 @@ stat_unconstrained <- function(x, evals = NULL, evecs = NULL){
   
   stat <- drop(purrr::reduce(persamplestat, `+`))
   attr(stat, "null_evals") <- drop(d0)
-  attr(stat, "df") <- df
   return(stat)
 }
 
