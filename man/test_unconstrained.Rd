@@ -19,7 +19,7 @@ standardise_specifiedevals(x, evals)
 
 \item{evecs}{For a single sample, specify eigenvectors to test under the assumption that the population mean's eigenvectors are the columns of \code{evecs}. The order of these eigenvectors matters and should be such that eigenvalues are in descending order.}
 
-\item{B}{Number of bootstrap samples.}
+\item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 }
 \value{
 A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.

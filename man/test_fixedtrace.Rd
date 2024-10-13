@@ -14,7 +14,7 @@ stat_fixedtrace(x, evals = NULL)
 
 \item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues equal to \code{evals}.}
 
-\item{B}{Number of bootstrap samples.}
+\item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 
 \item{maxit}{The maximum number of Newton steps allowed in empirical likelihood optimisation \insertCite{owen:2013}{TFORGE}.}
 }

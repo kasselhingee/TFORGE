@@ -41,13 +41,13 @@ The function \code{as_flat()} automatically chooses between a \code{TFORGE_kfsm}
 }
 \section{Functions}{
 \itemize{
-\item \code{as_flat}: Automatically convert to either a \code{TFORGE_kfsm} or a \code{TFORGE_fsm}.
+\item \code{as_flat()}: Automatically convert to either a \code{TFORGE_kfsm} or a \code{TFORGE_fsm}.
 
-\item \code{as_kfsm}: Convert multiple collections of matrices into a \code{kfsm}. \code{x} must be a list, with each entry of \code{x} a separate collection of matrices.
+\item \code{as_kfsm()}: Convert multiple collections of matrices into a \code{kfsm}. \code{x} must be a list, with each entry of \code{x} a separate collection of matrices.
 
-\item \code{as_fsm}: For \code{x} a list of symmetric matrices of the same size, flattens \code{x} into a 2D array the \code{i}th row is a flattened version \code{vech(x[[i]])} of the \code{i}th matrix of  \code{x}. If \code{x} is already flattened then \code{as_fsm()} will check that the number of columns are consistent with a flattened symmetric matrix.
+\item \code{as_fsm()}: For \code{x} a list of symmetric matrices of the same size, flattens \code{x} into a 2D array the \code{i}th row is a flattened version \code{vech(x[[i]])} of the \code{i}th matrix of  \code{x}. If \code{x} is already flattened then \code{as_fsm()} will check that the number of columns are consistent with a flattened symmetric matrix.
+
 }}
-
 \examples{
 x <- list(list(matrix(c(1,2,3,2,4,5,3,5,6), 3), 
                matrix(c(2,3,4,3,5,6,4,6,7), 3)),

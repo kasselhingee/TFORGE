@@ -17,7 +17,7 @@ standardise_multiplicity(x, mult)
 
 \item{mult}{A vector specifying the eigenvalue multiplicity under the null hypothesis in descending order of eigenvalue size.}
 
-\item{B}{The number of bootstrap samples}
+\item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 
 \item{evecs}{For debugging only. Supply eigenvectors of population mean.}
 }

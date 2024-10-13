@@ -13,7 +13,7 @@
 #' @param x A single sample of symmetric matrices or multiple samples of symmetric matrices. See [`as_flat()`].
 #' @param evals When `x` is a single sample, the null hypothesis is that the population mean has eigenvalues equal to `evals`.
 #' @param evecs For a single sample, specify eigenvectors to test under the assumption that the population mean's eigenvectors are the columns of `evecs`. The order of these eigenvectors matters and should be such that eigenvalues are in descending order.
-#' @param B Number of bootstrap samples.
+#' @param B Number of bootstrap samples. If `B = 'chisq'` then a chi-squared calibration is used instead.
 #' @return A `TFORGE` object (see [`bootresampling()`]) with the eigenvalues of the null hypothesis in the `null_evals` attribute for `t0`.
 #' @examples
 #' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1), B = 100)
