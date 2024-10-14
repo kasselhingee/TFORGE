@@ -7,18 +7,19 @@
 #' The orthogonally invariant covariance matrix is estimated by [`estimate_OIcov()`]. The maximum-likelihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
 #' @export
 test_multiplicity_OI <- function(x, mult){
+  out <- chisq_calib(x = x, stat_multiplicity_OI, mult = mult, df = 0.5 * sum(mult * (mult + 1)) - length(mult))
+  return(out)
+}
+
+stat_multiplicity_OI <- function(x, mult){
   mn <- colMeans(x)
   es_mn <- eigen_desc(invvech(mn))
   Mhat <- es_mn$vectors %*% diag(blk(es_mn$values, mult)) %*% t(es_mn$vectors)
   OIparams <- estimate_OIcov(x, Mhat)
   stat <- (nrow(x)/OIparams$scalesq) * sum((es_mn$values - blk(es_mn$values, mult))^2)
-  pval <- 1 - stats::pchisq(stat, df =  0.5 * sum(mult * (mult + 1)) - length(mult))
-  return(list(
-    pval = pval,
-    stat = stat,
-    scalesq = OIparams$scalesq,
-    tau = OIparams$tau
-  ))
+  attr(stat, "scalesq") <- OIparams$scalesq
+  attr(stat, "tau") <- OIparams$tau
+  return(stat)
 }
 
 # block into multiplicities a set of ordered eigenvalues, following Definition 4.1 Schwartzman (2008) for blk

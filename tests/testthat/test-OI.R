@@ -64,7 +64,7 @@ test_that("test_multiplicity_OI() on null has uniform p values", {
     test_multiplicity_OI(Ysample, mult = mult)$pval
   })
   
-  qqplot(vals, y = runif(1000))
+  # qqplot(vals, y = runif(1000))
   res <- ks.test(vals, "punif")
   expect_gt(res$p.value, 0.15)
 })
