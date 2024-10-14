@@ -408,3 +408,68 @@ test_that("test_unconstrained_aGOE() reject for simulation of multi sample not f
   res <- test_unconstrained_aGOE(Ysamples[[1]], Ysamples[[2]])
   expect_lt(res$pval, 0.05)
 })
+
+test_that("pvalue close to uniform with bootstrap calibration", {
+  p <- 3
+  C2 <- C1 <- diag(p*(p+1)/2)
+  
+  # set up distribution means
+  # set.seed(348)
+  # mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U1 <- matrix(c(
+    -0.05468859,  0.8779038,  0.4757037,
+    -0.78026045,  0.2597070, -0.5689867,
+    -0.62305922, -0.4022899,  0.6707906),
+    p, p, byrow = TRUE)
+  mn1 <- mn_U1 %*% diag(c(3,2,1)) %*% t(mn_U1)
+  # set.seed(543)
+  # mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U2 <- matrix(c(
+    -0.9445741, -0.09624873, -0.3138726,
+    -0.1296416, -0.76900390,  0.6259601,
+    -0.3016171,  0.63195663,  0.7139033),
+    p, p, byrow = TRUE)
+  mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
+  
+  set.seed(231654)
+  pvals <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = 100)$pval)
+  #qqplot(pvals, runif(1000)); abline(0, 1, lty = "dotted")
+  res <- suppressWarnings({ks.test(pvals, "punif")})
+  expect_gt(res$p.value, 0.05)
+})
+
+test_that("bootstrap calibration nullevals dont matter to power", {
+  p <- 3
+  C2 <- C1 <- diag(p*(p+1)/2)
+  
+  # set up distribution means
+  # set.seed(348)
+  # mn_U1 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U1 <- matrix(c(
+    -0.05468859,  0.8779038,  0.4757037,
+    -0.78026045,  0.2597070, -0.5689867,
+    -0.62305922, -0.4022899,  0.6707906),
+    p, p, byrow = TRUE)
+  mn1 <- mn_U1 %*% diag(c(4,2,1)) %*% t(mn_U1)
+  # set.seed(543)
+  # mn_U2 <- mclust::randomOrthogonalMatrix(p, p)
+  mn_U2 <- matrix(c(
+    -0.9445741, -0.09624873, -0.3138726,
+    -0.1296416, -0.76900390,  0.6259601,
+    -0.3016171,  0.63195663,  0.7139033),
+    p, p, byrow = TRUE)
+  mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
+  
+  set.seed(231654)
+  pvals1 <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn2, C1))), B = 100, nullevals = "1")$pval)
+  set.seed(231654)
+  pvals2 <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn2, C1))), B = 100, nullevals = "2")$pval)
+  set.seed(231654)
+  pvalsav <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn2, C1))), B = 100, nullevals = "av")$pval)
+  expect_gt(suppressWarnings(ks.test(pvals1, pvals2))$p.value, 0.1)
+  expect_gt(suppressWarnings(ks.test(pvals1, pvalsav))$p.value, 0.1)
+  # qqplot(pvals1, runif(1000)); abline(0, 1, lty = "dotted")
+  res <- suppressWarnings({ks.test(pvals1, "punif")})
+  expect_lt(res$p.value, 0.05)
+})
+

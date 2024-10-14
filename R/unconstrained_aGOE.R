@@ -118,7 +118,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman's \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 
 #' @export
-test_unconstrained_aGOE <- function(x1, x2 = NULL){
+test_unconstrained_aGOE <- function(x1, x2 = NULL, B = "chisq", nullevals = "av"){
   x1 <- as_flat(x1)
   if (inherits(x1, "TFORGE_kfsm")){
     if (length(x1) == 2){
@@ -132,26 +132,57 @@ test_unconstrained_aGOE <- function(x1, x2 = NULL){
   x2 <- as_fsm(x2)
   n1 <- nrow(x1)
   n2 <- nrow(x2)
-  M1 <- mmean(x1)
-  M2 <- mmean(x2)
+
+  if (B == "chisq"){# use Schwartzman's asymptotic calibration
+    Tstat <- stat_unconstrained_aGOE(as_flat(list(x1, x2)))
+    M1 <- attr(Tstat, "M1")
+    M2 <- attr(Tstat, "M2")
+    #now for the distribution
+    anv <- S_anv(n1, n2, M1, M2, 
+          C1 = S_mcovar(merr(x1, mean = M1)),
+          C2 = S_mcovar(merr(x2, mean = M2)))
+    pval <- 1-stats::pchisq(Tstat / anv$a, df = anv$v)
+    out <- list(
+      pval = as.vector(pval),
+      t0 = Tstat,
+      a = anv$a,
+      df = anv$v,
+      var_Lambda_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2 #possibly relevant to Welche-Satterthwaite approximation quality - but didn't see much of an association
+    )
+    class(out) <- c("TFORGE", class(out))
+    return(out)
+  }
+  
+  # use bootstrapping from the null
+  L1 <- eigen_desc(mmean(x1))$values
+  L2 <- eigen_desc(mmean(x2))$values
+  nullevals <- switch(nullevals,#could be anything really!
+                      `1` = L1,
+                      `2` = L2,
+                      av = (L1 + L2)/2)
+  x_std <- as_flat(list(standardise_specifiedevals(x1, nullevals), 
+                        standardise_specifiedevals(x2, nullevals)))
+  res <- bootresampling(as_flat(list(x1, x2)), x_std, 
+                        stat = stat_unconstrained_aGOE,
+                        B = B)
+  return(res)
+}
+
+# for similarity with stat_unconstrained
+stat_unconstrained_aGOE <- function(x){
+  x <- as_flat(x)
+  stopifnot(inherits(x, "TFORGE_kfsm"))
+  stopifnot(length(x) == 2)
+  n1 <- nrow(x[[1]])
+  n2 <- nrow(x[[2]])
+  M1 <- mmean(x[[1]])
+  M2 <- mmean(x[[2]])
   L1 <- eigen_desc(M1)$values
   L2 <- eigen_desc(M2)$values
   Tstat <- sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
-
-  #now for the distribution
-  anv <- S_anv(n1, n2, M1, M2, 
-        C1 = S_mcovar(merr(x1, mean = M1)),
-        C2 = S_mcovar(merr(x2, mean = M2)))
-  pval <- 1-stats::pchisq(Tstat / anv$a, df = anv$v)
-  out <- list(
-    pval = pval,
-    t0 = Tstat,
-    a = anv$a,
-    df = anv$v,
-    var_Lambda_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2 #possibly relevant to Welche-Satterthwaite approximation quality - but didn't see much of an association
-  )
-  class(out) <- c("TFORGE", class(out))
-  return(out)
+  attr(Tstat, "M1") <- M1
+  attr(Tstat, "M2") <- M2
+  return(Tstat)
 }
 
 # @title Schwartzman's theoretical Tstar statistic for eigenvalues (eq 16)

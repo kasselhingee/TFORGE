@@ -131,6 +131,6 @@ standardise_specifiedevals <- function(x, evals){
   av_evecs <- av_eigenspace$vectors
   cen <- vech(av_evecs %*% diag(evals) %*% t(av_evecs))
   newms <- t(t(errs) + cen)
-  class(newms) <- c("TFORGE_fsm", class(newms))
+  if (!inherits(newms, "TFORGE_fsm")){class(newms) <- c("TFORGE_fsm", class(newms))}
   return(newms)
 }
