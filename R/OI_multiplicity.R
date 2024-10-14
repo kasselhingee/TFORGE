@@ -6,9 +6,18 @@
 #' @details 
 #' The orthogonally invariant covariance matrix is estimated by [`estimate_OIcov()`]. The maximum-likelihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
 #' @export
-test_multiplicity_OI <- function(x, mult){
-  out <- chisq_calib(x = x, stat_multiplicity_OI, mult = mult, df = 0.5 * sum(mult * (mult + 1)) - length(mult))
-  return(out)
+test_multiplicity_OI <- function(x, mult, B = "chisq"){
+  if (B == "chisq"){
+    out <- chisq_calib(x = x, stat_multiplicity_OI, mult = mult, df = 0.5 * sum(mult * (mult + 1)) - length(mult))
+    return(out)
+  }
+  
+  x_std <- standardise_multiplicity(x, mult)
+  res <- bootresampling(x, x_std, 
+                        stat = stat_multiplicity_OI,
+                        B = B,
+                        mult = mult)
+  return(res)
 }
 
 stat_multiplicity_OI <- function(x, mult){
