@@ -97,7 +97,7 @@ test_that("Schwartzman statistic for iid elements is chisq under H0 and pvals un
     res})
 
   # qqplot(unlist(vals["t", ]), y = rchisq(1000, df = 3)); abline(0, 1, lty = "dotted")
-  res <- ks.test(unlist(vals["t", ]), "pchisq", df = 3)
+  res <- ks.test(unlist(vals["t0", ]), "pchisq", df = 3)
   expect_gt(res$p.value, 0.2)
   
   # true value of a is 1
@@ -111,8 +111,8 @@ test_that("Schwartzman statistic for iid elements is chisq under H0 and pvals un
   # hist(unlist(vals["a", ])) #biased - tends to be higher than 1
   expect_equal(mean(unlist(vals["a", ])), 1, tolerance = 0.1)
   # hist(unlist(vals["v", ])) #biased - always less than 3
-  expect_equal(mean(unlist(vals["v", ])), 3, tolerance = 0.1)
-  expect_equal(max(unlist(vals["v", ])), 3, tolerance = 1E-2)
+  expect_equal(mean(unlist(vals["df", ])), 3, tolerance = 0.1)
+  expect_equal(max(unlist(vals["df", ])), 3, tolerance = 1E-2)
   
   # qqplot(unlist(vals["pval", ]), y = runif(1000)); abline(0, 1, lty = "dotted") #it looks very uniform!
   res <- ks.test(unlist(vals["pval", ]), "punif")
