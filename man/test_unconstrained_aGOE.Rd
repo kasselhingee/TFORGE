@@ -4,13 +4,15 @@
 \alias{test_unconstrained_aGOE}
 \title{Two Sample Test of Equal Eigenvalues Using GOE Approximation}
 \usage{
-test_unconstrained_aGOE(x1, x2 = NULL)
+test_unconstrained_aGOE(x1, x2 = NULL, B = "chisq", nullevals = "av")
 }
 \arguments{
 \item{x1}{A single sample of matrices (passed to \code{\link[=as_fsm]{as_fsm()}}) or
 a list of two samples of matrices (passed to \code{\link[=as_kfsm]{as_kfsm()}}).}
 
 \item{x2}{If \code{x1} is a single sample then \code{x2} must be the second sample. Otherwise \code{x2} should be \code{NULL}.}
+
+\item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 }
 \value{
 A list:

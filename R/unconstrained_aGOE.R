@@ -108,6 +108,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param x1 A single sample of matrices (passed to [`as_fsm()`]) or
 #' a list of two samples of matrices (passed to [`as_kfsm()`]).
 #' @param x2 If `x1` is a single sample then `x2` must be the second sample. Otherwise `x2` should be `NULL`.
+#' @inheritParams test_unconstrained
 #' @references
 #' \insertAllCited{}
 #' @return
