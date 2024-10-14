@@ -143,13 +143,15 @@ test_unconstrained_aGOE <- function(x1, x2 = NULL){
         C1 = S_mcovar(merr(x1, mean = M1)),
         C2 = S_mcovar(merr(x2, mean = M2)))
   pval <- 1-stats::pchisq(Tstat / anv$a, df = anv$v)
-  return(list(
+  out <- list(
     pval = pval,
-    t = Tstat,
+    t0 = Tstat,
     a = anv$a,
-    v = anv$v,
-    var_Lambda_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2
-  ))
+    df = anv$v,
+    var_Lambda_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2 #possibly relevant to Welche-Satterthwaite approximation quality - but didn't see much of an association
+  )
+  class(out) <- c("TFORGE", class(out))
+  return(out)
 }
 
 # @title Schwartzman's theoretical Tstar statistic for eigenvalues (eq 16)
