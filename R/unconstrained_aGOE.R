@@ -108,6 +108,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param x1 A single sample of matrices (passed to [`as_fsm()`]) or
 #' a list of two samples of matrices (passed to [`as_kfsm()`]).
 #' @param x2 If `x1` is a single sample then `x2` must be the second sample. Otherwise `x2` should be `NULL`.
+#' @param scalestat If `TRUE` then the statistic divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary.
 #' @inheritParams test_unconstrained
 #' @references
 #' \insertAllCited{}
@@ -119,7 +120,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman's \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 
 #' @export
-test_unconstrained_aGOE <- function(x1, x2 = NULL, B = "chisq", nullevals = "av"){
+test_unconstrained_aGOE <- function(x1, x2 = NULL, B = "chisq", nullevals = "av", scalestat = FALSE){
   x1 <- as_flat(x1)
   if (inherits(x1, "TFORGE_kfsm")){
     if (length(x1) == 2){
@@ -135,20 +136,27 @@ test_unconstrained_aGOE <- function(x1, x2 = NULL, B = "chisq", nullevals = "av"
   n2 <- nrow(x2)
 
   if (B == "chisq"){# use Schwartzman's asymptotic calibration
-    Tstat <- stat_unconstrained_aGOE(as_flat(list(x1, x2)))
-    M1 <- attr(Tstat, "M1")
-    M2 <- attr(Tstat, "M2")
-    #now for the distribution
-    anv <- S_anv(n1, n2, M1, M2, 
-          C1 = S_mcovar(merr(x1, mean = M1)),
-          C2 = S_mcovar(merr(x2, mean = M2)))
-    pval <- 1-stats::pchisq(Tstat / anv$a, df = anv$v)
+    Tstat <- stat_unconstrained_aGOE(as_flat(list(x1, x2)), scale = scalestat)
+    if (scalestat){
+      pval <- 1-stats::pchisq(Tstat, df = attr(Tstat, "df"))
+      a = 1
+      df = attr(Tstat, "df")
+      var_Lambda_evals = attr(Tstat, "var_Lambda_evals")
+    } else {# do the scaling of stat here
+      anv <- S_anv(n1, n2, attr(Tstat, "M1"), attr(Tstat, "M2"), 
+            C1 = S_mcovar(merr(x1, mean = attr(Tstat, "M1"))),
+            C2 = S_mcovar(merr(x2, mean = attr(Tstat, "M2"))))
+      pval <- 1-stats::pchisq(Tstat / anv$a, df = anv$v)
+      a = anv$a
+      df = anv$v
+      var_Lambda_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2
+    }
     out <- list(
       pval = as.vector(pval),
-      t0 = Tstat,
-      a = anv$a,
-      df = anv$v,
-      var_Lambda_evals = anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2 #possibly relevant to Welche-Satterthwaite approximation quality - but didn't see much of an association
+      t0 = as.vector(Tstat),
+      a = a,
+      df = df,
+      var_Lambda_evals = var_Lambda_evals
     )
     class(out) <- c("TFORGE", class(out))
     return(out)
@@ -165,12 +173,14 @@ test_unconstrained_aGOE <- function(x1, x2 = NULL, B = "chisq", nullevals = "av"
                         standardise_specifiedevals(x2, nullevals)))
   res <- bootresampling(as_flat(list(x1, x2)), x_std, 
                         stat = stat_unconstrained_aGOE,
-                        B = B)
+                        B = B,
+                        scale = scalestat)
   return(res)
 }
 
 # for similarity with stat_unconstrained
-stat_unconstrained_aGOE <- function(x){
+# not always scaling by a because it is computationally expensive to bootstrap
+stat_unconstrained_aGOE <- function(x, scale = FALSE){
   x <- as_flat(x)
   stopifnot(inherits(x, "TFORGE_kfsm"))
   stopifnot(length(x) == 2)
@@ -183,6 +193,15 @@ stat_unconstrained_aGOE <- function(x){
   Tstat <- sum((L1 - L2)^2) * n1 * n2 / (n1 + n2)
   attr(Tstat, "M1") <- M1
   attr(Tstat, "M2") <- M2
+  if (scale){#now for approximate scale and degrees of freedom
+    anv <- S_anv(n1, n2, M1, M2, 
+                 C1 = S_mcovar(merr(x[[1]], mean = M1)),
+                 C2 = S_mcovar(merr(x[[2]], mean = M2)))
+    Tstat <- Tstat / anv$a
+    attr(Tstat, "a") <- 1
+    attr(Tstat, "df") <- anv$v
+    attr(Tstat, "var_Lambda_evals") <- anv$SigmaOmega_evals2_av - anv$SigmaOmega_evals_av^2 #possibly relevant to Welche-Satterthwaite approximation quality - but didn't see much of an association
+  }
   return(Tstat)
 }
 

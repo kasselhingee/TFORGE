@@ -153,6 +153,18 @@ test_that("pvalue close to uniform for non diagonal mean, unequal sample size", 
   sims <- replicate(1000, simulateTstat(100, 500))
   # qqplot(sims["pval", ], runif(1000)); abline(0, 1, lty = "dotted")
   expect_gt(ks.test(sims["pval", ], "punif")$p.value, 0.2)
+  
+  # simulate test statistic - scaled - should match
+  simulateTstat <- function(n1, n2){
+    x1 <- rsymm(n1, mn1, C1)
+    x2 <- rsymm(n2, mn2, C2)
+    res <- test_unconstrained_aGOE(x1, x2, scalestat = TRUE)
+    return(unlist(res))
+  }
+  set.seed(231654)
+  sims2 <- replicate(10, simulateTstat(100, 500))
+  expect_equal(sims2["t0", 1:10], sims["t0", 1:10] / sims["a", 1:10])
+  expect_equal(sims2["df", 1:10], sims["df", 1:10])
 })
 
 test_that("pvalue close to uniform when some correlation", {
@@ -436,7 +448,16 @@ test_that("pvalue close to uniform with bootstrap calibration", {
   #qqplot(pvals, runif(1000)); abline(0, 1, lty = "dotted")
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
+  
+  # same with scalestat
+  set.seed(231654)
+  pvals2 <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = 100, scalestat = TRUE)$pval)
+  #qqplot(pvals2, runif(1000)); abline(0, 1, lty = "dotted")
+  res2 <- suppressWarnings({ks.test(pvals2, "punif")})
+  expect_gt(res2$p.value, 0.05)
+  expect_false(isTRUE(all.equal(pvals2, pvals)))
 })
+
 
 test_that("bootstrap calibration nullevals dont matter to power", {
   p <- 3
