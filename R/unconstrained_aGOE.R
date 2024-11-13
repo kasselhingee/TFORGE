@@ -108,7 +108,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @param x1 A single sample of matrices (passed to [`as_fsm()`]) or
 #' a list of two samples of matrices (passed to [`as_kfsm()`]).
 #' @param x2 If `x1` is a single sample then `x2` must be the second sample. Otherwise `x2` should be `NULL`.
-#' @param scalestat If `TRUE` then the statistic divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary.
+#' @param scalestat If `TRUE` then the statistic divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and general boostrap theory suggest that `scalestat=TRUE` leads to better test size and power when using bootstrap.
 #' @inheritParams test_unconstrained
 #' @references
 #' \insertAllCited{}
@@ -120,14 +120,14 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman's \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 
 #' @export
-test_unconstrained_aGOE <- function(x1, x2 = NULL, B = "chisq", nullevals = "av", scalestat = FALSE){
-  x1 <- as_flat(x1)
-  if (inherits(x1, "TFORGE_kfsm")){
-    if (length(x1) == 2){
-      if (!is.null(x2)){stop("x1 is a list of samples, so x2 must be NULL.")}
-      x2 <- x1[[2]]
-      x1 <- x1[[1]]
-    } else if (length(x1 > 2)){
+test_unconstrained_aGOE <- function(x, x2 = NULL, B = "chisq", nullevals = "av", scalestat = TRUE){
+  x <- as_flat(x)
+  if (inherits(x, "TFORGE_kfsm")){
+    if (length(x) == 2){
+      if (!is.null(x2)){stop("x is a list of samples, so x2 must be NULL.")}
+      x2 <- x[[2]]
+      x1 <- x[[1]]
+    } else if (length(x > 2)){
       stop("Must be exactly two samples")
     }
   }
