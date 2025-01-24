@@ -38,7 +38,7 @@ test_that("project_basis depends on reference", {
   q_abasis <- mclust::randomOrthogonalMatrix(p, p)[, 1:q]
   bas1 <- project_basis(q_abasis, refbasis)
   bas2 <- project_basis(q_abasis, refbasis2)
-  bas1!=bas2
+  expect_error(expect_equal(bas1, bas2))
 })
 
 # project ref basis to eigenspace

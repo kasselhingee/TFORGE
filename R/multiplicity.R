@@ -199,7 +199,11 @@ project_basis <- function(subspace, refbasis = diag(nrow = nrow(subspace))) {
   projmat <- subspace %*% t(subspace)
   p <- nrow(subspace)
   # below scales refbasis axes so that alignment occurs
-  alignedsvd <- svd(projmat %*% diag(p:1) %*% refbasis, nu = ncol(subspace), nv = ncol(subspace))
+  # suppose x is expressed wrt ref basis
+  # 1) scale values of x to make the problem like finding an ellipse
+  # 2) convert x to cannonical basis by refbasis %*%
+  # 3) project x to subspace
+  alignedsvd <- svd(projmat %*% refbasis %*% diag(p:1), nu = ncol(subspace), nv = ncol(subspace))
   
   newbasis <- alignedsvd$u
   
