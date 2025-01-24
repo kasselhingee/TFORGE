@@ -33,7 +33,7 @@ test_multiplicity <- function(x, mult, B = 1000){
 #' @rdname test_multiplicity
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
 #' @export
-stat_multiplicity <- function(x, mult, evecs = NULL){
+stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "random"){
   av <- mmean(x)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
@@ -54,11 +54,11 @@ stat_multiplicity <- function(x, mult, evecs = NULL){
   idxs <- lapply(1:length(mult), function(i){
     esvalstart[i] : cmult[i]
   })
-  # Get evals after random rotations of the eigenvectors for each eigenvalue
-  # To uniformly randomly rotate them in each block, need uniform rotation matrices
-  # these can be found by uniform simulation within the basis of the given eigenvectors
-  # I can represent the existing basis as e1,e2,e3 etc, and create a new basis by using the random matrix to project e1,e2,e3 onto new directions of e1,e2,e3.
-  es$vectors <- rotevecs(es$vectors, idxs)
+  # Using estimated evals (aka using estimated eigenvectors) is biased: upwardly for largest eigenvalue
+  # Instead use arbitrarily assigned basis vectors of the eigenspace.
+  # Can do this by random rotations of the estimated eigenvectors of the space,
+  # Or projection-like operations from some predefined basis.
+  es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = refbasis)
   es$values <- diag(t(es$vectors) %*% av %*% es$vectors)
   
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
@@ -180,14 +180,31 @@ runifortho <- function(p){
   return(t(out))
 }
 
-# randomly rotate eigenvectors for each eigenspace
-rotevecs <- function(evecs, idxs){
-  rotevecs <- lapply(idxs, function(idxforeval){
+#' @noRd
+#' @title randomly rotate eigenvectors for each eigenspace
+#' @description Get evals after random rotations of the eigenvectors for each eigenvalue
+# To uniformly randomly rotate them in each block, need uniform rotation matrices
+# these can be found by uniform simulation within the basis of the given eigenvectors
+# I can represent the existing basis as e1,e2,e3 etc, and create a new basis by using the random matrix to project e1,e2,e3 onto new directions of e1,e2,e3.
+arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
+  newevecs <- lapply(idxs, function(idxforeval){
     if (length(idxforeval) == 1){return(evecs[, idxforeval, drop = FALSE])}
-    rot <- runifortho(length(idxforeval))
-    t(rot %*% t(evecs[, idxforeval]))
+    arbitrary_basis(evecs[, idxforeval, drop = FALSE], refbasis = refbasis)
   })
-  do.call(cbind, rotevecs)
+  do.call(cbind, newevecs)
+}
+
+#' @noRd
+#' For a subspace, uniformly randomly rotate it, or create a new one based on a reference
+#' @param subspace A matrix of column vectors.
+#' @param refbasis A matrix of column vectors or "random"
+arbitrary_basis <- function(subspace, refbasis = "random"){
+  if (refbasis == "random"){
+    rot <- runifortho(ncol(subspace))
+    return(t(rot %*% t(subspace)))
+  } else {
+    return(project_basis(subspace, refbasis = refbasis))
+  }
 }
 
 #' @noRd
