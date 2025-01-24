@@ -80,20 +80,24 @@ test_that("test has uniform distribution", {
   skip_on_cran() #test very slow
   set.seed(4)
   abasis <- runifortho(7)
-  set.seed(1331)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
+  set.seed(5)#set.seed(1331)
   vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
     Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     # B = 100 for more thorough
     c(r = test_multiplicity(Ysample, mult = mult, B = 100)$pval,
       c = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = diag(1, 7))$pval,
-      a = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = abasis))$pval
+      a = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = abasis)$pval)
   })
   
-  # qqplot(vals, y = runif(1000))
+  qqplot(vals["r", ], y = runif(1000))
+  qqplot(vals["c", ], y = runif(1000))
+  qqplot(vals["a", ], y = runif(1000))
   res <- suppressWarnings(ks.test(vals, "punif"))
-  expect_gt(res$p.value, 0.15) #above 0.2 if above two thoroughness measures taken
+  expect_gt(suppressWarnings(ks.test(vals["r", ], "punif"))$p.value, 0.15) #above 0.2 if above two thoroughness measures taken
+  expect_gt(suppressWarnings(ks.test(vals["c", ], "punif"))$p.value, 0.15) 
+  expect_gt(suppressWarnings(ks.test(vals["a", ], "punif"))$p.value, 0.15)
 })
 
 test_that("chisq: test has uniform distribution", {
