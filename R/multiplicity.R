@@ -189,3 +189,23 @@ rotevecs <- function(evecs, idxs){
   })
   do.call(cbind, rotevecs)
 }
+
+#' @noRd
+#' @title Create an orthonormal basis to a lower dimensional space using a reference basis for the full space
+#' @param subspace Column vectors forming an orthonormal basis of the subspace
+#' @param refbasis Column vectors forming an orthonormal basis of the full space
+project_basis <- function(subspace, refbasis = diag(nrow = nrow(subspace))) {
+  # projection matrix is property of subspace, not the vectors used to represent it, so projmat doesn't depend on arbitrary estimation of subspace basis vectors
+  projmat <- subspace %*% t(subspace)
+  p <- nrow(subspace)
+  # below scales refbasis axes so that alignment occurs
+  alignedsvd <- svd(projmat %*% diag(p:1) %*% refbasis, nu = ncol(subspace), nv = ncol(subspace))
+  
+  newbasis <- alignedsvd$u
+  
+  # check new basis
+  stopifnot(all(abs(newbasis %*% t(newbasis) - projmat) < sqrt(.Machine$double.eps)))
+  return(newbasis)
+}
+
+
