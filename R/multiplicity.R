@@ -17,16 +17,17 @@
 #' @return
 #' A `TFORGE` object including the p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). See [`bootresampling()`].
 #' @export
-test_multiplicity <- function(x, mult, B = 1000){
+test_multiplicity <- function(x, mult, B = 1000, refbasis = "random"){
   x <- as_flat(x)
   if (B == "chisq"){
-    return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult))
+    return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
   }
   ms_std <- standardise_multiplicity(x, mult)
   res <- bootresampling(x, ms_std, 
     stat = stat_multiplicity,
     B = B,
-    mult = mult)
+    mult = mult,
+    refbasis = refbasis)
   return(res)
 }
 
