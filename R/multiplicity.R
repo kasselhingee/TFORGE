@@ -187,6 +187,16 @@ runifortho <- function(p){
 # these can be found by uniform simulation within the basis of the given eigenvectors
 # I can represent the existing basis as e1,e2,e3 etc, and create a new basis by using the random matrix to project e1,e2,e3 onto new directions of e1,e2,e3.
 arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
+  #check refbasis:
+  if (is.character(refbasis)){if (refbasis != "random"){stop("refbasis must be either 'random' or a matrix")}}
+  else{
+    stopifnot(is.matrix(refbasis))
+    stopifnot(nrow(refbasis) == nrow(evecs))
+    stopifnot(nrow(refbasis) == ncol(refbasis))
+    if (!all(abs(refbasis %*% t(refbasis) - diag(1, nrow(refbasis))) < sqrt(.Machine$double.eps))){stop("refbasis does not appear to be orthogonal")}
+  }
+  
+  # Do calculations
   newevecs <- lapply(idxs, function(idxforeval){
     if (length(idxforeval) == 1){return(evecs[, idxforeval, drop = FALSE])}
     arbitrary_basis(evecs[, idxforeval, drop = FALSE], refbasis = refbasis)
@@ -199,9 +209,11 @@ arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
 #' @param subspace A matrix of column vectors.
 #' @param refbasis A matrix of column vectors or "random"
 arbitrary_basis <- function(subspace, refbasis = "random"){
-  if (refbasis == "random"){
+  if (is.character(refbasis)){
+    if (refbasis == "random"){
     rot <- runifortho(ncol(subspace))
     return(t(rot %*% t(subspace)))
+    }
   } else {
     return(project_basis(subspace, refbasis = refbasis))
   }
