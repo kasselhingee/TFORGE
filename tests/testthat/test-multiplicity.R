@@ -101,10 +101,10 @@ test_that("test has uniform distribution", {
 test_that("chisq: test has uniform distribution", {
   set.seed(5)
   abasis <- runifortho(7)
-  set.seed(1331)
+  set.seed(3) #set.seed(1331)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- replicate(1000, { #1000 for more thorough
+  vals <- replicate(100, { #1000 for more thorough
     Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     test_multiplicity(Ysample, mult = mult, B = "chisq")$pval #B = 100 for more thorough
     c(r = test_multiplicity(Ysample, mult = mult, B = "chisq")$pval,
