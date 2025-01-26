@@ -445,7 +445,7 @@ test_that("pvalue close to uniform with bootstrap calibration", {
   mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
   
   set.seed(231654)
-  pvals <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = 100)$pval)
+  pvals <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = 100, scalestat = FALSE)$pval)
   #qqplot(pvals, runif(1000)); abline(0, 1, lty = "dotted")
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
