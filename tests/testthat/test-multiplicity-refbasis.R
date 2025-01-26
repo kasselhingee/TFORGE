@@ -64,3 +64,35 @@ test_that("stat_multiplicity() is slightly different with random, cannonical and
   expect_error(expect_error(statr, statc))
   expect_error(expect_error(stata, statc))
 })
+
+
+test_that("stat has INcorrect null distribution using sample evecs", {
+  skip_on_cran()
+  set.seed(1331)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  vals <- replicate(1000, {
+    Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    evecs <- eigen_desc(mmean(Ysample))$vectors
+    stat_multiplicity(Ysample, mult = mult, refbasis = evecs)
+  })
+  
+  qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
+  expect_lt(ks.test(vals, "pchisq", df = sum(mult-1))$p.value, 0.001)
+})
+
+test_that("test has uniform distribution with misuse of sample evecs", {
+  skip_on_cran() #test very slow
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  set.seed(5)#set.seed(1331)
+  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
+    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    evecs <- eigen_desc(mmean(Ysample))$vectors
+    test_multiplicity(Ysample, mult = mult, B = 20, refbasis = evecs)$pval
+  })
+  
+  # qqplot(vals, y = runif(1000))
+  expect_lt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.0001)
+})
+
