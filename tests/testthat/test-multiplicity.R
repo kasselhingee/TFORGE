@@ -226,9 +226,9 @@ test_that("test p value resistant to fixed trace by normalisation", {
   Ysample_n <- normalise_trace(Ysample)
   
   set.seed(34641)
-  pval <- test_multiplicity(Ysample, mult = mult, 1000)$pval
+  pval <- test_multiplicity(Ysample, mult = mult, 1000, refbasis = diag(1, 7))$pval
   set.seed(34641)
-  pval_n <- test_multiplicity(Ysample_n, mult = mult, 1000)$pval
+  pval_n <- test_multiplicity(Ysample_n, mult = mult, 1000, refbasis = diag(1, 7))$pval
   expect_equal(pval, 
                pval_n, tol = 1E-1)
 })
