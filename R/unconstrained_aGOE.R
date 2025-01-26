@@ -130,8 +130,10 @@ test_unconstrained_aGOE <- function(x, x2 = NULL, B = "chisq", nullevals = "av",
     } else if (length(x > 2)){
       stop("Must be exactly two samples")
     }
+  } else {
+    x2 <- as_fsm(x2)
+    x1 <- as_fsm(x)
   }
-  x2 <- as_fsm(x2)
   n1 <- nrow(x1)
   n2 <- nrow(x2)
 

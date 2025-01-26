@@ -32,9 +32,10 @@ test_that("Results are consistent with the simulation check at the start of Schw
     # simulate Sigma
     Sigma <- drop(rWishart(1, 6, diag(6)))
     #simulate samples
-    x1 <- rsymm_Schwartzman(n1, M0, Sigma)
-    x2 <- rsymm_Schwartzman(n2, M0, Sigma)
-    res <- test_unconstrained_aGOE(x1, x2)
+    # x1 <- rsymm_Schwartzman(n1, M0, Sigma)
+    # x2 <- rsymm_Schwartzman(n2, M0, Sigma)
+    res <- test_unconstrained_aGOE(rsymm_Schwartzman(n1, M0, Sigma),
+                                   rsymm_Schwartzman(n2, M0, Sigma))
     return(unlist(res))
   }
   
@@ -42,7 +43,7 @@ test_that("Results are consistent with the simulation check at the start of Schw
   set.seed(1354)
   sims <- replicate(100, simulatestat(50, 50, M0))
   ecdffun <- ecdf(sims["pval", ])
-  #plot(ecdffun); abline(0, 1, lty = "dotted") #pvalue distribution should be approximately uniform for the null
+  # plot(ecdffun); abline(0, 1, lty = "dotted") #pvalue distribution should be approximately uniform for the null
   expect_lt(max(abs(ecdffun(ppoints(100)) - ppoints(100))), 0.1)
   expect_gt(ks.test(sims["pval", ], "punif")$p.value, 0.2)
   
