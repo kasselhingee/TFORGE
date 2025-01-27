@@ -56,30 +56,44 @@ test_that("blk() returns correct averages", {
 })
 
 test_that("test_multiplicity_OI() on null has uniform p values", {
+  set.seed(4)
+  abasis <- runifortho(7)
   set.seed(13312)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- replicate(1000, {
     Ysample <- rsymm_norm(1E2, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
-    test_multiplicity_OI(Ysample, mult = mult)$pval
+    c(r = test_multiplicity_OI(Ysample, mult = mult, refbasis = "random")$pval,
+      c = test_multiplicity_OI(Ysample, mult = mult, refbasis = diag(1, 7))$pval,
+      a = test_multiplicity_OI(Ysample, mult = mult, refbasis = abasis)$pval)
   })
   
-  # qqplot(vals, y = runif(1000))
-  res <- ks.test(vals, "punif")
-  expect_gt(res$p.value, 0.15)
+  # qqplot(vals["r", ], y = runif(1000))
+  # qqplot(vals["c", ], y = runif(1000))
+  # qqplot(vals["a", ], y = runif(1000))
+  expect_gt(suppressWarnings(ks.test(vals["r", ], "punif"))$p.value, 0.15)
+  expect_gt(suppressWarnings(ks.test(vals["c", ], "punif"))$p.value, 0.15) 
+  expect_gt(suppressWarnings(ks.test(vals["a", ], "punif"))$p.value, 0.15)
 })
 
 test_that("test_multiplicity_OI() bootstrap on null has uniform p values", {
+  set.seed(4)
+  abasis <- runifortho(7)
   set.seed(13312)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- replicate(100, {
+  vals <- pbapply::pbreplicate(100, {
     Ysample <- rsymm_norm(30, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
-    test_multiplicity_OI(Ysample, mult = mult, B = 100)$pval
+    c(r = test_multiplicity_OI(Ysample, mult = mult, B = 100, refbasis = "random")$pval,
+      c = test_multiplicity_OI(Ysample, mult = mult, B = 100, refbasis = diag(1, 7))$pval,
+      a = test_multiplicity_OI(Ysample, mult = mult, B = 100, refbasis = abasis)$pval)
   })
   
-  # qqplot(vals, y = runif(1000))
-  res <- suppressWarnings(ks.test(vals, "punif"))
-  expect_gt(res$p.value, 0.15)
+  # qqplot(vals["r", ], y = runif(1000))
+  # qqplot(vals["c", ], y = runif(1000))
+  # qqplot(vals["a", ], y = runif(1000))
+  expect_gt(suppressWarnings(ks.test(vals["r", ], "punif"))$p.value, 0.15)
+  expect_gt(suppressWarnings(ks.test(vals["c", ], "punif"))$p.value, 0.15) 
+  expect_gt(suppressWarnings(ks.test(vals["a", ], "punif"))$p.value, 0.15)
 })
 

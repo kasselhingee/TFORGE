@@ -3,19 +3,15 @@
 #' Given a sample from a population of symmetric matrices with Gaussian-distributed elements and orthogonally-invariant covariance, corollary 4.3 by \insertCite{schwartzman2008in;textual}{TFORGE} provides a method to test the eigenvalue multiplicity of the mean matrix.
 #' Orthogonally-invariant covariance is a strong assumption and may not be valid; consider using [`test_multiplicity()`] if you are unsure.
 #' @inheritParams test_multiplicity
-#' @param refbasis Converts matrices to new basis.
+#' @param refbasis Converts matrices to new basis by `t(refbasis) %*% m %*% refbasis`. 'random' reorients the data each time the statistic is computed.
 #' @details 
 #' The orthogonally invariant covariance matrix is estimated by [`estimate_OIcov()`]. The maximum-likelihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
 #' @export
 test_multiplicity_OI <- function(x, mult, B = "chisq", refbasis = diag(1, sum(mult))){
-  # convert x to new basis
-  x <- as_fsm(x)
-  mats <- apply(x, 1, invvech, simplify = FALSE)
-  mats <- lapply(mats, function(m){t(refbasis) %*% m})
-  x <- as_fsm(mats)
+  if (is.character(refbasis)){if (refbasis == "random"){refbasis = runifortho(sum(mult))}else{stop("refbasis must be a matrix or 'random'")}}
   
   if (B == "chisq"){
-    out <- chisq_calib(x = x, stat_multiplicity_OI, mult = mult, df = 0.5 * sum(mult * (mult + 1)) - length(mult))
+    out <- chisq_calib(x = x, stat_multiplicity_OI, mult = mult, df = 0.5 * sum(mult * (mult + 1)) - length(mult), refbasis = refbasis)
     return(out)
   }
   
@@ -23,11 +19,21 @@ test_multiplicity_OI <- function(x, mult, B = "chisq", refbasis = diag(1, sum(mu
   res <- bootresampling(x, x_std, 
                         stat = stat_multiplicity_OI,
                         B = B,
-                        mult = mult)
+                        mult = mult,
+                        refbasis = refbasis)
   return(res)
 }
 
-stat_multiplicity_OI <- function(x, mult){
+stat_multiplicity_OI <- function(x, mult, refbasis = diag(1, sum(mult))){
+  # convert x to new basis
+  x <- as_fsm(x)
+  if (is.character(refbasis)){if (refbasis == "random"){refbasis = runifortho(sum(mult))}else{stop("refbasis must be a matrix or 'random'")}}
+  if (!all(abs(refbasis - diag(1, sum(mult))) < sqrt(.Machine$double.eps))){
+    mats <- apply(x, 1, invvech, simplify = FALSE)
+    mats <- lapply(mats, function(m){t(refbasis) %*% m %*% refbasis})
+    x <- as_fsm(mats)
+  }
+  
   mn <- colMeans(x)
   es_mn <- eigen_desc(invvech(mn))
   Mhat <- es_mn$vectors %*% diag(blk(es_mn$values, mult)) %*% t(es_mn$vectors)
