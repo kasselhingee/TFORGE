@@ -25,6 +25,13 @@ cov_evals <- function(evecs, mcov){
   return(V)
 }
 
+# easier to interpret formula:
+cov_evals2 <- function(evecs, mcov){
+  dupmat <- dup(nrow(evecs)) # is sparse so could be even faster
+  evecxevec <- apply(evecs, 2, FUN = function(v){kronecker(v, v)}) #1, 5, 9
+  t(evecxevec) %*% dupmat %*% mcov %*% t(dupmat) %*% evecxevec
+}
+
 
 # @param x A single sample (list of matrices)
 # @param av To save computation, `av` can be passed if it is already computed.
