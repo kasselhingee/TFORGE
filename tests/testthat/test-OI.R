@@ -55,6 +55,19 @@ test_that("blk() returns correct averages", {
   expect_equal(blk(evals, c(5,4,1)), c(rep(8, 5), rep(14/4, 4), 1))
 })
 
+test_that("test_multiplicity_OI() changes with refbasis", {
+  set.seed(4)
+  abasis <- runifortho(7)
+  set.seed(13312)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  Ysample <- rsymm_norm(1E2, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
+  res <- c(r = test_multiplicity_OI(Ysample, mult = mult, refbasis = "random")$pval,
+           c = test_multiplicity_OI(Ysample, mult = mult, refbasis = diag(1, 7))$pval,
+           a = test_multiplicity_OI(Ysample, mult = mult, refbasis = abasis)$pval)
+  expect_true(all(abs(res - mean(res)) > sqrt(.Machine$double.eps )))
+})
+
 test_that("test_multiplicity_OI() on null has uniform p values", {
   set.seed(4)
   abasis <- runifortho(7)
