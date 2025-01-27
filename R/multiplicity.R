@@ -48,6 +48,7 @@ stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "random"){
   } else {
     es <- eigen_desc(av)
   }
+  C0 <- mcovar(merr(x, mean = av)) # the covariance between elements of xi
 
   #indices of multiplicity
   cmult <- cumsum(mult)
@@ -60,12 +61,12 @@ stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "random"){
   # Can do this by random rotations of the estimated eigenvectors of the space,
   # Or projection-like operations from some predefined basis.
   es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = refbasis)
+  optim_evecs <- mostdiagevecs(es$vectors, idxs, mcov = C0/nrow(x))
   es$values <- diag(t(es$vectors) %*% av %*% es$vectors)
   
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
   xi <- xiget(es$values, mult, idxs)
 
-  C0 <- mcovar(merr(x, mean = av)) # the covariance between elements of xi
   covar <- xicovar(mult, idxs, es$vectors, C0/nrow(x))
 
   return(drop(t(xi) %*% solve_error(covar) %*% xi))
@@ -205,6 +206,25 @@ arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
   do.call(cbind, newevecs)
 }
 
+mostdiagevecs <- function(evecs, idxs, mcov){
+  # Do calculations
+  newevecs <- lapply(idxs, function(idxforeval){
+    if (length(idxforeval) == 1){return(evecs[, idxforeval, drop = FALSE])}
+    d <- length(idxforeval)
+    bestpar <- optim(par = rep(0, (d-1)*d/2),
+                  fn = ssqoffdiagonal,
+                  baseevecs = evecs[, idxforeval],
+                  mcov = mcov,
+                  method = if (d==2){"Brent"}else{"Nelder-Mead"},
+                  lower = if (d==2){-100}else{-Inf},
+                  upper = if (d==2){100}else{+Inf}
+    )
+    bestrot <- sphm:::cayleyTransform(vecskewsym_inverse(bestpar$par))
+    bestevecs <- evecs[, idxforeval] %*% bestrot
+  })
+  do.call(cbind, newevecs)
+}
+
 #' @noRd
 #' For a subspace, uniformly randomly rotate it, or create a new one based on a reference
 #' @param subspace A matrix of column vectors.
@@ -242,4 +262,23 @@ project_basis <- function(subspace, refbasis = diag(nrow = nrow(subspace))) {
   return(newbasis)
 }
 
+vecskewsym <- function(A){A[lower.tri(A)]}
+vecskewsym_inverse <- function(vec){
+  p <- (1 + sqrt(8*length(vec) + 1))/2;
+  A <- matrix(0, p, p)
+  A[lower.tri(A)] <- vec
+  A[upper.tri(A)] <- -t(A)[upper.tri(A)]
+  return(A)
+}
+
+#baseevecs specify the eigenspace
+#vec chooses rotations within the space
+#covariance of main matrix
+ssqoffdiagonal <- function(vec, baseevecs, mcov){
+  A <- vecskewsym_inverse(vec)
+  rotmat <- sphm:::cayleyTransform(A)
+  trialevecs <- baseevecs %*% rotmat
+  evalcov <- cov_evals2(trialevecs, mcov)
+  sum(evalcov[lower.tri(evalcov)]^2)
+}
 
