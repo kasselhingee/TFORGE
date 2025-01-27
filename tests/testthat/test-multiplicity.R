@@ -98,6 +98,23 @@ test_that("test has uniform distribution", {
   expect_gt(suppressWarnings(ks.test(vals["a", ], "punif"))$p.value, 0.05)
 })
 
+test_that("using sample evecs is NOT does not give uniform p-values", {
+  skip_on_cran() #test very slow
+  set.seed(4)
+  abasis <- runifortho(7)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  set.seed(5)#set.seed(1331)
+  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
+    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    evecs <- eigen_desc(mmean(Ysample))$vectors
+    test_multiplicity(Ysample, mult = mult, B = 100, refbasis = evecs)$pval
+  })
+  
+  qqplot(vals, y = runif(1000))
+  expect_lt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.001)
+})
+
 test_that("chisq: test has uniform distribution", {
   set.seed(5)
   abasis <- runifortho(7)
