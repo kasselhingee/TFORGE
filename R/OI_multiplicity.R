@@ -30,7 +30,7 @@ stat_multiplicity_OI <- function(x, mult, refbasis = diag(1, sum(mult))){
   if (is.character(refbasis)){if (refbasis == "random"){refbasis = runifortho(sum(mult))}else{stop("refbasis must be a matrix or 'random'")}}
   if (!all(abs(refbasis - diag(1, sum(mult))) < sqrt(.Machine$double.eps))){
     mats <- apply(x, 1, invvech, simplify = FALSE)
-    mats <- lapply(mats, function(m){t(refbasis) %*% m %*% refbasis})
+    mats <- lapply(mats, function(m){makeSymmetric(t(refbasis) %*% m %*% refbasis)})
     x <- as_fsm(mats)
   }
   
