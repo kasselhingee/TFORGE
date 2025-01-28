@@ -85,13 +85,13 @@ test_that("test has uniform distribution", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   set.seed(5)#set.seed(1331)
-  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
+  vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
     Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     # B = 100 for more thorough
-    c(r = test_multiplicity(Ysample, mult = mult, B = 20)$pval,
-      c = test_multiplicity(Ysample, mult = mult, B = 20, refbasis = diag(1, 7))$pval,
-      m = test_multiplicity(Ysample, mult = mult, B = 20, refbasis = "mincorr")$pval,
-      a = test_multiplicity(Ysample, mult = mult, B = 20, refbasis = abasis)$pval)
+    c(r = test_multiplicity(Ysample, mult = mult, B = 100)$pval,
+      c = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = diag(1, 7))$pval,
+      m = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = "mincorr")$pval,
+      a = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = abasis)$pval)
   })
   
   # qqplot(vals["r", ], y = runif(1000))
