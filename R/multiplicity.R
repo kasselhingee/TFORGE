@@ -60,8 +60,12 @@ stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "random"){
   # Instead use arbitrarily assigned basis vectors of the eigenspace.
   # Can do this by random rotations of the estimated eigenvectors of the space,
   # Or projection-like operations from some predefined basis.
-  es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = refbasis)
-  optim_evecs <- mostdiagevecs(es$vectors, idxs, mcov = C0/nrow(x))
+  if (is.character(refbasis) && (refbasis[[1]] == "mincorr")){
+    es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = diag(nrow(es$vectors)))
+    es$vectors <- mostdiagevecs(es$vectors, idxs, mcov = C0/nrow(x))
+  } else {
+    es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = refbasis)
+  }
   es$values <- diag(t(es$vectors) %*% av %*% es$vectors)
   
   # the random variables xi in sets per multiplicity because the weight matrix is different in each one
@@ -206,24 +210,6 @@ arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
   do.call(cbind, newevecs)
 }
 
-mostdiagevecs <- function(evecs, idxs, mcov){
-  # Do calculations
-  newevecs <- lapply(idxs, function(idxforeval){
-    if (length(idxforeval) == 1){return(evecs[, idxforeval, drop = FALSE])}
-    d <- length(idxforeval)
-    bestpar <- optim(par = rep(0, (d-1)*d/2),
-                  fn = ssqoffdiagonal,
-                  baseevecs = evecs[, idxforeval],
-                  mcov = mcov,
-                  method = if (d==2){"Brent"}else{"Nelder-Mead"},
-                  lower = if (d==2){-100}else{-Inf},
-                  upper = if (d==2){100}else{+Inf}
-    )
-    bestrot <- sphm:::cayleyTransform(vecskewsym_inverse(bestpar$par))
-    bestevecs <- evecs[, idxforeval] %*% bestrot
-  })
-  do.call(cbind, newevecs)
-}
 
 #' @noRd
 #' For a subspace, uniformly randomly rotate it, or create a new one based on a reference
@@ -262,9 +248,30 @@ project_basis <- function(subspace, refbasis = diag(nrow = nrow(subspace))) {
   return(newbasis)
 }
 
+# find evecs that minimise the mixing of variance
+mostdiagevecs <- function(evecs, idxs, mcov){
+  # Do calculations
+  newevecs <- lapply(idxs, function(idxforeval){
+    if (length(idxforeval) == 1){return(evecs[, idxforeval, drop = FALSE])}
+    d <- length(idxforeval)
+    bestpar <- optim(par = rep(0, (d-1)*d/2),
+                  fn = ssqoffdiagonal,
+                  baseevecs = evecs[, idxforeval],
+                  mcov = mcov,
+                  method = if (d==2){"Brent"}else{"Nelder-Mead"},
+                  lower = if (d==2){-100}else{-Inf},
+                  upper = if (d==2){100}else{+Inf}
+    )
+    bestrot <- cayleyTransform(vecskewsym_inverse(bestpar$par))
+    bestevecs <- evecs[, idxforeval] %*% bestrot
+    return(bestevecs)
+  })
+  do.call(cbind, newevecs)
+}
+
 vecskewsym <- function(A){A[lower.tri(A)]}
 vecskewsym_inverse <- function(vec){
-  p <- (1 + sqrt(8*length(vec) + 1))/2;
+  p <- (1 + sqrt(8*length(vec) + 1))/2
   A <- matrix(0, p, p)
   A[lower.tri(A)] <- vec
   A[upper.tri(A)] <- -t(A)[upper.tri(A)]
@@ -276,9 +283,17 @@ vecskewsym_inverse <- function(vec){
 #covariance of main matrix
 ssqoffdiagonal <- function(vec, baseevecs, mcov){
   A <- vecskewsym_inverse(vec)
-  rotmat <- sphm:::cayleyTransform(A)
+  rotmat <- cayleyTransform(A)
   trialevecs <- baseevecs %*% rotmat
   evalcov <- cov_evals2(trialevecs, mcov)
-  sum(evalcov[lower.tri(evalcov)]^2)
+  sum(cov2cor(evalcov)[lower.tri(evalcov)]^2)
 }
 
+#A must be skew symmetric
+cayleyTransform <- function(A){
+  solve(diag(nrow(A)) - A) %*% (diag(nrow(A)) + A)
+}
+# M must be orthogonal with determinant of +1 (or zero?)
+inverseCayleyTransform <- function(M){
+  (M - diag(nrow(M))) %*% solve(M + diag(nrow(M)))
+}

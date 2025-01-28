@@ -64,14 +64,17 @@ test_that("stat has correct null distribution", {
     Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     c(statr = stat_multiplicity(Ysample, mult = mult),
       statc = stat_multiplicity(Ysample, mult = mult, refbasis = diag(1, 7)),
+      statm = stat_multiplicity(Ysample, mult = mult, refbasis = "mincorr"),
       stata = stat_multiplicity(Ysample, mult = mult, refbasis = abasis))
   })
   
-  qqplot(vals["statr", ], y = rchisq(1000, df = sum(mult-1)))
-  qqplot(vals["statc", ], y = rchisq(1000, df = sum(mult-1)))
-  qqplot(vals["stata", ], y = rchisq(1000, df = sum(mult-1)))
+  # qqplot(vals["statr", ], y = rchisq(1000, df = sum(mult-1)))
+  # qqplot(vals["statc", ], y = rchisq(1000, df = sum(mult-1)))
+  # qqplot(vals["statm", ], y = rchisq(1000, df = sum(mult-1)))
+  # qqplot(vals["stata", ], y = rchisq(1000, df = sum(mult-1)))
   expect_gt(ks.test(vals["statr", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
   expect_gt(ks.test(vals["statc", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
+  expect_gt(ks.test(vals["statm", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
   expect_gt(ks.test(vals["stata", ], "pchisq", df = sum(mult-1))$p.value, 0.15)
 })
 
@@ -87,18 +90,21 @@ test_that("test has uniform distribution", {
     # B = 100 for more thorough
     c(r = test_multiplicity(Ysample, mult = mult, B = 20)$pval,
       c = test_multiplicity(Ysample, mult = mult, B = 20, refbasis = diag(1, 7))$pval,
+      m = test_multiplicity(Ysample, mult = mult, B = 20, refbasis = "mincorr")$pval,
       a = test_multiplicity(Ysample, mult = mult, B = 20, refbasis = abasis)$pval)
   })
   
   # qqplot(vals["r", ], y = runif(1000))
   # qqplot(vals["c", ], y = runif(1000))
+  # qqplot(vals["m", ], y = runif(1000))
   # qqplot(vals["a", ], y = runif(1000))
   expect_gt(suppressWarnings(ks.test(vals["r", ], "punif"))$p.value, 0.05) #above 0.2 if above two thoroughness measures taken
   expect_gt(suppressWarnings(ks.test(vals["c", ], "punif"))$p.value, 0.05) 
+  expect_gt(suppressWarnings(ks.test(vals["m", ], "punif"))$p.value, 0.05) 
   expect_gt(suppressWarnings(ks.test(vals["a", ], "punif"))$p.value, 0.05)
 })
 
-test_that("using sample evecs is NOT does not give uniform p-values", {
+test_that("using sample evecs NOT does not give uniform p-values", {
   skip_on_cran() #test very slow
   set.seed(4)
   abasis <- runifortho(7)
