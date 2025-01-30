@@ -258,9 +258,10 @@ mostdiagevecs <- function(evecs, idxs, mcov){
                   fn = ssqoffdiagonal,
                   baseevecs = evecs[, idxforeval],
                   mcov = mcov,
-                  method = if (d==2){"Brent"}else{"Nelder-Mead"},
+                  method = if (d==2){"Brent"}else{"Nelder-Mead"}, #BFGS is very similar time wise in a simulation
                   lower = if (d==2){-100}else{-Inf},
-                  upper = if (d==2){100}else{+Inf}
+                  upper = if (d==2){100}else{+Inf},
+                  control = list(maxit = 100, reltol = 1E-2)
     )
     bestrot <- cayleyTransform(vecskewsym_inverse(bestpar$par))
     bestevecs <- evecs[, idxforeval] %*% bestrot
@@ -285,7 +286,7 @@ ssqoffdiagonal <- function(vec, baseevecs, mcov){
   A <- vecskewsym_inverse(vec)
   rotmat <- cayleyTransform(A)
   trialevecs <- baseevecs %*% rotmat
-  evalcov <- cov_evals2(trialevecs, mcov)
+  evalcov <- cov_evals(trialevecs, mcov) # cov_evals2 seems very slightly slower in the current implementation
   sum(cov2cor(evalcov)[lower.tri(evalcov)]^2)
 }
 
