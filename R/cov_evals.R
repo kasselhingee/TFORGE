@@ -12,8 +12,8 @@
 #' @export
 cov_evals <- function(evecs, mcov){
   # the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
-  indx <- rbind(t(utils::combn(1:nrow(evecs), 2)), #this avoids repeating elements that are symmetric
-                cbind(1:nrow(evecs), 1:nrow(evecs)))
+  indx <- rbind(t(utils::combn(1:ncol(evecs), 2)), #this avoids repeating elements that are symmetric
+                cbind(1:ncol(evecs), 1:ncol(evecs)))
   dupmat <- dup(nrow(evecs)) # is sparse so could be even faster
   vals <- mapply(cov_evals_inside_cpp, 
                  lapply(indx[,1], function(i) {evecs[, i]}),
