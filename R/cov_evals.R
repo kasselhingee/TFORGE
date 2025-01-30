@@ -19,7 +19,7 @@ cov_evals <- function(evecs, mcov){
                  lapply(indx[,1], function(i) {evecs[, i]}),
                  lapply(indx[,2], function(i) {evecs[, i]}),
                  MoreArgs = list(dupmat = dupmat, mcov = mcov))
-  V <- matrix(NA, nrow = nrow(evecs), ncol = ncol(evecs))
+  V <- matrix(NA, nrow = ncol(evecs), ncol = ncol(evecs))
   V[as.matrix(indx)] <- vals
   V[lower.tri(V)] <- t(V)[lower.tri(V)]
   return(V)
