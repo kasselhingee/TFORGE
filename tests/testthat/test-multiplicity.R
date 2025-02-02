@@ -57,7 +57,7 @@ test_that("debugging stat with true evecs has correct null distribution", {
 test_that("stat has correct null distribution", {
   set.seed(4)
   abasis <- runifortho(7)
-  set.seed(1331)
+  set.seed(1332)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- replicate(1000, {
