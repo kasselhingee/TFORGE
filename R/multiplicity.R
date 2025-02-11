@@ -132,6 +132,51 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
   return(At) # this is actually the transpose of whats in my notes (where rows correspond to idxk)
 }
 
+# Schwartzman's blk() operation for eigenvalues
+# Returns a modification of evals that matches multiplicity given in mult
+# Assumes evals in descending order, and 
+# averages in blocks given by mult
+multiplicity_blk <- function(evals, mult){
+  #indices
+  cmult <- cumsum(mult)
+  esvalstart <- c(0, cmult[-length(cmult)]) + 1
+  
+  
+  # get eigenvalues for each multiplicity by averaging 
+  newevals <- lapply(1:length(mult), function(i){
+    newval <- mean(evals[esvalstart[i] : cmult[i]])
+    rep(newval, mult[i])
+  })
+  newevals <- unlist(newevals)
+  return(newevals)
+}
+
+# For a given hypothetical mult, get the corresponding null mean from a sample average
+multiplicity_nullmean <- function(av, mult){
+  stopifnot(sum(mult) == ncol(av))
+  stopifnot(all(mult > 0))
+  stopifnot(any(mult != 1))
+  es <- eigen_desc(av, symmetric = TRUE)
+  
+  # evals according to null
+  nullevals <- multiplicity_blk(es$values, mult)
+  
+  # add in eigenvectors of av to get full null mean
+  nullmean <- es$vectors %*% diag(nullevals) %*% t(es$vectors)
+  return(nullmean)
+}
+
+standardise_multiplicity_new <- function(x, mult){
+  x <- as_fsm(x)
+  av <- mmean(x)
+  nullmean <- multiplicity_nullmean(av, mult)
+  
+  # make a translated sample out of nullmean and errors
+  nullmean <- vech(nullmean)
+  av <- vech(av)
+  out <- t(t(x) - av + nullmean)
+}
+
 #' @rdname test_multiplicity
 #' @export
 standardise_multiplicity <- function(x, mult){
