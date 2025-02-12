@@ -32,6 +32,39 @@ test_multiplicity <- function(x, mult, B = 1000, refbasis = "random"){
 }
 
 #' @rdname test_multiplicity
+#' @details
+#' `test_multiplicity_nonnegative()` uses weighted bootstrapping with empirical likelihood to create a population that satisfies the null hypothesis.
+test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasis = "random"){
+  x <- as_flat(x)
+  if (B == "chisq"){
+    return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
+  }
+  
+  # compute corresponding weights that lead to emp.lik.
+  wts <- elwts_fixedtrace(x, nullmean, maxit)
+  
+  #check the weights
+  if (!wtsokay(wts)){
+    out <- list(
+      pval = 0,
+      t0 = t0,
+      nullt = NA,
+      stdx = wts,
+      B = NA
+    )
+    class(out) <- c("TFORGE", class(out))
+    return(out)
+  }
+  
+  res <- bootresampling(x, wts, 
+                        stat = stat_multiplicity,
+                        B = B,
+                        mult = mult,
+                        refbasis = refbasis)
+  return(res)
+}
+
+#' @rdname test_multiplicity
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
 #' @export
 stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "random"){
@@ -166,7 +199,9 @@ multiplicity_nullmean <- function(av, mult){
   return(nullmean)
 }
 
-standardise_multiplicity_new <- function(x, mult){
+#' @rdname test_multiplicity
+#' @export
+standardise_multiplicity <- function(x, mult){
   x <- as_fsm(x)
   av <- mmean(x)
   nullmean <- multiplicity_nullmean(av, mult)
@@ -177,9 +212,7 @@ standardise_multiplicity_new <- function(x, mult){
   out <- t(t(x) - av + nullmean)
 }
 
-#' @rdname test_multiplicity
-#' @export
-standardise_multiplicity <- function(x, mult){
+standardise_multiplicity_old <- function(x, mult){
   x <- as_fsm(x)
   av <- mmean(x)
   stopifnot(sum(mult) == ncol(av))

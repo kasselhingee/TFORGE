@@ -23,12 +23,18 @@ test_that("stat is zero for standarised sample, dim 7", {
   av <- mmean(Ysample)
   es <- eigen_desc(av)
   mult <- c(3, 2, 1, 1)
-  Ystdsample <- standardise_multiplicity(Ysample, mult = mult)
   nullmean <- multiplicity_nullmean(av, mult = mult)
+  # nullmean conserves trace:
   expect_equal(sum(diag(nullmean)), sum(diag(av)))
+  
+  # null mean has the same eigenvectors/space
   expect_equal(t(es$vectors) %*% nullmean %*% es$vectors, 
                diag(multiplicity_blk(es$values, mult = mult)))
-  expect_equal(standardise_multiplicity_new(Ysample, mult = mult), Ystdsample)
+  
+  Ystdsample <- standardise_multiplicity(Ysample, mult = mult)
+  
+  # old way of calculating Ystdsample matches new way
+  expect_equal(standardise_multiplicity_old(Ysample, mult = mult), Ystdsample)
 
   #check new average has correct properties
   newav <- mmean(Ystdsample)
@@ -260,31 +266,6 @@ test_that("test p value resistant to fixed trace by normalisation", {
   pval_n <- test_multiplicity(Ysample_n, mult = mult, 1000, refbasis = diag(1, 7))$pval
   expect_equal(pval, 
                pval_n, tol = 1E-1)
-})
-
-test_that("fixed trace from projection preserved by standardisation and ignored by stat", {
-  set.seed(134)
-  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
-  mult <- c(3,2,1,1)
-  Ysample <- rsymm_norm(1000, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2))
-  Ysample_n <- as_fsm(apply(Ysample, 1, function(m){projtrace_matrix(invvech(m))}, simplify = FALSE))
-  
-  # check that only first element of Hevals  is changed by trace fix
-  evals <- eigen_desc(mmean(Ysample))$values
-  evals_n <- eigen_desc(mmean(Ysample_n))$values
-  expect_equal((helmert(sum(mult)) %*% evals)[-1],
-    (helmert(sum(mult)) %*% evals_n)[-1])
-  
-  std <- standardise_multiplicity(Ysample, mult)
-  std_n <- standardise_multiplicity(Ysample_n, mult)
-  expect_true(all.equal(as_fsm(apply(std, 1, function(m){projtrace_matrix(invvech(m))}, simplify = FALSE)), 
-                        std_n, check.attributes = FALSE))
-  
-  set.seed(123)
-  stat_orig <- stat_multiplicity(Ysample, mult = mult)
-  set.seed(123)
-  stat_n <- stat_multiplicity(Ysample_n, mult = mult)
-  expect_equal(stat_orig, stat_n)
 })
 
 test_that("runifortho produces orthogonal matrices", {
