@@ -106,7 +106,7 @@ test_that("test has uniform distribution", {
     c(r = test_multiplicity(Ysample, mult = mult, B = 100)$pval,
       c = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = diag(1, 7))$pval,
       m = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = "mincorr")$pval,
-      s = test_multiplicity(Ysample, mult = mult, B = 1000, refbasis = "sample")$pval,
+      s = test_multiplicity(Ysample, mult = mult, B = 1000, refbasis = "sample")$pval, #seems like using the sample eigenvectors need more bootstrapping
       a = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = abasis)$pval)
   }, cl = 2)
   
@@ -187,6 +187,18 @@ test_that("test rejects some incorrect hypotheses", {
   set.seed(3541) 
   expect_lt(test_multiplicity(Ysample, mult = c(3,2,2), 100)$pval, 0.05)
   # note that at B=100 there is still a lot a randomness in the output pvalue
+})
+
+test_that("test correctly rejects isotropy", {
+  diagel <- which(TFORGE:::isondiag_vech(seq(1, 6)))
+  covT = matrix(0, 6, 6)
+  diag(covT) <- 1
+  covT[diagel, diagel] <- diag(c(1, 1, 4))
+  set.seed(1)
+  Ysample <- rsymm(60, diag(c(1.5, 1, 1)), sigma = covT)
+  # set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = 1000, refbasis = "random")$pval, 0.05)
+  set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = 1000, refbasis = "sample")$pval, 0.05)
+  set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = 1000, refbasis = diag(1, 3))$pval, 0.05)
 })
 
 test_that("xiget() behaves properly", {
