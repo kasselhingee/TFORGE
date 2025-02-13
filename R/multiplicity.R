@@ -93,7 +93,9 @@ stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "random"){
   # Instead use arbitrarily assigned basis vectors of the eigenspace.
   # Can do this by random rotations of the estimated eigenvectors of the space,
   # Or projection-like operations from some predefined basis.
-  if (is.character(refbasis) && (refbasis[[1]] == "mincorr")){
+  if (is.character(refbasis) && (refbasis[[1]] == "sample")){
+    es$vectors <- es$vectors
+  } else if (is.character(refbasis) && (refbasis[[1]] == "mincorr")){
     es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = diag(nrow(es$vectors)))
     es$vectors <- mostdiagevecs(es$vectors, idxs, mcov = C0/nrow(x))
   } else {

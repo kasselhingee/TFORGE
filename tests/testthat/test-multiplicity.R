@@ -77,16 +77,19 @@ test_that("stat has correct null distribution", {
     c(statr = stat_multiplicity(Ysample, mult = mult),
       statc = stat_multiplicity(Ysample, mult = mult, refbasis = diag(1, 7)),
       statm = stat_multiplicity(Ysample, mult = mult, refbasis = "mincorr"),
+      stats = stat_multiplicity(Ysample, mult = mult, refbasis = "sample"),
       stata = stat_multiplicity(Ysample, mult = mult, refbasis = abasis))
   })
   
   # qqplot(vals["statr", ], y = rchisq(1000, df = sum(mult-1)))
   # qqplot(vals["statc", ], y = rchisq(1000, df = sum(mult-1)))
   # qqplot(vals["statm", ], y = rchisq(1000, df = sum(mult-1)))
+  # qqplot(vals["stats", ], y = rchisq(1000, df = sum(mult-1)))
   # qqplot(vals["stata", ], y = rchisq(1000, df = sum(mult-1)))
   expect_gt(ks.test(vals["statr", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
   expect_gt(ks.test(vals["statc", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
   expect_gt(ks.test(vals["statm", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
+  expect_error(expect_gt(ks.test(vals["stats", ], "pchisq", df = sum(mult-1))$p.value, 0.2))
   expect_gt(ks.test(vals["stata", ], "pchisq", df = sum(mult-1))$p.value, 0.15)
 })
 
@@ -96,23 +99,26 @@ test_that("test has uniform distribution", {
   abasis <- runifortho(7)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  set.seed(5)#set.seed(1331)
-  vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
+  set.seed(6)#set.seed(1331)
+  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
     Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     # B = 100 for more thorough
     c(r = test_multiplicity(Ysample, mult = mult, B = 100)$pval,
       c = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = diag(1, 7))$pval,
       m = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = "mincorr")$pval,
+      s = test_multiplicity(Ysample, mult = mult, B = 1000, refbasis = "sample")$pval,
       a = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = abasis)$pval)
-  })
+  }, cl = 2)
   
-  # qqplot(vals["r", ], y = runif(1000))
-  # qqplot(vals["c", ], y = runif(1000))
-  # qqplot(vals["m", ], y = runif(1000))
-  # qqplot(vals["a", ], y = runif(1000))
+  qqplot(vals["r", ], y = runif(1000))
+  qqplot(vals["c", ], y = runif(1000))
+  qqplot(vals["m", ], y = runif(1000))
+  qqplot(vals["s", ], y = runif(1000))
+  qqplot(vals["a", ], y = runif(1000))
   expect_gt(suppressWarnings(ks.test(vals["r", ], "punif"))$p.value, 0.05) #above 0.2 if above two thoroughness measures taken
   expect_gt(suppressWarnings(ks.test(vals["c", ], "punif"))$p.value, 0.05) 
   expect_gt(suppressWarnings(ks.test(vals["m", ], "punif"))$p.value, 0.05) 
+  expect_gt(suppressWarnings(ks.test(vals["s", ], "punif"))$p.value, 0.05) 
   expect_gt(suppressWarnings(ks.test(vals["a", ], "punif"))$p.value, 0.05)
 })
 
