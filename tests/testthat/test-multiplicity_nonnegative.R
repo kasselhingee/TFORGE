@@ -55,6 +55,39 @@ test_that("chisq: test has uniform distribution", {
   expect_gt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.15)
 })
 
+test_that("test rejects some incorrect hypotheses simulated from unconstrained case", {
+  set.seed(13321)
+  Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
+                   sigma = 0.1 * diag(7 * (7 + 1)/2))
+  set.seed(3653)
+  res <- test_multiplicity_nonnegative(Ysample, mult = c(3,2,1,1), 100)
+  expect_gt(res$pval, 0.1)
+  
+  res <- test_multiplicity_nonnegative(Ysample, mult = c(3,1,1,1,1), 100)
+  expect_gt(res$pval, 0.1)
+  res <- test_multiplicity_nonnegative(Ysample, mult = c(2,1,1,1,1,1), 100)
+  expect_gt(res$pval, 0.1)
+  
+  # set.seed(3542)
+  # pvals_2311 <- replicate(100, test_multiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, cl = 3)
+  set.seed(3542)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,3,1,1), 100)$pval, 0.05)
+  set.seed(35423) 
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,2,2,1), 100)$pval, 0.05)
+  set.seed(35424) 
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(4,1,1,1), 100)$pval, 0.05)
+  set.seed(35425) 
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,1,3), 100)$pval, 0.05)
+  set.seed(35426) 
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,3,1), 100)$pval, 0.05)
+  
+  set.seed(35427) 
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,3,2), 100)$pval, 0.05)
+  set.seed(3541) 
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,2,2), 100)$pval, 0.05)
+  # note that at B=100 there is still a lot a randomness in the output pvalue
+})
+
 test_that("test rejects some incorrect hypotheses", {
   set.seed(13321)
   Ysample <- specialsample(100)

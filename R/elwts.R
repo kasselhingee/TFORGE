@@ -4,7 +4,6 @@ elwts_fixedtrace <- function(x, nullmean, maxit = 25){
   wts <- as.vector(scelres$wts) * nrow(x)
   if (!isTRUE(scelres$converged)){
     wts <- -1 * wts
-    warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")
   }
   return(wts)
 }

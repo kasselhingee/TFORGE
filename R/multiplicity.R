@@ -41,13 +41,15 @@ test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasi
   }
   
   # compute corresponding weights that lead to emp.lik.
+  av <- mmean(x)
+  nullmean <- multiplicity_nullmean(av, mult)
   wts <- elwts_fixedtrace(x, nullmean, maxit)
   
   #check the weights
   if (!wtsokay(wts)){
     out <- list(
       pval = 0,
-      t0 = t0,
+      t0 = stat_multiplicity(x, mult, refbasis = refbasis),
       nullt = NA,
       stdx = wts,
       B = NA
