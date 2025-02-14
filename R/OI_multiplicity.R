@@ -26,9 +26,13 @@ stat_multiplicity_OI <- function(x, mult){
   es_mn <- eigen_desc(invvech(mn))
   Mhat <- es_mn$vectors %*% diag(blk(es_mn$values, mult)) %*% t(es_mn$vectors)
   OIparams <- estimate_OIcov(x, Mhat)
+  if (is.infinite(OIparams$tau)){stop("Estimated tau is infinite")}
+  if (!is.finite(OIparams$scalesq)){stop("Estimated scalesq is is not finite number")}
+  if (!is.finite(OIparams$tau)){stop("Estimated tau is not finite number")}
   stat <- (nrow(x)/OIparams$scalesq) * sum((es_mn$values - blk(es_mn$values, mult))^2)
   attr(stat, "scalesq") <- OIparams$scalesq
   attr(stat, "tau") <- OIparams$tau
+  if (!is.finite(stat)){stop("stat is not a finite number")}
   return(stat)
 }
 
