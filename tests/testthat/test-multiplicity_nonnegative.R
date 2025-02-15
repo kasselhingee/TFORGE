@@ -1,20 +1,27 @@
 # Note that it seems really hard to simulate with fixed trace and non-negative eigenvalues, with mean with specified eigenvalues
 # Instead I've used the empirical distribution trick with a very large sample
-evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+logevals <- c(rep(3, 3), rep(2, 2), 1, 0.5)-5
 mult <- c(3,2,1,1)
 # creating an empirical population that satisfies the null
 set.seed(5)
-bigtmp <- rsymm_norm(10000, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2)/10)
-nonnegevals <- apply(bigtmp, 1, function(v){min(eigen_desc(invvech(v))$values)}) >= 0 #time consuming truncation
-bigtmp <- as_fsm(bigtmp[nonnegevals, ])
-big <- normalise_trace(bigtmp)
-big <- as_fsm(big)
-nullmean <- multiplicity_nullmean(mmean(big), mult)
-wts <- elwts_fixedtrace(big, nullmean, maxit = 25)
+bigtmp <- rsymm_norm(10000, diag(logevals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2))
+nonnegevals <- t(apply(bigtmp, 1, function(v){
+  es <- eigen_desc(invvech(v))
+  vech(es$vectors %*% diag(exp(es$values)) %*% t(es$vectors))
+  }))
+nonnegevals <- as_fsm(nonnegevals)
+mmean(nonnegevals)
+cov_evals_est(nonnegevals)
+aves <- eigen(mmean(nonnegevals))
+nullmean <- multiplicity_nullmean(mmean(nonnegevals), mult)
+expect_equal(t(aves$vectors) %*% nullmean %*% aves$vectors,
+             diag(eigen_desc(nullmean)$values))
+
+wts <- elwts_fixedtrace(nonnegevals, nullmean, maxit = 25)
 expect_true(wtsokay(wts))
 specialsample <- function(size){
-  idx <- sample.int(nrow(big), size = size, prob = wts, replace = TRUE)
-  out <- big[idx, ]
+  idx <- sample.int(nrow(nonnegevals), size = size, prob = wts, replace = TRUE)
+  out <- nonnegevals[idx, ]
   class(out) <- c("TFORGE_fsm", class(out))
   return(out)
 }
@@ -90,22 +97,26 @@ test_that("test rejects some incorrect hypotheses simulated from unconstrained c
 
 test_that("test rejects some incorrect hypotheses", {
   set.seed(13321)
-  Ysample <- specialsample(100)
+  Ysample <- specialsample(30)
+  
+  set.seed(1)
+  expect_gt(test_multiplicity_nonnegative(Ysample, mult = mult, 1000)$pval, 0.05)
+  
   set.seed(3542)
-  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,3,1,1), 100)$pval, 0.05)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,3,1,1), 1000)$pval, 0.05)
   set.seed(35423) 
-  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,2,2,1), 100)$pval, 0.05)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,2,2,1), 1000)$pval, 0.05)
   set.seed(35424) 
-  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(4,1,1,1), 100)$pval, 0.05)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(4,1,1,1), 1000)$pval, 0.05)
   set.seed(35425) 
-  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,1,3), 100)$pval, 0.05)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,1,3), 1000)$pval, 0.05)
   set.seed(35426) 
-  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,3,1), 100)$pval, 0.05)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,3,1), 1000)$pval, 0.05)
   
   set.seed(35427) 
-  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,3,2), 100)$pval, 0.05)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(2,3,2), 1000)$pval, 0.05)
   set.seed(3541) 
-  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,2,2), 100)$pval, 0.05)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3,2,2), 1000)$pval, 0.05)
   # note that at B=100 there is still a lot a randomness in the output pvalue
 })
 
