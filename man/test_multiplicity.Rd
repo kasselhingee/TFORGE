@@ -2,13 +2,22 @@
 % Please edit documentation in R/multiplicity.R
 \name{test_multiplicity}
 \alias{test_multiplicity}
+\alias{test_multiplicity_nonnegative}
 \alias{stat_multiplicity}
 \alias{standardise_multiplicity}
 \title{Test eigenvalue multiplicity}
 \usage{
-test_multiplicity(x, mult, B = 1000)
+test_multiplicity(x, mult, B = 1000, refbasis = "random")
 
-stat_multiplicity(x, mult, evecs = NULL)
+test_multiplicity_nonnegative(
+  x,
+  mult,
+  B = 1000,
+  maxit = 25,
+  refbasis = "random"
+)
+
+stat_multiplicity(x, mult, evecs = NULL, refbasis = "random")
 
 standardise_multiplicity(x, mult)
 }
@@ -34,6 +43,8 @@ Bootstrap resampling is conducted from the null hypothesis, which uses the origi
 This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace. It may work poorly on matrices with other constraints, on samples smaller than 15, or samples of multimodal populations.
 
 Due to the random rotation of the eigenvectors, use \code{\link[=set.seed]{set.seed()}} before \code{stat_multiplicity()} or \code{test_multiplicity()} if you want the answer to be repeatable.
+
+\code{test_multiplicity_nonnegative()} uses weighted bootstrapping with empirical likelihood to create a population that satisfies the null hypothesis.
 }
 \examples{
 x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))

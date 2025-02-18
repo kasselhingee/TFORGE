@@ -34,6 +34,7 @@ test_multiplicity <- function(x, mult, B = 1000, refbasis = "random"){
 #' @rdname test_multiplicity
 #' @details
 #' `test_multiplicity_nonnegative()` uses weighted bootstrapping with empirical likelihood to create a population that satisfies the null hypothesis.
+#' @export
 test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasis = "random"){
   x <- as_flat(x)
   if (B == "chisq"){
@@ -294,7 +295,7 @@ arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
 
 
 #' @noRd
-#' For a subspace, uniformly randomly rotate it, or create a new one based on a reference
+#' @description For a subspace, uniformly randomly rotate it, or create a new one based on a reference
 #' @param subspace A matrix of column vectors.
 #' @param refbasis A matrix of column vectors or "random"
 arbitrary_basis <- function(subspace, refbasis = "random"){
