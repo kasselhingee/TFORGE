@@ -55,6 +55,21 @@ test_that("blk() returns correct averages", {
   expect_equal(blk(evals, c(5,4,1)), c(rep(8, 5), rep(14/4, 4), 1))
 })
 
+test_that("stat_multiplicity_OI() has correct null distribution", {
+  set.seed(13312)
+  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
+  mult <- c(3,2,1,1)
+  vals <- replicate(1000, {
+    Ysample <- rsymm_norm(1E2, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
+    stat_multiplicity_OI(Ysample, mult = mult)
+  })
+  df <- 0.5 * sum(mult * (mult + 1)) - length(mult)
+  qqplot(vals, y = rchisq(1000, df = df))
+  res <- ks.test(vals, "pchisq", df = df)
+  expect_gt(res$p.value, 0.15)
+})
+
+
 test_that("test_multiplicity_OI() on null has uniform p values", {
   set.seed(13312)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
