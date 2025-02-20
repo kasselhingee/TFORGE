@@ -7,14 +7,14 @@
 \alias{standardise_multiplicity}
 \title{Test eigenvalue multiplicity}
 \usage{
-test_multiplicity(x, mult, B = 1000, refbasis = "random")
+test_multiplicity(x, mult, B = 1000, refbasis = "sample")
 
 test_multiplicity_nonnegative(
   x,
   mult,
   B = 1000,
   maxit = 25,
-  refbasis = "random"
+  refbasis = "sample"
 )
 
 stat_multiplicity(x, mult, evecs = NULL, refbasis = "random")

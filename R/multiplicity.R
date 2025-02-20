@@ -17,9 +17,10 @@
 #' @return
 #' A `TFORGE` object including the p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). See [`bootresampling()`].
 #' @export
-test_multiplicity <- function(x, mult, B = 1000, refbasis = "random"){
+test_multiplicity <- function(x, mult, B = 1000, refbasis = "sample"){
   x <- as_flat(x)
   if (B == "chisq"){
+    if (refbasis == "sample"){warning("chisq calibration does not work for the statistic using eigenvalues of the sample mean")}
     return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
   }
   ms_std <- standardise_multiplicity(x, mult)
@@ -35,9 +36,10 @@ test_multiplicity <- function(x, mult, B = 1000, refbasis = "random"){
 #' @details
 #' `test_multiplicity_nonnegative()` uses weighted bootstrapping with empirical likelihood to create a population that satisfies the null hypothesis.
 #' @export
-test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasis = "random"){
+test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasis = "sample"){
   x <- as_flat(x)
   if (B == "chisq"){
+    if (refbasis == "sample"){warning("chisq calibration does not work for the statistic using eigenvalues of the sample mean")}
     return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
   }
   
