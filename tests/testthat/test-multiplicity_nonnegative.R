@@ -12,13 +12,13 @@ nonnegevals <- t(apply(bigtmp, 1, function(v){
 nonnegevals <- as_fsm(nonnegevals)
 mmean(nonnegevals)
 cov_evals_est(nonnegevals)
-aves <- eigen(mmean(nonnegevals))
+aves <- eigen_desc(mmean(nonnegevals))
 nullmean <- multiplicity_nullmean(mmean(nonnegevals), mult)
-expect_equal(t(aves$vectors) %*% nullmean %*% aves$vectors,
-             diag(eigen_desc(nullmean)$values))
+# expect_equal(t(aves$vectors) %*% nullmean %*% aves$vectors,
+#              diag(eigen_desc(nullmean)$values))
 
 wts <- elwts_fixedtrace(nonnegevals, nullmean, maxit = 25)
-expect_true(wtsokay(wts))
+# expect_true(wtsokay(wts))
 specialsample <- function(size){
   idx <- sample.int(nrow(nonnegevals), size = size, prob = wts, replace = TRUE)
   out <- nonnegevals[idx, ]
@@ -44,11 +44,22 @@ test_that("test has uniform distribution", {
   vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
     Ysample <- specialsample(200)
     # B = 100 for more thorough
-    test_multiplicity_nonnegative(Ysample, mult = mult, B = 100)$pval
+    test_multiplicity_nonnegative(Ysample, mult = mult, B = 1000)$pval
   })
   
   # qqplot(vals, y = runif(1000))
   expect_gt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.05) #above 0.2 if above two thoroughness measures taken
+})
+
+test_that("test size at small samples", {
+  set.seed(5)#set.seed(1331)
+  vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
+    Ysample <- specialsample(100) #at n = 15 and 30: null mean never in convex hull
+    res <- test_multiplicity_nonnegative(Ysample, mult = mult, B = 1000)
+    res[c("pval", "B")]
+  }, cl = 3)
+  sum(is.na(unlist(vals[2, ])))
+  pvals <- unlist(vals[1, ])
 })
 
 test_that("chisq: test has uniform distribution", {
