@@ -45,7 +45,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
   if (!is.null(evals)){
     if (all(abs(evals - evals[1]) < sqrt(.Machine$double.eps))){
-      warning("Supplied evals are equal to each other so test is testing for isotropy. test_multiplicity() usually has better behaviour for testing isotropy.")
+      warning("Supplied evals are equal to each other so test is testing for isotropy. test_multiplicity() is an alternative for testing isotropy.")
     }
   }
 
