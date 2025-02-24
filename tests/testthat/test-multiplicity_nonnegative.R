@@ -51,7 +51,7 @@ test_that("test has uniform distribution", {
   expect_gt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.05) #above 0.2 if above two thoroughness measures taken
 })
 
-test_that("test size at small samples", {
+test_that("test size at small samples: Error not uniform.", {
   set.seed(5)#set.seed(1331)
   vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
     Ysample <- specialsample(100) #at n = 15 and 30: null mean never in convex hull
@@ -60,6 +60,9 @@ test_that("test size at small samples", {
   }, cl = 3)
   sum(is.na(unlist(vals[2, ])))
   pvals <- unlist(vals[1, ])
+  mean(pvals <= 0.05)
+  qqplot(pvals, y = runif(1000))
+  ks.test(pvals, "punif")
 })
 
 test_that("chisq: test has uniform distribution", {
