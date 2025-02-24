@@ -31,20 +31,30 @@ rftiso <- function(n, meanlog = log(1/3) - 0.1^2/2, sdlog = 0.1){
 }
 
 
-test_that("test has okay test size for small n", {
+test_that("test has bad size for small n", {
   set.seed(10)
   vals <- pbapply::pbreplicate(1000, {
-    Ysample <- rftiso(30)
+    Ysample <- rftiso(15)
+    res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 1000)
+    res[c("pval", "B")]
+  }, cl = 3)
+  expect_equal(mean(is.na(unlist(vals[2, ]))), 0) # not in convex hull 0.09 of the time!
+  pvals <- unlist(vals[1, ])
+  expect_lt(abs(mean(pvals <= 0.05)-0.05), 0.01)
+  qqplot(pvals, y = runif(1000))
+  ks.test(pvals, "punif")
+})
+
+test_that("test has uniform distribution at large n", {
+  set.seed(10)
+  vals <- pbapply::pbreplicate(1000, {
+    Ysample <- rftiso(100)
     res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 1000)
     res[c("pval", "B")]
   }, cl = 3)
   expect_equal(sum(is.na(unlist(vals[2, ]))), 0)
   pvals <- unlist(vals[1, ])
-  expect_lt(abs(mean(pvals <= 0.05)-0.05), 0.1)
+  expect_lt(abs(mean(pvals <= 0.05)-0.05), 0.01)
   qqplot(pvals, y = runif(1000))
   ks.test(pvals[1:100], "punif")
-})
-
-test_that("test has uniform distribution at large n", {
-  
 })
