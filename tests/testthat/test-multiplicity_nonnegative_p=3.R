@@ -60,21 +60,6 @@ test_that("test on norm has bad size for small n", {
   ks.test(pvals, "punif")
 })
 
-test_that("test on norm has bad size for small n", {
-  set.seed(10)
-  vals <- pbapply::pbreplicate(1000, {
-    Ysample <- rsymm_norm(15, mean = diag(1/3, 3), sigma = diag(0.1^2, 6))
-    Ysample <- normalize_trace(Ysample)
-    res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 1000)
-    res[c("pval", "B")]
-  }, cl = 3)
-  expect_gt(mean(is.na(unlist(vals[2, ]))), 0.07) # not in convex hull 0.09 of the time!
-  pvals <- unlist(vals[1, ])
-  expect_gt(abs(mean(pvals <= 0.05)-0.05), 0.01)
-  qqplot(pvals, y = runif(1000))
-  ks.test(pvals, "punif")
-})
-
 test_that("test on norm has bad size for small n, even with well confined sample eigenvectors and no normalization", {
   vals <- pbapply::pblapply(1:1000, function(seed){
     set.seed(seed)
@@ -86,19 +71,6 @@ test_that("test on norm has bad size for small n, even with well confined sample
   inhull <- !is.na(unlist(lapply(vals, "[[", 3)))
   expect_gt(mean(!inhull), 0.07) #about 10%
 })
-
-Ysample <- rsymm_norm(15, mean = diag(1/3, 3), sigma = diag(c(0.001, 0.0001, 0.0001, 0.001, 0.0001, 0.001)))
-test_multiplicity_nonnegative(Ysample, mult = 3, B = 1000)
-Ysample %>%
-  as_tibble() %>%
-  tibble::rowid_to_column(var = "rowid") %>%
-  tidyr::pivot_longer(-rowid) %>%
-  dplyr::filter(name %in% c("V2", "V3", "V5")) %>%
-  ggplot() +
-  geom_point(aes(x = rowid, y = value, col = name)) +
-  theme_bw()
-  # facet_wrap(vars(name), scales = "free") +
-  # ggbeeswarm::geom_quasirandom(aes(x = value, y = name))
 
 test_that("bad size unique to weighted bootstrapping", {
   set.seed(10)
