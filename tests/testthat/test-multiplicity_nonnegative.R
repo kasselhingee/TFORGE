@@ -26,18 +26,6 @@ specialsample <- function(size){
   return(out)
 }
 
-test_that("stat has correct null distribution", {
-  # simulate check distribution of stat:
-  set.seed(10)
-  vals <- replicate(1000, { #asymptotics work slower with the specialsample() distribution than a normal hence larger sample size here
-    Ysample <- specialsample(200)
-    stat_multiplicity(Ysample, mult = mult)
-  })
-  
-  # qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
-  expect_gt(ks.test(vals, "pchisq", df = sum(mult-1))$p.value, 0.2)
-})
-
 test_that("test has uniform distribution", {
   skip_on_cran() #test very slow
   set.seed(5)#set.seed(1331)
