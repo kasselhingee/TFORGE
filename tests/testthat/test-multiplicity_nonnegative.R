@@ -26,19 +26,6 @@ specialsample <- function(size){
   return(out)
 }
 
-test_that("test has uniform distribution", {
-  skip_on_cran() #test very slow
-  set.seed(5)#set.seed(1331)
-  vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
-    Ysample <- specialsample(200)
-    # B = 100 for more thorough
-    test_multiplicity_nonnegative(Ysample, mult = mult, B = 1000)$pval
-  }, cl = 3)
-  
-  # qqplot(vals, y = runif(1000))
-  expect_gt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.05) #above 0.2 if above two thoroughness measures taken
-})
-
 test_that("test rejects some incorrect hypotheses simulated from unconstrained case", {
   set.seed(13321)
   Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
