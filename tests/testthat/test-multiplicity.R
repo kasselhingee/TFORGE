@@ -125,6 +125,21 @@ test_that("test has uniform distribution", {
   expect_gt(suppressWarnings(ks.test(vals["a", ], "punif"))$p.value, 0.05)
 })
 
+test_that("test has uniform distribution at small n", {
+  skip_on_cran() #takes a few minutes to run
+  set.seed(10)
+  vals <- pbapply::pbreplicate(100, {
+    Ysample <- rsymm_norm(15, mean = diag(1/3, 3), sigma = diag(0.1^2, 6))
+    Ysample <- normalize_trace(Ysample)
+    res <- test_multiplicity(Ysample, mult = 3, B = 1000)
+    res[c("pval", "B")]
+  })
+  pvals <- unlist(vals[1, ])
+  expect_lt(abs(mean(pvals <= 0.05)-0.05), 0.01)
+  # qqplot(pvals, y = runif(1000))
+  expect_gt(suppressWarnings(ks.test(pvals, "punif"))$p.value, 0.1)
+})
+
 test_that("using sample evecs NOT does not give uniform p-values", {
   skip_on_cran() #test very slow
   set.seed(4)
