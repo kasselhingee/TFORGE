@@ -86,7 +86,7 @@ test_that("test has uniform distribution with misuse of sample evecs", {
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   set.seed(5)#set.seed(1331)
-  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
+  vals <- replicate(100, { #1000 for more thorough
     Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     evecs <- eigen_desc(mmean(Ysample))$vectors
     test_multiplicity(Ysample, mult = mult, B = 20, refbasis = evecs)$pval
