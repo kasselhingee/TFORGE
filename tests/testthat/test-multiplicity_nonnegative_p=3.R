@@ -52,3 +52,26 @@ test_that("test has uniform distribution at large n", {
   res <- suppressWarnings(ks.test(pvals[1:100], "punif"))
   expect_gt(res$p.value, 0.2)
 })
+
+
+test_that("test rejects some incorrect hypotheses p = 3", {
+  set.seed(13321)
+  Ysample <- rsymm(30, diag(c(2,2,1)-3), sigma = diag(3 * (3+1) /2))
+  nonnegevals <- t(apply(Ysample, 1, function(v){
+    es <- eigen_desc(invvech(v))
+    vech(es$vectors %*% diag(exp(es$values)) %*% t(es$vectors))
+  }))
+  nonnegevals <- as_fsm(nonnegevals)
+  eigen_desc(mmean(nonnegevals))$values
+  set.seed(3654)
+  res <- test_multiplicity_nonnegative(nonnegevals, mult = c(2,1), B = 1000)
+  expect_gt(res$pval, 0.1)
+  
+  #test power is poor for the following situation
+  #set.seed(3543)
+  #expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(1, 2), B = 1000)$pval, 0.05)
+  
+  set.seed(3541)
+  expect_lt(test_multiplicity_nonnegative(Ysample, mult = c(3), B = 1000)$pval, 0.05)
+})
+
