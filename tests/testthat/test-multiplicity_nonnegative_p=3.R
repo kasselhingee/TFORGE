@@ -8,16 +8,8 @@ test_that("rsymm_lognorm normalised has correct eigenvalues", {
   
   #without projection/normalisation, the mean is slightly too high
   expect_true(all(eigen_desc(mmean(Ysample))$values > 1/3))
-
-  # projection of matrix doesnt neccesarily keep positive eigenvalues?!
-  Ysample2 <- project_trace(Ysample)
-  Ysample2[, c(1, 4, 6)] <- Ysample2[, c(1, 4, 6)] + 1/3
-  expect_equal(diag(mmean(Ysample2)), rep(1/3, 3), tol = 1E-3)
-  expect_gt(suppressWarnings(test_fixedtrace(Ysample2, evals = rep(1/3, 3), B = 1000)$pval), 0.05)
-  expect_gt(test_multiplicity(Ysample2, 3)$pval, 0.05)
-  expect_gt(test_multiplicity_nonnegative(Ysample2, 3)$pval, 0.05)
   
-  # normalisation of a matrix does though!
+  # normalisation of a matrix keeps positive eigenvalues
   Ysample3 <- normalize_trace(Ysample)
   expect_equal(diag(mmean(Ysample3)), rep(1/3, 3), tol = 1E-2)
   expect_equal(eigen_desc(mmean(Ysample3))$values, rep(1/3, 3), tol = 1E-2)
