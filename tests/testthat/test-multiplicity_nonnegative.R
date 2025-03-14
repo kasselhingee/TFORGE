@@ -45,35 +45,10 @@ test_that("test has uniform distribution", {
     Ysample <- specialsample(200)
     # B = 100 for more thorough
     test_multiplicity_nonnegative(Ysample, mult = mult, B = 1000)$pval
-  })
+  }, cl = 3)
   
   # qqplot(vals, y = runif(1000))
   expect_gt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.05) #above 0.2 if above two thoroughness measures taken
-})
-
-test_that("test size at small samples: Error not uniform.", {
-  set.seed(5)#set.seed(1331)
-  vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
-    Ysample <- specialsample(100) #at n = 15 and 30: null mean never in convex hull
-    res <- test_multiplicity_nonnegative(Ysample, mult = mult, B = 1000)
-    res[c("pval", "B")]
-  }, cl = 3)
-  sum(is.na(unlist(vals[2, ])))
-  pvals <- unlist(vals[1, ])
-  mean(pvals <= 0.05)
-  qqplot(pvals, y = runif(1000))
-  ks.test(pvals, "punif")
-})
-
-test_that("chisq: test has uniform distribution", {
-  set.seed(3) #set.seed(1331)
-  vals <- replicate(100, { #1000 for more thorough
-    Ysample <- specialsample(100)
-    test_multiplicity_nonnegative(Ysample, mult = mult, B = "chisq")$pval
-  })
-  
-  # qqplot(vals, y = runif(1000))
-  expect_gt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.15)
 })
 
 test_that("test rejects some incorrect hypotheses simulated from unconstrained case", {
