@@ -72,7 +72,7 @@ test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasi
 #' @rdname test_multiplicity
 #' @param evecs For debugging only. Supply eigenvectors of population mean.
 #' @export
-stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "random"){
+stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "sample"){
   av <- mmean(x)
   if (sum(mult) != ncol(av)){
     stop(paste("Sum of mult = ", mult, "is not equal to ", ncol(av), collapse = " "))
