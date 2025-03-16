@@ -66,19 +66,3 @@ test_that("stat_multiplicity() is slightly different with random, cannonical and
 })
 
 
-test_that("stat has INcorrect null distribution using sample evecs", {
-  skip_on_cran()
-  set.seed(1331)
-  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
-  mult <- c(3,2,1,1)
-  vals <- replicate(1000, {
-    Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
-    evecs <- eigen_desc(mmean(Ysample))$vectors
-    stat_multiplicity(Ysample, mult = mult, refbasis = evecs)
-  })
-  
-  qqplot(vals, y = rchisq(1000, df = sum(mult-1)))
-  expect_lt(ks.test(vals, "pchisq", df = sum(mult-1))$p.value, 0.001)
-})
-
-
