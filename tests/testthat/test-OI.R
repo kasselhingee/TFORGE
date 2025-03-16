@@ -64,7 +64,7 @@ test_that("stat_multiplicity_OI() has correct null distribution", {
     stat_multiplicity_OI(Ysample, mult = mult)
   })
   df <- 0.5 * sum(mult * (mult + 1)) - length(mult)
-  qqplot(vals, y = rchisq(1000, df = df))
+  # qqplot(vals, y = rchisq(1000, df = df))
   res <- ks.test(vals, "pchisq", df = df)
   expect_gt(res$p.value, 0.15)
 })
