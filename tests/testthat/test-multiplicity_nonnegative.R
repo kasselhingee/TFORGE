@@ -39,7 +39,7 @@ test_that("test on norm has bad size for small n, even with well confined sample
 
 test_that("test has uniform distribution at large n=30", {
   set.seed(10)
-  vals <- pbapply::pbreplicate(100, {
+  vals <- replicate(100, {
     Ysample <- rftiso(30)
     res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 10)
     res[c("pval", "B")]
