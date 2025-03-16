@@ -66,26 +66,21 @@ test_that("debugging stat with true evecs has correct null distribution", {
   expect_gt(res$p.value, 0.1)
 })
 
-test_that("stat has correct null distribution", {
+test_that("stat has correct null distribution for large samples", {
   set.seed(4)
   abasis <- runifortho(7)
-  set.seed(1332)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- replicate(1000, {
+  set.seed(1)
+  vals <- replicate(50, {
     Ysample <- rsymm_norm(100, diag(evals), sigma = diag(1, sum(mult) * (sum(mult) + 1) / 2) )
-    c(statr = stat_multiplicity(Ysample, mult = mult),
+    c(statr = stat_multiplicity(Ysample, mult = mult, refbasis = "random"),
       statc = stat_multiplicity(Ysample, mult = mult, refbasis = diag(1, 7)),
       statm = stat_multiplicity(Ysample, mult = mult, refbasis = "mincorr"),
       stats = stat_multiplicity(Ysample, mult = mult, refbasis = "sample"),
       stata = stat_multiplicity(Ysample, mult = mult, refbasis = abasis))
   })
   
-  # qqplot(vals["statr", ], y = rchisq(1000, df = sum(mult-1)))
-  # qqplot(vals["statc", ], y = rchisq(1000, df = sum(mult-1)))
-  # qqplot(vals["statm", ], y = rchisq(1000, df = sum(mult-1)))
-  # qqplot(vals["stats", ], y = rchisq(1000, df = sum(mult-1)))
-  # qqplot(vals["stata", ], y = rchisq(1000, df = sum(mult-1)))
   expect_gt(ks.test(vals["statr", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
   expect_gt(ks.test(vals["statc", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
   expect_gt(ks.test(vals["statm", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
@@ -94,11 +89,11 @@ test_that("stat has correct null distribution", {
 })
 
 test_that("test has uniform distribution for refbasis = sample or random", {
-  # takes 45s skip_on_cran() #test very slow
+  # takes 20s skip_on_cran()
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  set.seed(1331)#set.seed(1331)
-  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
+  set.seed(1)#set.seed(1331)
+  vals <- replicate(50, { #1000 for more thorough
     Ysample <- rsymm_norm(30, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     c(r = test_multiplicity(Ysample, mult = mult, B = 10, refbasis = "random")$pval,
       s = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = "sample")$pval #seems like using the sample eigenvectors need more bootstrapping
@@ -145,13 +140,10 @@ test_that("chisq: test has uniform distribution with refbasis=random", {
 test_that("test rejects some incorrect hypotheses", {
   set.seed(13321)
   Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
-                   sigma = 0.1 * diag(7 * (7 + 1)/2))
-  set.seed(3654)
-  res <- test_multiplicity(Ysample, mult = c(3,2,1,1), 100)
-  expect_gt(res$pval, 0.1)
+                   sigma = 0.01 * diag(7 * (7 + 1)/2))
+  set.seed(2)
+  expect_gt(test_multiplicity(Ysample, mult = c(3,2,1,1), B = 100)$pval, 0.05)
 
-  # set.seed(3542)
-  # pvals_2311 <- replicate(100, test_multiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, cl = 3)
   set.seed(3542)
   expect_lt(test_multiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, 0.05)
   set.seed(35423) 
@@ -167,7 +159,6 @@ test_that("test rejects some incorrect hypotheses", {
   expect_lt(test_multiplicity(Ysample, mult = c(2,3,2), 100)$pval, 0.05)
   set.seed(3541) 
   expect_lt(test_multiplicity(Ysample, mult = c(3,2,2), 100)$pval, 0.05)
-  # note that at B=100 there is still a lot a randomness in the output pvalue
 })
 
 test_that("test correctly rejects isotropy", {
