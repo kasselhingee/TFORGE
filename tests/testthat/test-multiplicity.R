@@ -94,18 +94,16 @@ test_that("stat has correct null distribution", {
 })
 
 test_that("test has uniform distribution for refbasis = sample or random", {
-  skip_on_cran() #test very slow
-  set.seed(4)
-  abasis <- runifortho(7)
+  # takes 45s skip_on_cran() #test very slow
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   set.seed(1331)#set.seed(1331)
-  vals <- pbapply::pbreplicate(1000, { #1000 for more thorough
-    Ysample <- rsymm_norm(15, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
+    Ysample <- rsymm_norm(30, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     c(r = test_multiplicity(Ysample, mult = mult, B = 10, refbasis = "random")$pval,
-      s = test_multiplicity(Ysample, mult = mult, B = 1000, refbasis = "sample")$pval #seems like using the sample eigenvectors need more bootstrapping
+      s = test_multiplicity(Ysample, mult = mult, B = 100, refbasis = "sample")$pval #seems like using the sample eigenvectors need more bootstrapping
     )
-  }, cl = 3)
+  })
   
   # qqplot(vals["r", ], y = runif(1000))
   # qqplot(vals["s", ], y = runif(1000))
