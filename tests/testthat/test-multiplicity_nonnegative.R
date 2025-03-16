@@ -41,12 +41,12 @@ test_that("test has uniform distribution at large n=30", {
   set.seed(10)
   vals <- replicate(100, {
     Ysample <- rftiso(30)
-    res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 10)
+    res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 100)
     res[c("pval", "B")]
   })
   expect_equal(sum(is.na(unlist(vals[2, ]))), 0)
   # qqplot(pvals, y = runif(1000))
-  res <- suppressWarnings(ks.test(pvals[1:100], "punif"))
+  res <- suppressWarnings(ks.test(unlist(vals["pval",]), "punif"))
   expect_gt(res$p.value, 0.2)
 })
 
