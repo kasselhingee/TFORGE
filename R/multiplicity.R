@@ -5,9 +5,11 @@
 #' The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
 #' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`.
 #' @details
-#' This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace. It may work poorly on matrices with other constraints, on samples smaller than 15, or samples of multimodal populations.
+#' This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace.
+#' We recommend that the number bootstrap resamples is at least 1000 if `refbasis = "sample"`.
+#' The weighted-bootstrapping method used by `test_multiplicity_nonnegative()` has poor test size for samples smaller than 20.
 #' 
-#' Due to the random rotation of the eigenvectors, use [`set.seed()`] before `stat_multiplicity()` or `test_multiplicity()` if you want the answer to be repeatable.
+#' Due to the random rotation of the eigenvectors when `refbasis = "random"`, use [`set.seed()`] if you want the answer to be repeatable.
 #' @param x A single sample of matrices (passed to [`as_fsm()`]).
 #' @param mult A vector specifying the eigenvalue multiplicity under the null hypothesis in descending order of eigenvalue size.
 #' @inheritParams test_unconstrained
