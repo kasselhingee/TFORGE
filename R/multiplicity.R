@@ -7,7 +7,9 @@
 #' @details
 #' This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace.
 #' We recommend that the number bootstrap resamples is at least 1000 if `refbasis = "sample"`.
-#' The weighted-bootstrapping method used by `test_multiplicity_nonnegative()` has poor test size for samples smaller than 20.
+#'
+#' For 3x3 matrices, the weighted-bootstrapping method used by `test_multiplicity_nonnegative()` has poor test size for samples smaller than 20;
+#' larger matrices will likely need larger samples.
 #' 
 #' Due to the random rotation of the eigenvectors when `refbasis = "random"`, use [`set.seed()`] if you want the answer to be repeatable.
 #' @param x A single sample of matrices (passed to [`as_fsm()`]).
