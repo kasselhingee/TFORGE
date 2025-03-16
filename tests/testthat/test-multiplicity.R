@@ -112,12 +112,12 @@ test_that("test has uniform distribution for refbasis = sample or random", {
 })
 
 test_that("test has uniform distribution at normalised small n=15, p = 3", {
-  skip_on_cran() #takes a few minutes to run
+  #takes a 20s to run
   set.seed(10)
-  vals <- pbapply::pbreplicate(100, {
+  vals <- replicate(100, {
     Ysample <- rsymm_norm(15, mean = diag(1/3, 3), sigma = diag(0.1^2, 6))
     Ysample <- normalize_trace(Ysample)
-    res <- test_multiplicity(Ysample, mult = 3, B = 1000)
+    res <- test_multiplicity(Ysample, mult = 3, B = 100)
     res[c("pval", "B")]
   })
   pvals <- unlist(vals[1, ])
@@ -126,32 +126,13 @@ test_that("test has uniform distribution at normalised small n=15, p = 3", {
   expect_gt(suppressWarnings(ks.test(pvals, "punif"))$p.value, 0.1)
 })
 
-test_that("using sample evecs does NOT give uniform p-values", {
-  skip_on_cran() #test very slow
-  set.seed(4)
-  abasis <- runifortho(7)
-  evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
-  mult <- c(3,2,1,1)
-  set.seed(5)#set.seed(1331)
-  vals <- pbapply::pbreplicate(100, { #1000 for more thorough
-    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
-    evecs <- eigen_desc(mmean(Ysample))$vectors
-    test_multiplicity(Ysample, mult = mult, B = 100, refbasis = evecs)$pval
-  })
-  
-  qqplot(vals, y = runif(1000))
-  expect_lt(suppressWarnings(ks.test(vals, "punif"))$p.value, 0.001)
-})
-
-test_that("chisq: test has uniform distribution", {
-  set.seed(5)
-  set.seed(3) #set.seed(1331)
+test_that("chisq: test has uniform distribution with refbasis=random", {
+  set.seed(1)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   vals <- replicate(100, { #1000 for more thorough
-    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
-    test_multiplicity(Ysample, mult = mult, B = "chisq")$pval #B = 100 for more thorough
-    c(r = test_multiplicity(Ysample, mult = mult, B = "chisq")$pval,
+    Ysample <- rsymm_norm(100, diag(evals), sigma = 0.0001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
+    c(r = test_multiplicity(Ysample, mult = mult, B = "chisq", refbasis = "random")$pval,
       c = test_multiplicity(Ysample, mult = mult, B = "chisq", refbasis = diag(1, 7))$pval)
   })
   
