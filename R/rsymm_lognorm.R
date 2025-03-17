@@ -3,7 +3,7 @@
 rsymm_lognorm <- function(n, meanlog, sigmalog = diag(length(vech(meanlog)))){
   stopifnot(isSymmetric(meanlog))
   logX <- rsymm_norm(n, mean = meanlog, sigma = sigmalog)
-  X <- apply(logX, 1, function(v){vech(matrixexp(invvech(v)))}) %>% t()
+  X <- t(apply(logX, 1, function(v){vech(matrixexp(invvech(v)))}))
   X <- as_fsm(X)
   return(X)
 }

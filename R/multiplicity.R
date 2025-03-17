@@ -355,7 +355,7 @@ mostdiagevecs <- function(evecs, idxs, mcov){
   newevecs <- lapply(idxs, function(idxforeval){
     if (length(idxforeval) == 1){return(evecs[, idxforeval, drop = FALSE])}
     d <- length(idxforeval)
-    bestpar <- optim(par = rep(0, (d-1)*d/2),
+    bestpar <- stats::optim(par = rep(0, (d-1)*d/2),
                   fn = ssqoffdiagonal,
                   baseevecs = evecs[, idxforeval],
                   mcov = mcov,
@@ -388,7 +388,7 @@ ssqoffdiagonal <- function(vec, baseevecs, mcov){
   rotmat <- cayleyTransform(A)
   trialevecs <- baseevecs %*% rotmat
   evalcov <- cov_evals(trialevecs, mcov) # cov_evals2 seems very slightly slower in the current implementation
-  sum(cov2cor(evalcov)[lower.tri(evalcov)]^2)
+  sum(stats::cov2cor(evalcov)[lower.tri(evalcov)]^2)
 }
 
 #A must be skew symmetric
