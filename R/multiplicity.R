@@ -1,11 +1,21 @@
 #' @title Test eigenvalue multiplicity
 #' @description
 #' Given a sample from a population, uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues.
-#' The test statistic is computed by `stat_multiplicity()`, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue with multiplicity greater than 1.
+#' The test statistic is computed by `stat_multiplicity()`.
 #' The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
 #' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`.
 #' @details
 #' This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace.
+#'
+#' On `refbasis`:
+#' An estimate of each eigenspace specified by `mult` can be obtained from the eigenvectors of the sample mean.
+#' The eigenvectors create an orthonormal basis of the (estimated) eigenspace,
+#' however the choice of orthonormal basis for the estimated eigenspace effects the performance.
+#' This choice is specified by the parameter `refbasis`.
+#' Setting `refbasis = "sample"` uses the eigenvectors of the sample mean as the basis, however the resulting statistic does not appear to be pivotal.
+#' Choosing the orthonormal basis independently of the data does result in a pivotal asymptotically chi-squared statistic.
+#' Setting `refbasis = "random"` will do exactly this, by applying a uniformly random rotation of the relevant eigenvectors of the sample mean.
+#' We recommend using `refbasis = "sample"` (which requires bootstrap calibration) because test power is much higher than `refbasis = "random"`.
 #' We recommend that the number bootstrap resamples is at least 1000 if `refbasis = "sample"`.
 #'
 #' For 3x3 matrices, the weighted-bootstrapping method used by `test_multiplicity_nonnegative()` has poor test size for samples smaller than 20;
@@ -14,6 +24,7 @@
 #' Due to the random rotation of the eigenvectors when `refbasis = "random"`, use [`set.seed()`] if you want the answer to be repeatable.
 #' @param x A single sample of matrices (passed to [`as_fsm()`]).
 #' @param mult A vector specifying the eigenvalue multiplicity under the null hypothesis in descending order of eigenvalue size.
+#' @param refbasis Select the basis of the eigenspaces. See details.
 #' @inheritParams test_unconstrained
 #' @examples
 #' x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))

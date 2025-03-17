@@ -17,7 +17,7 @@ test_multiplicity_nonnegative(
   refbasis = "sample"
 )
 
-stat_multiplicity(x, mult, evecs = NULL, refbasis = "random")
+stat_multiplicity(x, mult, evecs = NULL, refbasis = "sample")
 
 standardise_multiplicity(x, mult)
 }
@@ -28,6 +28,8 @@ standardise_multiplicity(x, mult)
 
 \item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 
+\item{refbasis}{Select the basis of the eigenspaces. See details.}
+
 \item{evecs}{For debugging only. Supply eigenvectors of population mean.}
 }
 \value{
@@ -35,14 +37,28 @@ A \code{TFORGE} object including the p-value of the test (slot \code{pval}) and 
 }
 \description{
 Given a sample from a population, uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues.
-The test statistic is computed by \code{stat_multiplicity()}, which includes a uniformly random rotation of eigenvectors associated with each eigenvalue with multiplicity greater than 1.
+The test statistic is computed by \code{stat_multiplicity()}.
 The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
 Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by \code{standardise_multiplicity()}.
 }
 \details{
-This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace. It may work poorly on matrices with other constraints, on samples smaller than 15, or samples of multimodal populations.
+This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace.
 
-Due to the random rotation of the eigenvectors, use \code{\link[=set.seed]{set.seed()}} before \code{stat_multiplicity()} or \code{test_multiplicity()} if you want the answer to be repeatable.
+On \code{refbasis}:
+An estimate of each eigenspace specified by \code{mult} can be obtained from the eigenvectors of the sample mean.
+The eigenvectors create an orthonormal basis of the (estimated) eigenspace,
+however the choice of orthonormal basis for the estimated eigenspace effects the performance.
+This choice is specified by the parameter \code{refbasis}.
+Setting \code{refbasis = "sample"} uses the eigenvectors of the sample mean as the basis, however the resulting statistic does not appear to be pivotal.
+Choosing the orthonormal basis independently of the data does result in a pivotal asymptotically chi-squared statistic.
+Setting \code{refbasis = "random"} will do exactly this, by applying a uniformly random rotation of the relevant eigenvectors of the sample mean.
+We recommend using \code{refbasis = "sample"} (which requires bootstrap calibration) because test power is much higher than \code{refbasis = "random"}.
+We recommend that the number bootstrap resamples is at least 1000 if \code{refbasis = "sample"}.
+
+For 3x3 matrices, the weighted-bootstrapping method used by \code{test_multiplicity_nonnegative()} has poor test size for samples smaller than 20;
+larger matrices will likely need larger samples.
+
+Due to the random rotation of the eigenvectors when \code{refbasis = "random"}, use \code{\link[=set.seed]{set.seed()}} if you want the answer to be repeatable.
 
 \code{test_multiplicity_nonnegative()} uses weighted bootstrapping with empirical likelihood to create a population that satisfies the null hypothesis.
 }
