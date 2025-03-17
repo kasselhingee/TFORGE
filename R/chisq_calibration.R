@@ -1,6 +1,7 @@
 #' Internal: Chi Squared Calibration for Testing
 #' @description
 #' Similar to `bootresampling()`, but uses a chi-squared distribution instead of an empirical distribution from bootstrapping.
+#' @param df Degrees of freedom of the chi-squared distribution
 #' @inheritParams bootresampling
 #' @export
 chisq_calib <- function(x, stat, df, ...){

@@ -11,6 +11,8 @@ chisq_calib(x, stat, df, ...)
 
 \item{stat}{Function to compute the statistic.}
 
+\item{df}{Degrees of freedom of the chi-squared distribution}
+
 \item{...}{Passed to \code{stat}}
 }
 \description{

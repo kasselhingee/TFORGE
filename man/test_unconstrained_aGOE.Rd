@@ -13,16 +13,16 @@ test_unconstrained_aGOE(
 )
 }
 \arguments{
-\item{x}{A single sample of symmetric matrices or multiple samples of symmetric matrices. See \code{\link[=as_flat]{as_flat()}}.}
+\item{x}{A single sample of matrices (passed to \code{\link[=as_fsm]{as_fsm()}}) or
+a list of two samples of matrices (passed to \code{\link[=as_kfsm]{as_kfsm()}}).}
 
-\item{x2}{If \code{x1} is a single sample then \code{x2} must be the second sample. Otherwise \code{x2} should be \code{NULL}.}
+\item{x2}{If \code{x} is a single sample then \code{x2} must be the second sample. Otherwise \code{x2} should be \code{NULL}.}
 
 \item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 
-\item{scalestat}{If \code{TRUE} then the statistic divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and general boostrap theory suggest that \code{scalestat=TRUE} leads to better test size and power when using bootstrap.}
+\item{nullevals}{For internal testing of bootstrap calibration. \code{"av"} assumes the eigenvalues under the null hypothesis are the average of the eigenvalues of the two sample means. \code{"1"} and \code{"2"} assume the null eigenvalues are equal to the eigenvalue of the first and second sample respectively.}
 
-\item{x1}{A single sample of matrices (passed to \code{\link[=as_fsm]{as_fsm()}}) or
-a list of two samples of matrices (passed to \code{\link[=as_kfsm]{as_kfsm()}}).}
+\item{scalestat}{If \code{TRUE} then the statistic divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and general boostrap theory suggest that \code{scalestat=TRUE} leads to better test size and power when using bootstrap.}
 }
 \value{
 A list:

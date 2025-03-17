@@ -30,6 +30,8 @@ standardise_multiplicity(x, mult)
 
 \item{refbasis}{Select the basis of the eigenspaces. See details.}
 
+\item{maxit}{The maximum number of Newton steps allowed in empirical likelihood optimisation \insertCite{owen:2013}{TFORGE}.}
+
 \item{evecs}{For debugging only. Supply eigenvectors of population mean.}
 }
 \value{

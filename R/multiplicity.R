@@ -26,6 +26,7 @@
 #' @param mult A vector specifying the eigenvalue multiplicity under the null hypothesis in descending order of eigenvalue size.
 #' @param refbasis Select the basis of the eigenspaces. See details.
 #' @inheritParams test_unconstrained
+#' @inheritParams test_fixedtrace
 #' @examples
 #' x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))
 #' test_multiplicity(x, mult = c(1, 2, 1))
