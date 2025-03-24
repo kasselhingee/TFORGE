@@ -15,26 +15,7 @@
 #' When the eigenvalues are distinct, then passing estimated eigenvectors to `cov_evals()` yields an estimate of the asymptotic covariance of the eigenvalues.
 #' 
 #' See Supplement B.2 for more information and derivation.
-#' Uses `RcppArmadillo` for a slight increase in speed.
-#' @useDynLib TFORGE, .registration=TRUE
-#' @importFrom Rcpp evalCpp
 #' @return A symmetric matrix with same number of columns as `evecs`.
-cov_evals_old <- function(evecs, mcov){
-  # the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
-  indx <- rbind(t(utils::combn(1:ncol(evecs), 2)), #this avoids repeating elements that are symmetric
-                cbind(1:ncol(evecs), 1:ncol(evecs)))
-  dupmat <- dup(nrow(evecs)) # is sparse so could be even faster
-  vals <- mapply(cov_evals_inside_cpp, 
-                 lapply(indx[,1], function(i) {evecs[, i]}),
-                 lapply(indx[,2], function(i) {evecs[, i]}),
-                 MoreArgs = list(dupmat = dupmat, mcov = mcov))
-  V <- matrix(NA, nrow = ncol(evecs), ncol = ncol(evecs))
-  V[as.matrix(indx)] <- vals
-  V[lower.tri(V)] <- t(V)[lower.tri(V)]
-  return(V)
-}
-
-# easier to interpret formula that gives the same results as _old:
 #' @export
 cov_evals <- function(evecs, mcov){
   dupmat <- dup(nrow(evecs)) # is sparse so could be even faster
@@ -64,11 +45,6 @@ cov_evals_est <- function(x, evecs = NULL, av = NULL){
   }
 
   cov_evals(evecs, mcov)
-}
-
-cov_evals_inside <- function(vecj, veck, dupmat, mcov){
-  tmp <- vecj %*% t(veck)
-  sum(diag(t(dupmat) %*% kronecker(tmp, tmp) %*% dupmat %*% mcov))
 }
 
 

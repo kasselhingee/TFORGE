@@ -29,5 +29,4 @@ The returned matrix has rows and columns that are in the same order as the colum
 When the eigenvalues are distinct, then passing estimated eigenvectors to \code{cov_evals()} yields an estimate of the asymptotic covariance of the eigenvalues.
 
 See Supplement B.2 for more information and derivation.
-Uses \code{RcppArmadillo} for a slight increase in speed.
 }

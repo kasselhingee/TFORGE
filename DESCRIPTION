@@ -1,6 +1,6 @@
 Package: TFORGE
 Title: Tests for Geophysical Eigenvalues
-Version: 0.1.11
+Version: 0.1.12
 Authors@R: 
     c(person(given = "Kassel Liam", family = "Hingee", email = "kassel.hingee@anu.edu.au", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9894-2407")),
     person("Art B.", "Owen", role = c("cph")),
@@ -10,7 +10,6 @@ Description: The eigenvalues of observed symmetric matrices are often of intense
 Imports:
   mvtnorm,
   purrr,
-  Rcpp (>= 1.0.11),
   Rdpack
 Suggests:
   testthat
@@ -19,4 +18,3 @@ License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-LinkingTo: Rcpp, RcppArmadillo
