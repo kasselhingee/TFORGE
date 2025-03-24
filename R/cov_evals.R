@@ -19,8 +19,7 @@
 #' @useDynLib TFORGE, .registration=TRUE
 #' @importFrom Rcpp evalCpp
 #' @return A symmetric matrix with same number of columns as `evecs`.
-#' @export
-cov_evals <- function(evecs, mcov){
+cov_evals_old <- function(evecs, mcov){
   # the V1 / V2 matrix for a single sample depending on whether evecs estimated or supplied
   indx <- rbind(t(utils::combn(1:ncol(evecs), 2)), #this avoids repeating elements that are symmetric
                 cbind(1:ncol(evecs), 1:ncol(evecs)))
@@ -35,8 +34,9 @@ cov_evals <- function(evecs, mcov){
   return(V)
 }
 
-# easier to interpret formula that gives the same results:
-cov_evals2 <- function(evecs, mcov){
+# easier to interpret formula that gives the same results as _old:
+#' @export
+cov_evals <- function(evecs, mcov){
   dupmat <- dup(nrow(evecs)) # is sparse so could be even faster
   evecxevec <- apply(evecs, 2, FUN = function(v){kronecker(v, v)}) #1, 5, 9
   t(evecxevec) %*% dupmat %*% mcov %*% t(dupmat) %*% evecxevec
