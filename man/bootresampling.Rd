@@ -2,14 +2,14 @@
 % Please edit documentation in R/bootresampling.R
 \name{bootresampling}
 \alias{bootresampling}
-\title{A function for helping perform single-sample and k-sample bootstrap tests}
+\title{Internal: Bootstrap calibration for single-sample and k-sample tests}
 \usage{
 bootresampling(x, stdx, stat, B, ...)
 }
 \arguments{
-\item{x}{Symmetric matrix observations as a list of matrices, or list of list of matrices (see \code{\link[=as_flat]{as_flat()}}).}
+\item{x}{Symmetric matrix observations. Either a \code{\link{fsm}} or a \code{\link{kfsm}}.}
 
-\item{stdx}{A (multi)sample of matrices stored in flat form (\code{\link[=as_flat]{as_flat()}}) and standardized to satisfy the null hypothesis OR sampling weights for each matrix in \code{x}, in the same structure as \code{x}.}
+\item{stdx}{Either a \code{\link{fsm}} or \code{\link{kfsm}} of matrices transformed to satisfy the null hypothesis OR sampling weights for each matrix in \code{x} for weighted bootstrap calibration (sampling weights should be optimised and also generate an empirical distribution that satisfies the null hypothesis).}
 
 \item{stat}{Function to compute the statistic.}
 
@@ -31,14 +31,13 @@ A list of
 The returned object has a bespoke class \code{TFORGE} for easy use of \code{print()}.
 }
 \description{
-Designed for internal use.
-Performs bootstrap resampling, calculation of a statistic and returns \code{p}-value of a hypothesis test.
-Resampling is conducted as if the null hypothesis holds by using the \code{stdx} argument which contains either standardised matrices or weights.
+Performs a bootstrap hypothesis test using the supplied statistic.
+The \code{stdx} parameter is used to define an empirical distribution that satisfies the null hypothesis.
 }
 \details{
-The function \code{stat} is applied to \code{x} and all resamples. The statistic values are returned in the \code{t0} and \code{nullt} elements respectively.
+The function \code{stat} is applied to \code{x} and all resamples, with the result returned in the \code{t0} and \code{nullt} elements of the returned object, respectively.
 
-Errors in evaluating the statistic \code{stat} on resamples are recorded in the \code{nullt_messages} and lead to \code{NA} values for the statistic.
+Errors in evaluating \code{stat} on resamples are recorded in the \code{nullt_messages} and lead to \code{NA} values for the statistic in the \code{nullt} element of the returned object.
 
-The \code{p}-value is the fraction of non-\code{NA} resample statistic values that are greater than the \code{stat} applied to \code{x}.
+The \code{p}-value is the fraction of non-\code{NA} resample statistic values that are greater than \code{stat} applied to \code{x}.
 }

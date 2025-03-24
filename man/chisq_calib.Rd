@@ -7,7 +7,7 @@
 chisq_calib(x, stat, df, ...)
 }
 \arguments{
-\item{x}{Symmetric matrix observations as a list of matrices, or list of list of matrices (see \code{\link[=as_flat]{as_flat()}}).}
+\item{x}{Symmetric matrix observations. Either a \code{\link{fsm}} or a \code{\link{kfsm}}.}
 
 \item{stat}{Function to compute the statistic.}
 
@@ -16,5 +16,5 @@ chisq_calib(x, stat, df, ...)
 \item{...}{Passed to \code{stat}}
 }
 \description{
-Similar to \code{bootresampling()}, but uses a chi-squared distribution instead of an empirical distribution from bootstrapping.
+Similar to \code{\link[=bootresampling]{bootresampling()}}, but uses chi-squared calibration instead of bootstrapping.
 }

@@ -1,19 +1,18 @@
-#' @title A function for helping perform single-sample and k-sample bootstrap tests
+#' @title Internal: Bootstrap calibration for single-sample and k-sample tests
 #' @description
-#' Designed for internal use.
-#' Performs bootstrap resampling, calculation of a statistic and returns `p`-value of a hypothesis test. 
-#' Resampling is conducted as if the null hypothesis holds by using the `stdx` argument which contains either standardised matrices or weights.
-#' @param x Symmetric matrix observations as a list of matrices, or list of list of matrices (see [`as_flat()`]).
-#' @param stdx A (multi)sample of matrices stored in flat form ([`as_flat()`]) and standardized to satisfy the null hypothesis OR sampling weights for each matrix in `x`, in the same structure as `x`.
+#' Performs a bootstrap hypothesis test using the supplied statistic.
+#' The `stdx` parameter is used to define an empirical distribution that satisfies the null hypothesis. 
+#' @param x Symmetric matrix observations. Either a [`fsm`] or a [`kfsm`].
+#' @param stdx Either a [`fsm`] or [`kfsm`] of matrices transformed to satisfy the null hypothesis OR sampling weights for each matrix in `x` for weighted bootstrap calibration (sampling weights should be optimised and also generate an empirical distribution that satisfies the null hypothesis).
 #' @param stat Function to compute the statistic.
 #' @param B The number of bootstrap samples to use.
 #' @param ... Passed to `stat`
 #' @details
-#' The function `stat` is applied to `x` and all resamples. The statistic values are returned in the `t0` and `nullt` elements respectively.
+#' The function `stat` is applied to `x` and all resamples, with the result returned in the `t0` and `nullt` elements of the returned object, respectively.
 #' 
-#' Errors in evaluating the statistic `stat` on resamples are recorded in the `nullt_messages` and lead to `NA` values for the statistic.
+#' Errors in evaluating `stat` on resamples are recorded in the `nullt_messages` and lead to `NA` values for the statistic in the `nullt` element of the returned object.
 #' 
-#' The `p`-value is the fraction of non-`NA` resample statistic values that are greater than the `stat` applied to `x`.
+#' The `p`-value is the fraction of non-`NA` resample statistic values that are greater than `stat` applied to `x`.
 #' @return
 #' A list of
 #'  + `pval` the `p`-value from the test

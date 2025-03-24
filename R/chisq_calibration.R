@@ -1,6 +1,6 @@
 #' Internal: Chi Squared Calibration for Testing
 #' @description
-#' Similar to `bootresampling()`, but uses a chi-squared distribution instead of an empirical distribution from bootstrapping.
+#' Similar to [`bootresampling()`], but uses chi-squared calibration instead of bootstrapping.
 #' @param df Degrees of freedom of the chi-squared distribution
 #' @inheritParams bootresampling
 #' @export
