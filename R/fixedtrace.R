@@ -155,8 +155,8 @@ stat_fixedtrace <- function(x, evals = NULL){
 
 #' @title Project diagonal elements to have trace of zero
 #' @description
-#' Projects the diagonal elements of symmetric matrices onto the plane through the origin and orthogonal to the vector (1,1,1,....,1).
-#' The trace of the symmetric matrices is then zero.
+#' Projects the diagonal elements of symmetric matrices onto the plane through the origin and orthogonal to the vector \eqn{(1,1,1,....,1)^\top}.
+#' The trace of the resulting symmetric matrices is zero.
 #' @inheritParams test_multiplicity
 #' @export
 project_trace <- function(x){

@@ -7,7 +7,7 @@
 estimate_OIcov(x, Mhat, tau = NULL)
 }
 \arguments{
-\item{x}{A single sample of symmetric matrices (passed to \code{\link[=as_fsm]{as_fsm()}}).}
+\item{x}{A single sample of symmetric matrices. \code{x} must be either an \code{\link{fsm}} object or something that \code{\link[=as_fsm]{as_fsm()}} can parse.}
 
 \item{Mhat}{A maximum-likelihood estimate of the population mean}
 

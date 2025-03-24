@@ -10,7 +10,7 @@ normalise_trace(x)
 normalize_trace(x)
 }
 \arguments{
-\item{x}{A single sample of matrices (passed to \code{\link[=as_fsm]{as_fsm()}}).}
+\item{x}{A sample of matrices suitable for \code{\link[=as_fsm]{as_fsm()}}.}
 }
 \description{
 Scales symmetric matrices by their trace, so that resulting matrices have a trace of one.

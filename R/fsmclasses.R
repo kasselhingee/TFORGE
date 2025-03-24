@@ -1,9 +1,10 @@
 #' @title Flat storage of symmetric matrices
 #' @name fsm
+#' @aliases kfsm
 #' @description
-#' The `TFORGE_fsm` class, short for 'Flat Symmetric Matrices', is for storing a collection of symmetric matrices with each matrix stored as a row according to [`vech()`].
+#' The `TFORGE_fsm` class, short for *Flat Symmetric Matrices*, is for storing a collection of symmetric matrices with each matrix stored as a row vector according to [`vech()`].
 #' The `TFORGE_fsm` class is itself a thin wrapper of the array class.
-#' So, for example, `x[1, ]` will return the flattened-form of the first matrix in the collection, and `invvech(x[1,])` will be the first matrix in non-flat form.
+#' So, for example, `x[1, ]` will return the vectorised-form of the first matrix in the collection, and `invvech(x[1,])` will be the first matrix in non-flat form.
 #' The `TFORGE_kfsm` class is for a collection of multiple `TFORGE_fsm`.
 #' The function `as_flat()` automatically converts data to either `TFORGE_kfsm` or `TFORGE_fsm`.
 
@@ -55,7 +56,7 @@ as_kfsm <- function(x, ...){
   }
 }
 
-#' @describeIn fsm For `x` a list of symmetric matrices of the same size, flattens `x` into a 2D array the `i`th row is a flattened version `vech(x[[i]])` of the `i`th matrix of  `x`. If `x` is already flattened then `as_fsm()` will check that the number of columns are consistent with a flattened symmetric matrix.
+#' @describeIn fsm For `x` a list of symmetric matrices of the same size, flattens `x` into a 2D array where the `i`th row is a vectorised version `vech(x[[i]])` of the `i`th matrix of  `x`. If `x` is already flattened then `as_fsm()` will check that the number of columns are consistent with a flattened symmetric matrix.
 #' @export
 as_fsm <- function(x, ...){
   if (inherits(x, "TFORGE_fsm")){return(x)}

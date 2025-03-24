@@ -7,7 +7,7 @@
 test_multiplicity_OI(x, mult, B = "chisq", refbasis = NULL)
 }
 \arguments{
-\item{x}{A single sample of matrices (passed to \code{\link[=as_fsm]{as_fsm()}}).}
+\item{x}{A sample of matrices suitable for \code{\link[=as_fsm]{as_fsm()}}.}
 
 \item{mult}{A vector specifying the eigenvalue multiplicity under the null hypothesis in descending order of eigenvalue size.}
 

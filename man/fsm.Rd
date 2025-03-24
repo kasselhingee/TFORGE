@@ -2,6 +2,7 @@
 % Please edit documentation in R/fsmclasses.R
 \name{fsm}
 \alias{fsm}
+\alias{kfsm}
 \alias{as_flat}
 \alias{as_kfsm}
 \alias{as_fsm}
@@ -22,9 +23,9 @@ as_fsm(x, ...)
 An object with class \code{TFORGE_kfsm} or \code{TFORGE_fsm}.
 }
 \description{
-The \code{TFORGE_fsm} class, short for 'Flat Symmetric Matrices', is for storing a collection of symmetric matrices with each matrix stored as a row according to \code{\link[=vech]{vech()}}.
+The \code{TFORGE_fsm} class, short for \emph{Flat Symmetric Matrices}, is for storing a collection of symmetric matrices with each matrix stored as a row vector according to \code{\link[=vech]{vech()}}.
 The \code{TFORGE_fsm} class is itself a thin wrapper of the array class.
-So, for example, \code{x[1, ]} will return the flattened-form of the first matrix in the collection, and \code{invvech(x[1,])} will be the first matrix in non-flat form.
+So, for example, \code{x[1, ]} will return the vectorised-form of the first matrix in the collection, and \code{invvech(x[1,])} will be the first matrix in non-flat form.
 The \code{TFORGE_kfsm} class is for a collection of multiple \code{TFORGE_fsm}.
 The function \code{as_flat()} automatically converts data to either \code{TFORGE_kfsm} or \code{TFORGE_fsm}.
 }
@@ -45,7 +46,7 @@ The function \code{as_flat()} automatically chooses between a \code{TFORGE_kfsm}
 
 \item \code{as_kfsm()}: Convert multiple collections of matrices into a \code{kfsm}. \code{x} must be a list, with each entry of \code{x} a separate collection of matrices.
 
-\item \code{as_fsm()}: For \code{x} a list of symmetric matrices of the same size, flattens \code{x} into a 2D array the \code{i}th row is a flattened version \code{vech(x[[i]])} of the \code{i}th matrix of  \code{x}. If \code{x} is already flattened then \code{as_fsm()} will check that the number of columns are consistent with a flattened symmetric matrix.
+\item \code{as_fsm()}: For \code{x} a list of symmetric matrices of the same size, flattens \code{x} into a 2D array where the \code{i}th row is a vectorised version \code{vech(x[[i]])} of the \code{i}th matrix of  \code{x}. If \code{x} is already flattened then \code{as_fsm()} will check that the number of columns are consistent with a flattened symmetric matrix.
 
 }}
 \examples{

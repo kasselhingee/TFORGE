@@ -22,7 +22,7 @@
 #' larger matrices will likely need larger samples.
 #' 
 #' Due to the random rotation of the eigenvectors when `refbasis = "random"`, use [`set.seed()`] if you want the answer to be repeatable.
-#' @param x A single sample of matrices (passed to [`as_fsm()`]).
+#' @param x A sample of matrices suitable for [`as_fsm()`].
 #' @param mult A vector specifying the eigenvalue multiplicity under the null hypothesis in descending order of eigenvalue size.
 #' @param refbasis Select the basis of the eigenspaces. See details.
 #' @inheritParams test_unconstrained

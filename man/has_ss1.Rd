@@ -7,9 +7,9 @@
 has_ss1(x, tolerance = sqrt(.Machine$double.eps))
 }
 \arguments{
-\item{x}{Either a list of samples, each sample being a list of matrices, or a single sample as a list of matrices.}
+\item{x}{A sample or multiple samples of matrices suitable for \code{\link[=as_flat]{as_flat()}}.}
 
-\item{tolerance}{Tolerance on the relative difference, passed to \code{all.equal()}}
+\item{tolerance}{Tolerance on the relative difference, passed to \code{\link[=all.equal]{all.equal()}}}
 }
 \value{
 \code{TRUE} or \code{FALSE}

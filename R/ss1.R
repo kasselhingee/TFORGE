@@ -133,8 +133,7 @@ amaral2007Lemma1 <- function(m){
 
 #' @title Check whether the supplied sample(s) have equal sum of squared eigenvalues
 #' @description Compares whether the sum of the squared eigenvalues of the supplied symmetric matrices match each other using the property that the sum of the squared eigenvalues of `Y` equals the trace of `Y %*% Y`.
-#' @param x Either a list of samples, each sample being a list of matrices, or a single sample as a list of matrices.
-#' @param tolerance Tolerance on the relative difference, passed to `all.equal()`
+#' @inheritParams has_fixedtrace
 #' @export
 #' @return `TRUE` or `FALSE`
 has_ss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
