@@ -8,11 +8,11 @@
 #' It is passed to [`mvtnorm::rmvnorm()`] without any transformation. 
 #' @return A `TFORGE_fsm` object. See [`as_fsm()`].
 #' @details 
-#' The function `rsymm_norm` generates `n` symmetric matrices whose elements are drawn from a multivariate Normal distribution.
-#' The mean matrix is vectorized using the [`vech()`] function (which extracts the lower triangular part of the matrix, including the diagonal) 
+#' The mean matrix is vectorized using the [`vech()`] function 
 #' and then used as the mean vector in the [`mvtnorm::rmvnorm()`] function. The covariance matrix `sigma` is passed unchanged to [`mvtnorm::rmvnorm()`].
+#' Symmetric matrices are obtained by applying [`invvech()`] to each simulated vector.
 #' @examples 
-#' rsymm(100, diag(c(3,2,1)))
+#' rsymm_norm(100, diag(c(3,2,1)))
 #' @export
 rsymm_norm <- function(n, mean, sigma = diag(length(vech(mean)))){
   stopifnot(isSymmetric(mean))

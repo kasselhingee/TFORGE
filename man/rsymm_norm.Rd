@@ -24,10 +24,10 @@ A \code{TFORGE_fsm} object. See \code{\link[=as_fsm]{as_fsm()}}.
 Simulate symmetric matrices with elements from a multivariate Normal distribution.
 }
 \details{
-The function \code{rsymm_norm} generates \code{n} symmetric matrices whose elements are drawn from a multivariate Normal distribution.
-The mean matrix is vectorized using the \code{\link[=vech]{vech()}} function (which extracts the lower triangular part of the matrix, including the diagonal)
+The mean matrix is vectorized using the \code{\link[=vech]{vech()}} function
 and then used as the mean vector in the \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}} function. The covariance matrix \code{sigma} is passed unchanged to \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}}.
+Symmetric matrices are obtained by applying \code{\link[=invvech]{invvech()}} to each simulated vector.
 }
 \examples{
-rsymm(100, diag(c(3,2,1)))
+rsymm_norm(100, diag(c(3,2,1)))
 }
