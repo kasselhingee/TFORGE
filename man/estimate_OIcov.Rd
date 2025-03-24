@@ -19,7 +19,7 @@ A named list of \eqn{\sigma^2}{s^2} and \eqn{\tau}
 \description{
 Orthogonally-invariant covariance is a restrictive structure, but if it holds then a suite of tools is available \insertCite{schwartzman2008in}{TFORGE}.
 Any orthogonally-invariant covariance can be specified by just two parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2}.
-For a Gaussian-distributed elements, the parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} can be estimated by maximum-likelihood from the data and a maximum-likelihood estimate of the population mean \insertCite{@Lemma 3.3, @schwartzman2008in}{TFORGE}.
+For Gaussian-distributed elements, this function estimates the parameters \eqn{\tau}{tau} and \eqn{\sigma^2}{s^2} by maximum-likelihood from the data and using a maximum-likelihood estimate of the population mean \insertCite{@Lemma 3.3, @schwartzman2008in}{TFORGE}.
 }
 \section{Orthogonally-Invariant Covariance}{
 A symmetric random matrix \eqn{Y} with a Gaussian distribution has orthogonally-invariant covariance if and only if \eqn{Q Y Q^T} has the same distribution as \eqn{Y} for any orthogonal matrix \eqn{Q}.
