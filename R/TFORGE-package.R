@@ -16,6 +16,8 @@
 #'
 #' Additionally [`test_unconstrained_aGOE()`] can perform \eqn{2}-sample tests with calibration by a Gaussian Orthogonal Ensemble (GOE) approximation \insertCite{schwartzman2010gr}{TFORGE}. A bootstrapped calibration for this test is also available where the GOE approximation is used to stabalise the scale of the statistic.
 #'
+#' There are two functions [`conf_fixedtrace()`] and [`conf_ss1fixedtrace()`] for estimating confidence regions.
+#'
 #' The above tests all require that the eigenvalues of the population mean are distinct (with decreasing performance when eigenvalues are very close to each other).
 #' Eigenvalues are assumed to be in descending order.
 #' 

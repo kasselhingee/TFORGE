@@ -9,9 +9,10 @@
 The eigenvalues of observed symmetric matrices are often of intense scientific interest. This package offers single sample tests for the eigenvalues of the population mean or the eigenvalue-multiplicity of the population mean. For k-samples, this package offers tests for equal eigenvalues between samples. Included is support for matrices with constraints common to geophysical tensors (constant trace, sum of squared eigenvalues, or both) and eigenvectors are usually considered nuisance parameters. Pivotal bootstrap methods enable these tests to have good performance for small samples (n=15 for 3x3 matrices). Also available is a 2-sample test using a Gaussian orthogonal ensemble approximation and an eigenvalue-multiplicity test that assumes orthogonally-invariant covariance.
 }
 \details{
+All tests in this package are for hypotheses about the eigenvalues of the (extrinsic) mean of the sampled population(s).
 Functions for conducting hypothesis tests start with \code{test_}.
-All tests are for hypotheses about the eigenvalues of the (extrinsic) mean of the sampled population(s).
 When the matrices are constrained to a submanifold of the space of symmetric matrices we use the extrinsic mean, which projects the usual linear/Euclidean mean so that it satisfies the same constraints as the data.
+Tests can be calibrated using either a chi-squared distribution or bootstrapping; in simulations bootstrapping was more reliable but slower.
 
 The following functions conduct single sample and \eqn{k}-sample tests of the eigenvalues of the (extrinsic) population mean:
 \itemize{
@@ -25,6 +26,8 @@ The single sample tests conducted by the above functions test the null hypothesi
 The \eqn{k}-sample tests conducted by the above functions test the null hypothesis that the extrinsic population means have the same eigenvalues.
 
 Additionally \code{\link[=test_unconstrained_aGOE]{test_unconstrained_aGOE()}} can perform \eqn{2}-sample tests with calibration by a Gaussian Orthogonal Ensemble (GOE) approximation \insertCite{schwartzman2010gr}{TFORGE}. A bootstrapped calibration for this test is also available where the GOE approximation is used to stabalise the scale of the statistic.
+
+There are two functions \code{\link[=conf_fixedtrace]{conf_fixedtrace()}} and \code{\link[=conf_ss1fixedtrace]{conf_ss1fixedtrace()}} for estimating confidence regions.
 
 The above tests all require that the eigenvalues of the population mean are distinct (with decreasing performance when eigenvalues are very close to each other).
 Eigenvalues are assumed to be in descending order.
@@ -59,4 +62,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 \references{
 \insertAllCited{}
+}
+\author{
+\strong{Maintainer}: Kassel Liam Hingee \email{kassel.hingee@anu.edu.au} (\href{https://orcid.org/0000-0001-9894-2407}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Art B. Owen [copyright holder]
+  \item Board of Trustees Leland Stanford Junior University [copyright holder]
+}
+
 }

@@ -10,7 +10,7 @@ conf_fixedtrace(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE)
 conf_fixedtrace_inregion(evals, cr)
 }
 \arguments{
-\item{x}{A single sample of 3x3 symmetric matrices (passed to \code{\link[=as_fsm]{as_fsm()}})}
+\item{x}{A single sample of 3x3 symmetric matrices. \code{x} must be either an \code{\link{fsm}} object or something that \code{\link[=as_fsm]{as_fsm()}} can parse.}
 
 \item{alpha}{Desired significance level of the approximate confidence region.}
 
@@ -18,9 +18,9 @@ conf_fixedtrace_inregion(evals, cr)
 
 \item{npts}{Number of points on the boundary of the region to compute.}
 
-\item{check}{If \code{TRUE}, then the mean of 100 new resamples will be used to check the coverage of the region.}
+\item{check}{If \code{TRUE}, then the extrinsic means of 100 new resamples will be used to check the coverage of the region.}
 
-\item{evals}{A set of eigenvalues.}
+\item{evals}{A set of eigenvalues with the same trace as matrices in \code{x}.}
 
 \item{cr}{A confidence region returned by \code{\link[=conf_fixedtrace]{conf_fixedtrace()}}.}
 }
@@ -34,9 +34,10 @@ A list:
 }
 }
 \description{
-When a 3x3 symmetric matrix has a fixed-trace constraint, the vector of its eigenvalues lies on a 2D plane within 3D space.
+When a 3x3 symmetric matrix has a fixed-trace constraint, the vector of its eigenvalues lies on a 2D plane.
 This function calculates the boundary of an approximate confidence region in this 2D plane using the same statistic as \code{\link[=test_fixedtrace]{test_fixedtrace()}}.
 The returned boundary can be used to plot the confidence region.
+The function \code{\link[=conf_fixedtrace_inregion]{conf_fixedtrace_inregion()}} returns where given points are in the estimated confidence region.
 }
 \details{
 Uses the same statistic as \code{\link[=test_fixedtrace]{test_fixedtrace()}} and bootstrap resampling to obtain approximate bounds on the eigenvalues of a population mean.

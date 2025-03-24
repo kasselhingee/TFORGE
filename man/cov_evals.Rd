@@ -2,22 +2,32 @@
 % Please edit documentation in R/cov_evals.R
 \name{cov_evals}
 \alias{cov_evals}
-\title{Eigenvalue covariance from eigenvectors and element-wise covariance}
+\title{Compute the Covariance of Eigenvalues}
 \usage{
 cov_evals(evecs, mcov)
 }
 \arguments{
-\item{evecs}{Matrix of eigenvectors of the mean of \code{Y}. Eigenvectors as columns and ordered according to descending eigenvalue.}
+\item{evecs}{Matrix with columns that are eigenvectors of the mean of \code{Y}.}
 
 \item{mcov}{Covariance of \code{vech(Y)}, where \code{Y} is the random matrix.}
 }
 \value{
-A covariance matrix corresponding to the eigenvalues of the mean of \code{Y} in descending order.
+A symmetric matrix with same number of columns as \code{evecs}.
 }
 \description{
-For a random symmetric matrix \code{Y}, the covariance of the eigenvalues of \code{Y} is calculated from the covariance of the elements and the eigenvectors of the mean of \code{Y}.
-This calculation is valid when the eigenvalues are distinct.
+For a random symmetric matrix \code{Y}, calculates the covariance of the eigenvalues of \code{Y} using the covariance of the elements of \code{Y} and the eigenvectors of the mean of \code{Y}.
 }
 \details{
+For any two columns \eqn{a} and \eqn{b} of \code{evecs}, computes the covariance
+\deqn{
+\textrm{Cov}(a^\top Y a, b^\top Y b) = ( a \otimes a)^\top \mathbb{D} C_0 \mathbb{D}^\top (b \otimes b),
+}
+where \eqn{a} and \eqn{b} are the columns of \code{evecs} and \eqn{C_0}=\code{mcov} is the covariance of vech\eqn{(Y)}. \eqn{\mathbb{D}} and \eqn{\otimes} is the duplication matrix and kronecker product respectively.
+
+The returned matrix has rows and columns that are in the same order as the columns of \code{evecs}.
+
+When the eigenvalues are distinct, then passing estimated eigenvectors to \code{cov_evals()} yields an estimate of the asymptotic covariance of the eigenvalues.
+
+See Supplement B.2 for more information and derivation.
 Uses \code{RcppArmadillo} for a slight increase in speed.
 }

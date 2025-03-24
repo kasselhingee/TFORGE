@@ -28,18 +28,19 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 }
 
 #' @title Eigenvalue confidence region under fixed trace constraint
-#' @description When a 3x3 symmetric matrix has a fixed-trace constraint, the vector of its eigenvalues lies on a 2D plane within 3D space.
+#' @description When a 3x3 symmetric matrix has a fixed-trace constraint, the vector of its eigenvalues lies on a 2D plane.
 #' This function calculates the boundary of an approximate confidence region in this 2D plane using the same statistic as [`test_fixedtrace()`].
 #' The returned boundary can be used to plot the confidence region.
+#' The function [`conf_fixedtrace_inregion()`] returns where given points are in the estimated confidence region.
 #' @details
 #' Uses the same statistic as [`test_fixedtrace()`] and bootstrap resampling to obtain approximate bounds on the eigenvalues of a population mean.
 #' The statistic has a quadratic form so that the boundary of the confidence region is an ellipse, but for plotting simplicity the ellipse is returned as a dense set of `npts` points.
 #' A warning will be generated if the confidence region leaves the space of distinct descending-order eigenvalues and a check of coverage of bootstrap resamples is available.
-#' @param x A single sample of 3x3 symmetric matrices (passed to [`as_fsm()`])
+#' @param x A single sample of 3x3 symmetric matrices. `x` must be either an [`fsm`] object or something that [`as_fsm()`] can parse.
 #' @param alpha Desired significance level of the approximate confidence region.
 #' @param B Number of bootstrap resamples.
 #' @param npts Number of points on the boundary of the region to compute.
-#' @param check If `TRUE`, then the mean of 100 new resamples will be used to check the coverage of the region.
+#' @param check If `TRUE`, then the extrinsic means of 100 new resamples will be used to check the coverage of the region.
 #' @return A list:
 #' + `est`: the eigenvalues of the mean matrix.
 #' + `boundary`: A matrix with 3 columns and `npts` rows giving the boundary of the region. Each row corresponds to a point on the boundary and the columns are the first, second and final eigenvalue.
@@ -137,7 +138,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
 
 # @describeIn conf_fixedtrace Return whether a particular set of eigenvalues `evals` lies in the confidence region returned by [conf_fixedtrace()].
 #' @rdname conf_fixedtrace
-#' @param evals A set of eigenvalues.
+#' @param evals A set of eigenvalues with the same trace as matrices in `x`.
 #' @param cr A confidence region returned by [conf_fixedtrace()].
 #' @export
 conf_fixedtrace_inregion <- function(evals, cr){

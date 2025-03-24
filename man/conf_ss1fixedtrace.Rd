@@ -10,13 +10,13 @@ conf_ss1fixedtrace(x, alpha = 0.05, B = 1000, check = TRUE)
 conf_ss1fixedtrace_inregion(evals, cr)
 }
 \arguments{
-\item{x}{A single sample of 3x3 symmetric matrices (passed to \code{\link[=as_fsm]{as_fsm()}})}
+\item{x}{A single sample of 3x3 symmetric matrices. \code{x} must be either an \code{\link{fsm}} object or something that \code{\link[=as_fsm]{as_fsm()}} can parse.}
 
 \item{alpha}{Desired significance level of the approximate confidence region.}
 
 \item{B}{Number of bootstrap resamples.}
 
-\item{check}{If \code{TRUE}, then the mean of 100 new resamples will be used to check the coverage of the region.}
+\item{check}{If \code{TRUE}, then the extrinsic means of 100 new resamples will be used to check the coverage of the region.}
 
 \item{evals}{A set of eigenvalues with trace of zero and sum of squares of one.}
 
@@ -33,6 +33,6 @@ A list:
 }
 \description{
 When a 3x3 symmetric matrix has a trace of zero and the sum of squared eigenvalues is one, then the eigenvalues of the matrix lie on a circle in 3D space.
-Under these situations, this function calculates a confidence region (i.e. intervals) for the population mean's eigenvalues.
+Under these situations, this function calculates a confidence region (i.e. an interval) for the eigenvalues of the population's extrinsic mean.
 The function \code{conf_ss1fixedtrace_inregion()} returns whether a set of eigenvalues is inside a confidence region returned by \code{conf_fixedtrace()}.
 }

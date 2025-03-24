@@ -1,6 +1,6 @@
 #' @title Eigenvalue confidence interval under trace=0 and sum of square constraint
 #' @description When a 3x3 symmetric matrix has a trace of zero and the sum of squared eigenvalues is one, then the eigenvalues of the matrix lie on a circle in 3D space.
-#' Under these situations, this function calculates a confidence region (i.e. intervals) for the population mean's eigenvalues.
+#' Under these situations, this function calculates a confidence region (i.e. an interval) for the eigenvalues of the population's extrinsic mean.
 #' The function `conf_ss1fixedtrace_inregion()` returns whether a set of eigenvalues is inside a confidence region returned by `conf_fixedtrace()`.
 #' @inheritParams conf_fixedtrace
 #' @return A list:
