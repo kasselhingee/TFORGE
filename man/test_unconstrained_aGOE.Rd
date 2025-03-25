@@ -22,7 +22,7 @@ a list of two samples of matrices (passed to \code{\link[=as_kfsm]{as_kfsm()}}).
 
 \item{nullevals}{For internal testing of bootstrap calibration. \code{"av"} assumes the eigenvalues under the null hypothesis are the average of the eigenvalues of the two sample means. \code{"1"} and \code{"2"} assume the null eigenvalues are equal to the eigenvalue of the first and second sample respectively.}
 
-\item{scalestat}{If \code{TRUE} then the statistic divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and general boostrap theory suggest that \code{scalestat=TRUE} leads to better test size and power when using bootstrap.}
+\item{scalestat}{If \code{TRUE} then the statistic is divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and bootstrapping behaviour more generally suggests that \code{scalestat=TRUE} leads to better test size and power when using bootstrap calibration.}
 }
 \value{
 A list:
@@ -42,7 +42,7 @@ The distribution of this statistic for more general populations is approximated 
 }
 \details{
 The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
-The p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
+For chi-squared calibration, the p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 }
 \references{
 \insertAllCited{}

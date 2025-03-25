@@ -38,13 +38,15 @@ standardise_multiplicity(x, mult)
 A \code{TFORGE} object including the p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}). See \code{\link[=bootresampling]{bootresampling()}}.
 }
 \description{
-Given a sample from a population, uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues.
+Tests the multiplicity of the eigenvalues a population's mean.
 The test statistic is computed by \code{stat_multiplicity()}.
 The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
-Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by \code{standardise_multiplicity()}.
+For unconstrained symmetric matrices use \code{test_multiplicity()}.
+For matrices constrained to have fixed trace use \code{test_multiplicity_nonnegative()}.
 }
 \details{
-This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace.
+For \code{test_multiplicity()}, bootstrap resampling is conducted from the null hypothesis by resampling from the original sample converted to satisfy the null hypothesis by \code{standardise_multiplicity()}.
+For \code{test_multiplicity_nonnegative()}, weighted bootstrapping is used (see 'Weighted Bootstrapping' below).
 
 On \code{refbasis}:
 An estimate of each eigenspace specified by \code{mult} can be obtained from the eigenvectors of the sample mean.
@@ -61,9 +63,17 @@ For 3x3 matrices, the weighted-bootstrapping method used by \code{test_multiplic
 larger matrices will likely need larger samples.
 
 Due to the random rotation of the eigenvectors when \code{refbasis = "random"}, use \code{\link[=set.seed]{set.seed()}} if you want the answer to be repeatable.
-
-\code{test_multiplicity_nonnegative()} uses weighted bootstrapping with empirical likelihood to create a population that satisfies the null hypothesis.
 }
+\section{Weighted Bootstrapping}{
+This function uses a form of weighted bootstrapping called b-boostrapping \insertCite{hall1999in}{TFORGE}. An empirical distribution is defined by sampling weights for each observation in the original sample.
+The sampling weights must be such that the (extrinsic) mean of the empirical distribution is \deqn{c\hat{Q} \Lambda \hat{Q}^\top,}
+where \eqn{\hat{Q}} are the eigenvectors of the sample mean, \eqn{\Lambda} is a diagonal matrix of eigenvalues specified by either the null hypothesis (for single sample tests) or estimated as the common eigenvalues of multiple populations (for k-sample tests).
+In some situations \eqn{c} is a free scalar to enable projection of the Euclidean mean to the extrinsic mean, otherwise \eqn{c=1}.
+If no such sampling weights exist (i.e. the convex hull of the data does not contain \eqn{c\hat{Q} \Lambda \hat{Q}^\top}), then the test rejects with \code{pval=0} and a warning.
+
+The sampling weights are also optimised to maximise empirical likelihood \insertCite{owen:2013}{TFORGE}.
+}
+
 \examples{
 x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))
 test_multiplicity(x, mult = c(1, 2, 1))

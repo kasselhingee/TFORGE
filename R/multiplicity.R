@@ -1,11 +1,13 @@
 #' @title Test eigenvalue multiplicity
 #' @description
-#' Given a sample from a population, uses bootstrap resampling to test multiplicity hypotheses of the population mean's eigenvalues.
+#' Tests the multiplicity of the eigenvalues a population's mean.
 #' The test statistic is computed by `stat_multiplicity()`.
 #' The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
-#' Bootstrap resampling is conducted from the null hypothesis, which uses the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`.
+#' For unconstrained symmetric matrices use `test_multiplicity()`. 
+#' For matrices constrained to have fixed trace use `test_multiplicity_nonnegative()`.
 #' @details
-#' This hypothesis test works on unconstrained symmetric matrices or matrices constrained to have fixed trace.
+#' For `test_multiplicity()`, bootstrap resampling is conducted from the null hypothesis by resampling from the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`. 
+#' For `test_multiplicity_nonnegative()`, weighted bootstrapping is used (see 'Weighted Bootstrapping' below).
 #'
 #' On `refbasis`:
 #' An estimate of each eigenspace specified by `mult` can be obtained from the eigenvectors of the sample mean.
@@ -27,6 +29,7 @@
 #' @param refbasis Select the basis of the eigenspaces. See details.
 #' @inheritParams test_unconstrained
 #' @inheritParams test_fixedtrace
+#' @inheritSection test_fixedtrace Weighted Bootstrapping
 #' @examples
 #' x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))
 #' test_multiplicity(x, mult = c(1, 2, 1))
@@ -49,8 +52,6 @@ test_multiplicity <- function(x, mult, B = 1000, refbasis = "sample"){
 }
 
 #' @rdname test_multiplicity
-#' @details
-#' `test_multiplicity_nonnegative()` uses weighted bootstrapping with empirical likelihood to create a population that satisfies the null hypothesis.
 #' @export
 test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasis = "sample"){
   x <- as_flat(x)

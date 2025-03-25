@@ -104,11 +104,11 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' The distribution of this statistic for more general populations is approximated using a tangent space and the Welch-Satterthwaite approximation.
 #' @details 
 #' The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
-#' The p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
+#' For chi-squared calibration, the p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' @param x A single sample of matrices (passed to [`as_fsm()`]) or
 #' a list of two samples of matrices (passed to [`as_kfsm()`]).
 #' @param x2 If `x` is a single sample then `x2` must be the second sample. Otherwise `x2` should be `NULL`.
-#' @param scalestat If `TRUE` then the statistic divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and general boostrap theory suggest that `scalestat=TRUE` leads to better test size and power when using bootstrap.
+#' @param scalestat If `TRUE` then the statistic is divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and bootstrapping behaviour more generally suggests that `scalestat=TRUE` leads to better test size and power when using bootstrap calibration.
 #' @param nullevals For internal testing of bootstrap calibration. `"av"` assumes the eigenvalues under the null hypothesis are the average of the eigenvalues of the two sample means. `"1"` and `"2"` assume the null eigenvalues are equal to the eigenvalue of the first and second sample respectively.
 #' @inheritParams test_unconstrained
 #' @references
