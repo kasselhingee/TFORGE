@@ -3,19 +3,23 @@
 #' For a single sample, test eigenvalues of the population mean.
 #' For multiple samples, test for equality of the eigenvalues of the population means.
 #' This function is for 3x3 symmetric matrices with trace of zero and sum of squared eigenvalues of one.
-#' These constraints combine so that the space of possible sets of (ordered) eigenvalues is 1 dimensional.
+#' These constraints combine so that the space of possible sets of (ordered) eigenvalues is a circle.
 #' The test statistic is calculated by `stat_ss1fixedtrace()`.
 #' @details
+#' Test hypotheses described below.
+#'
 #' The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere and the trace constraint forces eigenvalues onto a plane.
 #' Combined the constraints force eigenvalues onto a circle in 3D Euclidean space.
 #' The test statistic accounts for these constraints by projecting eigenvalues onto a line tangential to this circle and orthogonal to the null-hypothesis eigenvalues.
-#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
+#'
+#' Weighted bootstrap calibration is used (see 'Weighted Bootstrapping' below).
 #'
 #' Eigenvalues must be distinct.
 
 #' @inheritParams test_unconstrained
 #' @inheritParams test_fixedtrace
-#' @inheritSection test_fixedtrace Hypotheses
+#' @inheritSection test_unconstrained Hypotheses
+#' @inheritSection test_fixedtrace Weighted Bootstrapping
 #' @references \insertAllCited{}
 #' @export
 test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25){

@@ -3,15 +3,16 @@
 #' For multiple samples of symmetric matrices, test for equality of the eigenvalues of the population means.
 #' Eigenvalues must be distinct.
 #' @details
-#' For a single sample with `evecs` omitted, the null hypothesis is that the population mean has eigenvalues of `evals` without restriction on the eigenvectors. The alternative hypothesis here is that the eigenvalues are not `evals`.
-#' If a `evecs` is supplied then both the null hypothesis and alternative hypothesis assume that the population mean has eigenvectors of `evecs`.
-#'
-#' For multiple samples, `evals` and `evecs` must be omitted. The null hypothesis is that the population means of each sample have the same eigenvalues.
-#'
+#' Test hypotheses described below.
+#' For a single sample, the eigenvectors of the population mean in the null and alternative hypotheses may be prespecified by `evecs`.
+#' 
 #' Bootstrap resampling is conducted from a population that satisfies the null hypothesis by transforming each sample in `x` with `standardise_specifiedevals()`.
 #' The test statistic is calculated by `stat_unconstrained()`. 
+#' # Hypotheses
+#' For a single sample the null hypothesis is that the population (extrinsic) mean has eigenvalues of `evals`; the alternative hypothesis is that the eigenvalues are not equal to `evals`.
+#' For multiple samples, `evals` must be omitted and the null hypothesis is that the population (extrinsic) means have the same eigenvalues.
 #' @param x A single sample of symmetric matrices or multiple samples of symmetric matrices. See [`as_flat()`].
-#' @param evals When `x` is a single sample, the null hypothesis is that the population mean has eigenvalues equal to `evals`.
+#' @param evals When `x` is a single sample, the null hypothesis is that the (extrinsic) mean of the population has eigenvalues equal to `evals`. For multiple samples `evals` must be omitted.
 #' @param evecs For a single sample, specify eigenvectors to test under the assumption that the population mean's eigenvectors are the columns of `evecs`. The order of these eigenvectors matters and should be such that eigenvalues are in descending order.
 #' @param B Number of bootstrap samples. If `B = 'chisq'` then a chi-squared calibration is used instead.
 #' @return A `TFORGE` object (see [`bootresampling()`]) with the eigenvalues of the null hypothesis in the `null_evals` attribute for `t0`.

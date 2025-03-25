@@ -15,7 +15,7 @@ standardise_specifiedevals(x, evals)
 \arguments{
 \item{x}{A single sample of symmetric matrices or multiple samples of symmetric matrices. See \code{\link[=as_flat]{as_flat()}}.}
 
-\item{evals}{When \code{x} is a single sample, the null hypothesis is that the population mean has eigenvalues equal to \code{evals}.}
+\item{evals}{When \code{x} is a single sample, the null hypothesis is that the (extrinsic) mean of the population has eigenvalues equal to \code{evals}. For multiple samples \code{evals} must be omitted.}
 
 \item{evecs}{For a single sample, specify eigenvectors to test under the assumption that the population mean's eigenvectors are the columns of \code{evecs}. The order of these eigenvectors matters and should be such that eigenvalues are in descending order.}
 
@@ -30,14 +30,17 @@ For multiple samples of symmetric matrices, test for equality of the eigenvalues
 Eigenvalues must be distinct.
 }
 \details{
-For a single sample with \code{evecs} omitted, the null hypothesis is that the population mean has eigenvalues of \code{evals} without restriction on the eigenvectors. The alternative hypothesis here is that the eigenvalues are not \code{evals}.
-If a \code{evecs} is supplied then both the null hypothesis and alternative hypothesis assume that the population mean has eigenvectors of \code{evecs}.
-
-For multiple samples, \code{evals} and \code{evecs} must be omitted. The null hypothesis is that the population means of each sample have the same eigenvalues.
+Test hypotheses described below.
+For a single sample, the eigenvectors of the population mean in the null and alternative hypotheses may be prespecified by \code{evecs}.
 
 Bootstrap resampling is conducted from a population that satisfies the null hypothesis by transforming each sample in \code{x} with \code{standardise_specifiedevals()}.
 The test statistic is calculated by \code{stat_unconstrained()}.
 }
+\section{Hypotheses}{
+For a single sample the null hypothesis is that the population (extrinsic) mean has eigenvalues of \code{evals}; the alternative hypothesis is that the eigenvalues are not equal to \code{evals}.
+For multiple samples, \code{evals} must be omitted and the null hypothesis is that the population (extrinsic) means have the same eigenvalues.
+}
+
 \examples{
 test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1), B = 100)
 test_unconstrained(list(rsymm_norm(15, diag(c(3,2,1))),

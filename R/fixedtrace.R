@@ -22,14 +22,21 @@ has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
 #' For multiple samples of symmetric matrices with fixed trace, test for equality of the eigenvalues of the population means.
 #' The test statistic is calculated by `stat_fixedtrace()`.
 #' @details
-#' The fixed trace constraint forces the set of eigenvalues to lie in a plane.
+#' Test hypotheses described below.
+#' The fixed trace constraint forces the vector of eigenvalues to lie in a plane.
 #' The test statistic accounts for this constraint by using an orthonormal basis in the plane.
-#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
+#' Weighted bootstrap calibration is used (see 'Weighted Bootstrapping' below).
 #'
 #' Eigenvalues must be distinct.
-#' # Hypotheses
-#' For a single sample the null hypothesis is that the population mean has eigenvalues of `evals`; the alternative hypothesis is that the eigenvalues are not equal to `evals`.
-#' For multiple samples, `evals` must be omitted and the null hypothesis is that the population means of each sample have the same eigenvalues.
+#' # Weighted Bootstrapping
+#' This function uses a form of weighted bootstrapping called b-boostrapping \insertCite{hall1999in}{TFORGE}. An empirical distribution is defined by sampling weights for each observation in the original sample.
+#' The sampling weights must be such that the (extrinsic) mean of the empirical distribution is \deqn{c\hat{Q} \Lambda \hat{Q}^\top,}
+#' where \eqn{\hat{Q}} are the eigenvectors of the sample mean, \eqn{\Lambda} is a diagonal matrix of eigenvalues specified by either the null hypothesis (for single sample tests) or estimated as the common eigenvalues of multiple populations (for k-sample tests).
+#' In some situations \eqn{c} is a free scalar to enable projection of the Euclidean mean to the extrinsic mean, otherwise \eqn{c=1}. 
+#' If no such sampling weights exist (i.e. the convex hull of the data does not contain \eqn{c\hat{Q} \Lambda \hat{Q}^\top}), then the test rejects with `pval=0` and a warning.
+#'
+#' The sampling weights are also optimised to maximise empirical likelihood \insertCite{owen:2013}{TFORGE}.
+#' @inheritSection test_unconstrained Hypotheses
 #' @references \insertAllCited{}
 #' @inherit test_unconstrained return
 # @param x Multiple samples of matrices, all with the same trace. Or a single sample of matrices. See [`as_flat()`] for required structure.

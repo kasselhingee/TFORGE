@@ -4,14 +4,17 @@
 #' For multiple samples of symmetric matrices where sum of squared eigenvalues  = 1, test for equality of the eigenvalues of the population means.
 #' The test statistic is calculated by `stat_ss1()`.
 #' @details
+#' Test hypotheses described below.
 #' The sum of squared eigenvalues constraint forces the set of eigenvalues to lie on a sphere (or circle).
 #' The test statistic accounts for this constraint by projecting eigenvalues onto a plane perpendicular to the direction of the sample average's eigenvalues.
-#' Bootstrap resampling is from an empirical distribution that satisfies the null hypothesis; for this test we use empirical likelihood \insertCite{owen:2013}{TFORGE} to find non-uniform sampling weights for each matrix in the original sample.
+#'
+#' Weighted bootstrap calibration is used (see 'Weighted Bootstrapping' below).
 #'
 #' Eigenvalues must be distinct.
 #' @inheritParams test_unconstrained
 #' @inheritParams test_fixedtrace
-#' @inheritSection test_fixedtrace Hypotheses
+#' @inheritSection test_unconstrained Hypotheses
+#' @inheritSection test_fixedtrace Weighted Bootstrapping
 #' @references \insertAllCited{}
 #' @export
 test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
