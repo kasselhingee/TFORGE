@@ -129,12 +129,12 @@ stat_fixedtrace <- function(x, evals = NULL){
   
   #get estimate of common evals for multisample situation
   if (is.null(evals)){
-    precisions_mean <- mapply(`*`, ns, precisions, SIMPLIFY = FALSE)#precisions of the means, not the Y
+    precisions_mean <- mapply(`*`, ns, precisions, SIMPLIFY = FALSE) # list of precisions scaled by sample size
     sum_precisions <- purrr::reduce(precisions_mean, `+`)
     precisionsbyevals <- mapply(function(A, B){A %*% H %*% B}, A = precisions_mean, B = lapply(ess, "[[", "values"), SIMPLIFY = FALSE)
     sum_precisionsbyevals <- purrr::reduce(precisionsbyevals, `+`)
     d0proj <- drop(solve_error(sum_precisions) %*% sum_precisionsbyevals)
-    d0 <- (t(H) %*% d0proj) + mean(diag(invvech(mss[[1]][1, ]))) #convert projected evals back to p-dimensions, then shift to give correct trace.
+    d0 <- (t(H) %*% d0proj) + mean(diag(invvech(mss[[1]][1, ]))) #convert projected evals back to p-dimensions and shift to match sum to trace of data
     if (!all(order(d0, decreasing = TRUE) == 1:length(d0))){
       d0 <- descendingordererror(d0)
     }
