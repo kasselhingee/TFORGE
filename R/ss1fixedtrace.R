@@ -29,6 +29,9 @@ test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25){
   if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since mss is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  # check that evals satisfy ss1 constraint
+  if (!is.null(evals)){if (abs(sqrt(sum(evals^2)) - 1) > sqrt(.Machine$double.eps)){stop("Square of evals do not sum to 1")}}
+  if (!is.null(evals)){if (!isTRUE(all.equal(sum(evals), sum(diag(invvech(x[[1]][1, ])))))){stop("Provided evals do not sum to trace of observations.")}}
   
   # chisq calibration quick exit
   if (B == "chisq"){
@@ -120,6 +123,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
       d0 <- descendingordererror(d0)
     }
   } else {
+    if (abs(sqrt(sum(evals^2)) - 1) > sqrt(.Machine$double.eps)){warning("Normalising eigenvalues supplied to stat so that the squared eigenvalues sum to 1.")}
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
     if (!isTRUE(all.equal(sum(d0), sum(diag(invvech(x[[1]][1, ])))))){stop("Provided evals do not sum to trace of observations.")}
   }

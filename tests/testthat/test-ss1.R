@@ -32,7 +32,7 @@ test_that("test_ss1() uniform pval on NULL TFORGE_fsm", {
   pvals <- replicate(100, {
     Y <- rsymm_norm(30, diag(c(3,2,1)), sigma = diag(1, 6))
     Y <- normL2evals_sst(Y)
-    res <- test_ss1(Y, c(3,2,1), 100, maxit = 1000)
+    res <- test_ss1(Y, normalise_ss1_vec(c(3,2,1)), 100, maxit = 1000)
     res$pval
   })
   # qqplot(pvals, y = runif(100))
@@ -45,7 +45,7 @@ test_that("chisq: test_ss1() uniform pval on NULL TFORGE_fsm", {
   pvals <- replicate(100, {
     Y <- rsymm_norm(30, diag(c(3,2,1)), sigma = diag(1, 6))
     Y <- normL2evals_sst(Y)
-    res <- test_ss1(Y, c(3,2,1), "chisq", maxit = 1000)
+    res <- test_ss1(Y, normalise_ss1_vec(c(3,2,1)), "chisq", maxit = 1000)
     res$pval
   })
   # qqplot(pvals, y = runif(100))
@@ -87,7 +87,7 @@ test_that("test_ss1() reject for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)), sigma = diag(0.7, 6))
   Y <- normL2evals_sst(Y)
-  res <- test_ss1(Y, c(1,1,1)/3, 100, maxit = 100)
+  res <- test_ss1(Y, normalise_ss1_vec(c(1,1,1)), 100, maxit = 100)
   expect_lt(res$pval, 0.05)
 })
 
@@ -95,7 +95,7 @@ test_that("test_ss1() reject with warning for single sample with very wrong eval
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)), sigma = diag(0.7, 6))
   Y <- normL2evals_sst(Y)
-  expect_warning(res <- test_ss1(Y, c(-3,-2,-1)/sqrt(3^2 + 2^2 + 1), 100, maxit = 100),
+  expect_warning(res <- test_ss1(Y, normalise_ss1_vec(c(-3,-2,-1)), 100, maxit = 100),
                  "convex hull")
   expect_equal(res$pval, 0)
 })

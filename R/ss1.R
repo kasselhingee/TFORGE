@@ -23,6 +23,8 @@ test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
   if (inherits(x, "TFORGE_fsm")){x <- as_flat(list(x))}
   if (is.null(evals) && (length(x) == 1)){stop("evals must be supplied for a meaningful test since x is a single sample")}
   if (!is.null(evals) && (length(x) > 1)){stop("evals cannot be supplied when testing common eigenvalues between groups")}
+  # check that evals satisfy ss1 constraint
+  if (!is.null(evals)){if (abs(sqrt(sum(evals^2)) - 1) > sqrt(.Machine$double.eps)){stop("Square of evals do not sum to 1")}}
   
   if (has_fixedtrace(x)){warning("All tensors the same trace. Consider using test_ss1fixedtrace().")}
   
@@ -101,6 +103,7 @@ stat_ss1 <- function(x, evals = NULL){
       d0 <- descendingordererror(d0)
     }
   } else {
+    if (abs(sqrt(sum(evals^2)) - 1) > sqrt(.Machine$double.eps)){warning("Normalising eigenvalues supplied to stat_ss1() so that the squared eigenvalues sum to 1.")}
     d0 <- sort(evals / sqrt(sum(evals^2)), decreasing = TRUE)
   }
   
@@ -208,3 +211,8 @@ normalise_ss1 <- function(x){
 
 # ms is an TFORGE_fsm
 normL2evals_sst <- normalise_ss1
+
+# small functino to help with writing unit tests
+normalise_ss1_vec <- function(v){
+  v / sqrt(sum(v^2))
+}
