@@ -18,12 +18,13 @@
 #' @return A symmetric matrix with same number of columns as `evecs`.
 #' @export
 cov_evals <- function(evecs, mcov){
-  dupmat <- dup(nrow(evecs)) # is sparse so could be even faster
+  dupmat <- dup(nrow(evecs)) # duplication matrix dupmat is sparse so could be even faster in principle, but we dont go there
   evecxevec <- apply(evecs, 2, FUN = function(v){kronecker(v, v)}) #1, 5, 9
   t(evecxevec) %*% dupmat %*% mcov %*% t(dupmat) %*% evecxevec
 }
 
 
+# Estimate covariance of eigenvalues from a single sample x
 # @param x A single sample (list of matrices)
 # @param av To save computation, `av` can be passed if it is already computed.
 # @details If `evecs` is not provided then the eigenvectors \eqn{q_{0i}} are replaced with the eigenvectors of the average of `x`.

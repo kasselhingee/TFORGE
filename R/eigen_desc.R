@@ -13,6 +13,7 @@ eigen_desc <- function(...){
   return(raw)
 }
 
+# for developing the package - warn if I ever accidentally use base::eigen(), which sorts eigenvalues differently
 eigen <- function(...){
   warning("Using base::eigen() without sorting eigenvalues into descending order. Use eigen_desc() instead.")
   base::eigen(...)

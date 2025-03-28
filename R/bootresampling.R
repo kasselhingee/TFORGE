@@ -28,21 +28,22 @@ bootresampling <- function(x, stdx, stat, B,  ...){
   stopifnot(is_single_whole_number(B))
   x <- as_flat(x)
   t0 <- stat(x, ...)
-  exargs <- list(...)
+  exargs <- list(...) #extra arguments
   if (inherits(x, "TFORGE_kfsm")){
-    if (inherits(stdx[[1]], "numeric")){ #stdx is a vector of weights
+    if (inherits(stdx[[1]], "numeric")){ #stdx is a vector of weights - sample from x using these weights
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(x, prob = stdx)), exargs)), simplify = FALSE)
-    } else { #if stdx isn't a vector of weights, assume it is a standardised version of x
+    } else { #if stdx isn't a vector of weights, assume it is a standardised version of x - sample from stdx
       nullt_l <- replicate(B, catch_do.call(stat, c(list(multisample(stdx)), exargs)), simplify = FALSE)
     }
-  } else if (inherits(x, "TFORGE_fsm")){
-    if (inherits(stdx, "numeric")){#sample with weights cos stdx isn't the same shape as x
+  } else if (inherits(x, "TFORGE_fsm")){ #repeat above, but for a single sample data set
+    if (inherits(stdx, "numeric")){
       nullt_l <- replicate(B, catch_do.call(stat, c(list(sample_fsm(x, prob = stdx, replace = TRUE)), exargs)), simplify = FALSE)
     } else {
       nullt_l <- replicate(B, catch_do.call(stat, c(list(sample_fsm(stdx, replace = TRUE)), exargs)), simplify = FALSE)
     }
   }
-  
+ 
+  # Extract results and capture any failure messages 
   nullt <- simplify2array(nullt_l)
   messages <- replicate(length(nullt), vector(mode = "character", length = 0))
   if (any(is.na(nullt))){
