@@ -1,4 +1,7 @@
+# functions for calling the empirical likelihood maximiser
+
 # for a single sample compute corresponding weights that lead to emp.lik.
+# used by test_fixedtrace() test_multiplicity_nonnegative()
 elwts_fixedtrace <- function(x, nullmean, maxit = 25){
   scelres <- emplik(x, vech(nullmean), itermax = maxit)
   wts <- as.vector(scelres$wts) * nrow(x)
@@ -9,27 +12,28 @@ elwts_fixedtrace <- function(x, nullmean, maxit = 25){
 }
 
 
-#function finds the best c and weights such that weighted average of data is c.mu and 
-#empirical likelihood maximised
+# function finds the best c and weights such that weighted average of data is c.mu and empirical likelihood maximised
 # note that the profile likelihood function (result of emplik()) has convex superlevel sets according to Theorem 3.2 (Owen 2001).
 # So there is unique minimum value to the problem where the mean lies on a line.
 # @returns If the method doesn't converge then the negative of the weights is returned
 # @param ms A single sample of symmetric tensors
-# @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" range gives a range of values of c, passed to `optimize()`
+# @param mu Proposed mean up-to-constant c. It is assumed to have an attribute "c_range" that gives a range of possible values of c, passed to `optimize()`
 opt_el.test <- function(ms, mu, maxit = 25){
   if (attr(mu, "c_range")[["min"]] > attr(mu, "c_range")[["max"]]){
     return(rep(0, nrow(ms))) #no pluasible values of c - avoids error triggered in optimise
   }
-  bestmult <- stats::optimise(f = function(x){#optim warns that Nelder-Mead unreliable on 1 dimension so using Brent here instead
+  bestmult <- stats::optimise(f = function(x){# find the the c with the best empirical likelihood
     scelres <- emplik(ms, x*vech(mu), itermax = maxit)
     return(-scelres$logelr)
-  },
-  lower = attr(mu, "c_range")[["min"]], 
-  upper = attr(mu, "c_range")[["max"]]) 
-  scelres <- emplik(ms, bestmult$minimum*vech(mu), itermax = maxit)
-  wts <- as.vector(scelres$wts) * nrow(ms) #the multiple here is to match the weights put out by emplik::el.test()
+    },
+    lower = attr(mu, "c_range")[["min"]], 
+    upper = attr(mu, "c_range")[["max"]])
 
-  # check and warn about results
+  #repeat at best c to get weights on the data
+  scelres <- emplik(ms, bestmult$minimum*vech(mu), itermax = maxit)
+  wts <- as.vector(scelres$wts) * nrow(ms) #the multiplier here is to match the weights put out by emplik::el.test()
+
+  # if no convergence, return negative weights
   if (!isTRUE(scelres$converged)){
     wts <- -1 * wts
   }
