@@ -1,3 +1,5 @@
+# These error conditions are dealt with by catch_do.call() in bootresampling()
+
 # wrapper around solve that returns a matrix of NA if couldn't solve
 solve_error <- function(A){
   erroraction <- function(e){
@@ -12,6 +14,7 @@ solve_error <- function(A){
   out
 }
 
+# call an error condition when the estimated eigenvalues are not in descending order
 descendingordererror <- function(d0){
   # good help on withRestarts and related here: http://adv-r.had.co.nz/beyond-exception-handling.html
   withRestarts(

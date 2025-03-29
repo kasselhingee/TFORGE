@@ -1,15 +1,19 @@
+# functions for calculating approximate confidence regions for eigenvalues in a fixed-trace situation
 
-# For an ellipse size a and b on the x and y axis
+# For an ellipse size a and b on the x and y axis, respectively
 # return the (x,y) location corresponding to the ray at the angle intersecting the unit circle, then scaled to have the correct a or b
 # that is gives the (x,y) such that (x/a, y/b) (which is on the unit circle) corresponds to the given angle
 # angle may be a vector of angles
+# @param angle Angle of ray relative to x-axis
+# @param a Distance from origin to ellipse along the x-axis
+# @param b Distance from origin to ellipse along the y-axis
 regularellipse <- function(angle, a, b){
   x <- a * cos(angle)
   y <- b * sin(angle)
   return(cbind(x = x, y = y))
 }
 
-# convert points from regular ellipse to the ft plane through the origin with rotation by eigenvectors of Omega
+# convert points from regular ellipse to the fixed trace plane through the origin with rotation by eigenvectors of Omega
 # @param pts from regularellipse()
 # @param evecs Eigenvectors of Omega
 ellipseinftplane <- function(pts, evecs){
@@ -20,6 +24,7 @@ ellipseinftplane <- function(pts, evecs){
 
 # combine ellipseinftplane and regular ellipse to get locations around the mean
 # also shifts the ellipse into the plane through ctrevals
+# @param ctrevals Location of the center of the ellipse
 ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
   locs2d <- regularellipse(angle, a = a, b = b)
   locsplane <- ellipseinftplane(locs2d, evecs = evecs)
@@ -48,9 +53,9 @@ ellipseftcentre <- function(angle, a, b, evecs, ctrevals){
 #' + `threshold`: The threshold (estimated via resampling) on the statistic.
 #' @export
 conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE){
-  stopifnot(ncol(x) == 6)
-  stopifnot(has_fixedtrace(x))
   x <- as_fsm(x)
+  stopifnot(ncol(x) == 6) #ensures input is 3x3 symmetric matrix data
+  stopifnot(has_fixedtrace(x))
 
   # sample mean
   av <- mmean(x)
@@ -63,6 +68,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
   statthreshold <- stats::quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
 
   # now compute boundary of region
+  # solves for the set of locations such that stat_fixedtrace() is smaller than the statthreshold
   Omega <- cov_evals_ft(x, evecs = av_ess$vectors, av = av)
   Omega_ess <- eigen_desc(Omega)
   a <- sqrt(statthreshold * Omega_ess$values[1]/size)
@@ -76,6 +82,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
                          )
 
   # also create a function that tests whether inside the region using the statistic directly
+  # this is very similar to conf_fixedtrace_inregion() below, but faster because Omega_ess only need to be calculated once here
   H <- helmertsub(3)
   inregion <- function(evals){
     statval <- size * t(av_eval - evals) %*% t(H) %*% Omega_ess$vectors %*% diag(1/Omega_ess$values) %*% t(Omega_ess$vectors) %*% H %*% (av_eval - evals)
@@ -113,7 +120,7 @@ conf_fixedtrace <- function(x, alpha = 0.05, B = 1000, npts = 1000, check = TRUE
     warning(sprintf("Confidence region includes eigenvalues where the %s are not in descending order.", desc))
   } 
   
-  if (check){
+  if (check){ # the region should contain 1-alpha of mean of resampled data, this does a quick check
     resample_avevals <- t(replicate(100, eigen_desc(mmean(sample_fsm(x)))$values))
     inregionvals <- apply(resample_avevals, MARGIN = 1, function(v) {inregion(v)})
     coverage <- mean(inregionvals)

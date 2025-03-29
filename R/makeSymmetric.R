@@ -1,4 +1,4 @@
-# removed computational fuzz to make a matrix symmetric
+# remove tiny floating point differences to make a matrix exactly symmetric
 makeSymmetric <- function(m, tolerance = sqrt(.Machine$double.eps) * 1E2){
   offdiag1 <- m[lower.tri(m)]
   offdiag2 <- t(m)[lower.tri(m)]

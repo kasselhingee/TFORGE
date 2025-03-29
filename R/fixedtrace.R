@@ -9,8 +9,8 @@
 has_fixedtrace <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as_flat(x)
   if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
-  diagels <- isondiag_vech(x[1, ])
-  traces <- rowSums(x[, diagels])
+  diagels <- isondiag_vech(x[1, ]) #get indices of diagonal elements
+  traces <- rowSums(x[, diagels]) #extract diagonal elements and sum
   tracerange <- range(traces)
   isTRUE(all.equal(tracerange[1], tracerange[2], tolerance = tolerance))
 }
@@ -63,6 +63,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
     return(chisq_calib(x, stat_fixedtrace, df = df, evals = evals))
   }
 
+  # apply the statistic to the data x for the side effect of getting the eigenvalues of the null for k-sample situations (in single sample the specified eigenvalues are returned)
   t0 <- stat_fixedtrace(x, evals = evals)
   estevals <- attr(t0, "null_evals")
   
@@ -73,7 +74,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
     evecs %*% diag(estevals) %*% t(evecs)
   })
   
-  # compute corresponding weights that lead to emp.lik.
+  # compute corresponding weights that lead to maximum emp.lik.
   wts <- mapply(function(ms, nullmean){
     scelres <- emplik(ms, vech(nullmean), itermax = maxit)
     if (!isTRUE(scelres$converged)){warning("emplik() did not converge, which usually means that the proposed null mean is outside the convex hull of the data")}
@@ -81,7 +82,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
     wts
   }, ms = x, nullmean = nullmeans, SIMPLIFY = FALSE)
 
-  #check the weights
+  #check the weights. if not okay, export a result of pval = 0 now
   if (!wtsokay(wts)){
     out <- list(
       pval = 0,
@@ -94,6 +95,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
     return(out)
   }
 
+  # do bootstrap calibration
   res <- bootresampling(x, wts, 
                         stat = stat_fixedtrace,
                         B = B,
@@ -117,9 +119,8 @@ stat_fixedtrace <- function(x, evals = NULL){
   ess <- lapply(avs, function(av){eigen_desc(av)})
   ns <- lapply(mss, nrow)
   
-  #first get all eval precision matrices 
-  ## below could be faster by passing evecs to cov_evals_est()
-  ## stop using solve_error, or atleast the parameter
+  #first get all eigenvalue precision matrices 
+  ## use solve_error() for nice stopping
   precisions <- mapply(function(ms, evecs, av){solve_error(cov_evals_ft(ms, H = H, evecs = evecs, av = av))},
                        ms = mss,
                        evecs = lapply(ess, "[[", "vectors"),
@@ -174,6 +175,7 @@ project_trace <- function(x){
   x[, diagels] <- diags %*% t(projmat)
   return(x)
 }
+# similar functino but for non-flattened matrices
 projtrace_matrix <- function(m){ #project to have trace 0
   diags <- diag(m)
   ones <- rep(1, length(diags))/sqrt(length(diags))
@@ -202,6 +204,7 @@ normalise_trace <- function(x){
 #' @export
 normalize_trace <- normalise_trace
 
+# compute covariance of eigenvalues projected on to the fixed-trace plane
 cov_evals_ft <- function(ms, H = NULL, evecs = NULL, av = NULL){
   if (is.null(H)){H <- helmertsub(dim_fsm_kfsm(ms))}
   H %*% cov_evals_est(ms, evecs = evecs, av = av) %*% t(H)

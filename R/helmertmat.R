@@ -1,4 +1,4 @@
-# @title Create the Helmert matrix
+# @title Create the Helmert matrix and submatrix
 # @param p Dimension
 helmert <- function(p){
   stopifnot(p>1)
