@@ -155,7 +155,7 @@ has_ss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
 
 # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0) for use in empirical likelihood
 # also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
-# @param a single sample of tensors
+# @param ms a single sample of tensors
 # @param d0 the NULL set of eigenvalues
 # @param av The average of `ms`, if omitted then computed from `ms` directly (include to save computation time)
 # @param evecs The eigenvectors of the average of `ms`. If omitted then computed from the average of `ms` directly (include to save computation time).
@@ -163,7 +163,9 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
   if (is.null(av)){av <- mmean(ms)}
   if (is.null(evecs)){evecs <- eigen_desc(av)$vectors}
   nullmean <- evecs %*% diag(d0) %*% t(evecs)
-  if (getcbound){# bounds for cj
+  if (getcbound){
+    # bounds for cj, which is the range of possible sqrt(sum of squared trace) of the resample means
+    # A simpler method could be to just fix the bounds to [0,1].
     diags <- apply(ms, 1, function(vec){m <- invvech(vec); diag(t(evecs) %*% m %*% evecs)}, simplify = FALSE)
     diags <- do.call(cbind, diags)
     ranges <- t(apply(diags, 1, range))
