@@ -60,7 +60,7 @@ test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasi
     return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
   }
   
-  # compute corresponding weights that lead to emp.lik.
+  # compute corresponding weights that lead to maximum emp.lik.
   av <- mmean(x)
   nullmean <- multiplicity_nullmean(av, mult)
   wts <- elwts_fixedtrace(x, nullmean, maxit)
@@ -111,21 +111,22 @@ stat_multiplicity <- function(x, mult, evecs = NULL, refbasis = "sample"){
   idxs <- lapply(1:length(mult), function(i){
     esvalstart[i] : cmult[i]
   })
-  # Using estimated evals (aka using estimated eigenvectors) is biased: upwardly for largest eigenvalue
-  # Instead use arbitrarily assigned basis vectors of the eigenspace.
-  # Can do this by random rotations of the estimated eigenvectors of the space,
-  # Or projection-like operations from some predefined basis.
+  
+  # Below chooses the basis for each eigenspace. 
+  # Arbitrary options are 'random' or projection-like from a set of prespecified eigenvectors (e.g. cannonical vectors).
+  # Non-arbitrary are 'sample' - uses the eigenvectors of the sample mean,
+  # and 'mincorr' which finds eigenvectors that minimises the correlation between the resulting eigenvalue estimates
   if (is.character(refbasis) && (refbasis[[1]] == "sample")){
     es$vectors <- es$vectors
   } else if (is.character(refbasis) && (refbasis[[1]] == "mincorr")){
-    es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = diag(nrow(es$vectors)))
-    es$vectors <- mostdiagevecs(es$vectors, idxs, mcov = C0/nrow(x))
+    es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = diag(nrow(es$vectors))) #start with canonical vectors
+    es$vectors <- mostdiagevecs(es$vectors, idxs, mcov = C0/nrow(x)) #optimise vectors to reduce correlation
   } else {
-    es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = refbasis)
+    es$vectors <- arbitrary_evecs(es$vectors, idxs, refbasis = refbasis) #project-like specified vectors to become orthogonal bases of the estimated eigenspaces
   }
   es$values <- diag(t(es$vectors) %*% av %*% es$vectors)
   
-  # the random variables xi in sets per multiplicity because the weight matrix is different in each one
+  # for each unique hypothesised eigenvalue, projects the estimated eigenvalues into the plane perpendicular to (1,1,...1)
   xi <- xiget(es$values, mult, idxs)
 
   covar <- xicovar(mult, idxs, es$vectors, C0/nrow(x))
@@ -173,6 +174,7 @@ xicovar <- function(mult, idxs, evecs, Cav){
 # for each pair of distinct eigenvalues with multiplicity>1, create the matrix of covariance between eigenvalues (I've called this matrix A_jk in my notes)
 # j and k refer to index of *distinct* eigenvalues, i.e. entries of mult
 # idxs is a list of vectors, each vector contains the columns of evecs that have columns corresponding to the vectors eigenvalue
+# the computations here overlap a lot with the computation of cov_evals()
 covarbetweenevals <- function(j, k, idxs, evecs, Cav){
   Dp <- dup(nrow(evecs))
   idxj = idxs[[j]]
@@ -192,7 +194,8 @@ covarbetweenevals <- function(j, k, idxs, evecs, Cav){
 # Schwartzman's blk() operation for eigenvalues
 # Returns a modification of evals that matches multiplicity given in mult
 # Assumes evals in descending order, and 
-# averages in blocks given by mult
+# averages in these evals blocks given by mult
+# Useful for computing a hypothetical population mean that satisfies the null hypothesis
 multiplicity_blk <- function(evals, mult){
   #indices
   cmult <- cumsum(mult)
@@ -208,7 +211,7 @@ multiplicity_blk <- function(evals, mult){
   return(newevals)
 }
 
-# For a given hypothetical mult, get the corresponding null mean from a sample average
+# From the sample average, calculate a hypothetical population mean that satisfies the given hypothetical multiplicity
 multiplicity_nullmean <- function(av, mult){
   stopifnot(sum(mult) == ncol(av))
   stopifnot(all(mult > 0))
@@ -236,48 +239,16 @@ standardise_multiplicity <- function(x, mult){
   out <- t(t(x) - av + nullmean)
 }
 
-standardise_multiplicity_old <- function(x, mult){
-  x <- as_fsm(x)
-  av <- mmean(x)
-  stopifnot(sum(mult) == ncol(av))
-  stopifnot(all(mult > 0))
-  stopifnot(any(mult != 1))
-  es <- eigen_desc(av, symmetric = TRUE)
-
-  #indices
-  cmult <- cumsum(mult)
-  esvalstart <- c(0, cmult[-length(cmult)]) + 1
-
-
-  # get eigenvalues for each multiplicity by averaging 
-  evals <- vapply(1:length(mult), function(i){
-    mean(es$values[esvalstart[i] : cmult[i]])
-  }, FUN.VALUE = 1.1)
-  
-  #make matices with the correspond eigenvectors (with eval of 1 for now)
-  mats <- lapply(1:length(mult), function(i){
-    idx <- esvalstart[i] : cmult[i]
-    msum(lapply(idx, function(k) es$vectors[, k] %*% t(es$vectors[, k])))
-  })
-
-  #combine evals and mats to create a matrix with the desired multiplicity of eigenvalues and the same eigenvectors of av
-  newM <- msum(mapply('*', evals, mats, SIMPLIFY = FALSE))
-
-  # make new sample out of newM and errors
-  newM <- vech(newM)
-  av <- vech(av)
-  out <- t(t(x) - av + newM)
-  return(out)
-}
-
-# random matrices in the uniform distribution on the Stiefel manifold can be obtained as the L in X = TL decomposition of a random Normal matrix (elements iid normal), where
+# For random rotations of the eigenspace basis, want random orthogonal matrices with positive determinant.
+# Here I dont bother with the positive determinant requirement as the sign of the axes doesnt matter.
+# Random matrices in the uniform distribution on the Stiefel manifold can be obtained as the L in X = TL decomposition of a random Normal matrix (elements iid normal), where
 # T is lower triangular (and square) and L is unitary (not necessarily square).
-#[ P67-68 Gupta and Nagar 1999]
+# [P67-68 Gupta and Nagar 1999]
 # This is not quite the QR decomposition in LINPACK which is X = QR such that Q is orthonormal (square matrix) and R is upper triangular.
 # t(X) = QR => X = R^T Q^T.
 # R^T is lower triangular ==> T
 # Q^T is orthonormal ==> L.
-# So when X if square the Q of the QR decomposition of t(X) is the transpose of a uniformly random matrix on the Stiefel manifold.
+# So when X is square the Q of the QR decomposition of t(X) is the transpose of a uniformly random matrix on the Stiefel manifold.
 # @param p the nrows and columns
 runifortho <- function(p){
   # rstiefel::rustiefel(p,p)
@@ -290,10 +261,9 @@ runifortho <- function(p){
 
 #' @noRd
 #' @title randomly rotate eigenvectors for each eigenspace
-#' @description Get evals after random rotations of the eigenvectors for each eigenvalue
-# To uniformly randomly rotate them in each block, need uniform rotation matrices
-# these can be found by uniform simulation within the basis of the given eigenvectors
-# I can represent the existing basis as e1,e2,e3 etc, and create a new basis by using the random matrix to project e1,e2,e3 onto new directions of e1,e2,e3.
+#' @description Get eigenvalue estimates after arbitrary choice of the basis defining the eigenspace
+# To uniformly randomly rotate them in each block, need uniform rotation matrices using runifortho()
+# For each eigenspace, calls arbitrary_basis() to do the actual calculations.
 arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
   #check refbasis:
   if (is.character(refbasis)){if (refbasis != "random"){stop("refbasis must be either 'random' or a matrix")}}
@@ -314,7 +284,7 @@ arbitrary_evecs <- function(evecs, idxs, refbasis = "random"){
 
 
 #' @noRd
-#' @description For a subspace, uniformly randomly rotate it, or create a new one based on a reference
+#' @description For a subspace, uniformly randomly rotate the basis vectors within the subspace, or create a new basis using a reference
 #' @param subspace A matrix of column vectors.
 #' @param refbasis A matrix of column vectors or "random"
 arbitrary_basis <- function(subspace, refbasis = "random"){

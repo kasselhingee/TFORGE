@@ -33,9 +33,6 @@ test_that("stat is zero for standarised sample, dim 7", {
   
   Ystdsample <- standardise_multiplicity(Ysample, mult = mult)
   
-  # old way of calculating Ystdsample matches new way
-  expect_equal(standardise_multiplicity_old(Ysample, mult = mult), Ystdsample)
-
   #check new average has correct properties
   newav <- mmean(Ystdsample)
   newes <- eigen_desc(newav)
