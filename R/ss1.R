@@ -155,6 +155,18 @@ has_ss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
 
 # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0) for use in empirical likelihood
 # also compute the bounds on free scalar c - see Eq37_cj_bound.pdf
+# @description The bounds on c are computed by exploiting the eigenvectors of the hypothesised mean:
+# \deqn{cQdiag(\delta_0)Q^\top = \sum_{i=1}^n w_i Y_i}
+# means that 
+# \deqn{diag(c\delta_0) = \sum_{i=1}^n w_i Q^\top Y_i Q,}
+# in particular
+# \deqn{c\delta_0[1] = \sum_{i=1}^n w_i (Q^\top Y_i Q)[1,1]}
+# and similar for 2nd, 3rd etc eigenvalue.
+# Because the \eqn{w_i} create convex combinations, this means that
+# \deqn{min((Q^\top Y_i Q) [1,1]) \leq c\delta_0[1] \leq max((Q^\top Y_i Q) [1,1]),}
+# and similar for 2nd, 3rd etc eigenvalue.
+# Currently this does not exploit the fact that \eqn{tr(Y_i Y_i) = 1} (and similar for \eqn{\delta_0}) and \eqn{c} is the Frobenius norm of \eqn{\sum_{i=1}^n w_i Y_i},
+# which means that \eqn{c} must be between 0 and 1.
 # @param ms a single sample of tensors
 # @param d0 the NULL set of eigenvalues
 # @param av The average of `ms`, if omitted then computed from `ms` directly (include to save computation time)
