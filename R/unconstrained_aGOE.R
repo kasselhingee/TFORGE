@@ -1,5 +1,5 @@
 # Utility functions for Schwartzman 2010 test
-# vecd (which is not quite vech and has a different ordering)
+# vecd vectorises matrices, but has a different ordering to vech, and scales the off-diagonal elements
 vecd <- function(m){
   c(diag(m), sqrt(2) * m[lower.tri(m, diag = FALSE)])
 }
@@ -23,13 +23,14 @@ vech2vecd <- function(vec){
   drop(vech2vecd_mat(length(vec)) %*% vec)
 }
 
-# Special sample covariance that uses Schwartzman's vecd, but with merr in vech form
+# Special sample covariance that uses Schwartzman's vecd scaling and ordering, but with merr in vech form (e.g. compatible with fsm objects)
 S_mcovar <- function(merr){
   tmpmat <- vech2vecd_mat(ncol(merr))
   tmpmat %*% mcovar(merr) %*% t(tmpmat)
 }
 
-# i is the index that correponds to 1, p is the number of rows/columns
+# Eii is a index-like matrix used for wii below.
+# i specifies the index that correponds to 1, p is the number of rows/columns of the returned matrix
 Eii <- function(i, p){
   out <- matrix(0, p, p)
   out[i, i] <- 1
@@ -140,12 +141,12 @@ test_unconstrained_aGOE <- function(x, x2 = NULL, B = "chisq", nullevals = "av",
 
   if (B == "chisq"){# use Schwartzman's asymptotic calibration
     Tstat <- stat_unconstrained_aGOE(as_flat(list(x1, x2)), scale = scalestat)
-    if (scalestat){
+    if (scalestat){#statistic already comes scaled, only need to choose df
       pval <- 1-stats::pchisq(Tstat, df = attr(Tstat, "df"))
       a = 1
       df = attr(Tstat, "df")
       var_Lambda_evals = attr(Tstat, "var_Lambda_evals")
-    } else {# do the scaling of stat here
+    } else {#statistic not already scaled, so do it here
       anv <- S_anv(n1, n2, attr(Tstat, "M1"), attr(Tstat, "M2"), 
             C1 = S_mcovar(merr(x1, mean = attr(Tstat, "M1"))),
             C2 = S_mcovar(merr(x2, mean = attr(Tstat, "M2"))))
@@ -182,7 +183,7 @@ test_unconstrained_aGOE <- function(x, x2 = NULL, B = "chisq", nullevals = "av",
 }
 
 # for similarity with stat_unconstrained
-# not always scaling by a because it is computationally expensive to bootstrap
+# @param scale If true, then scale by a before returning. scale=FALSE is the default to match Schwartzman et al (2010) descriptions
 stat_unconstrained_aGOE <- function(x, scale = FALSE){
   x <- as_flat(x)
   stopifnot(inherits(x, "TFORGE_kfsm"))

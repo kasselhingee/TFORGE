@@ -29,7 +29,8 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   # get V from x
   covar_unconstrained <- cov_evals_est(x = x, evecs = es$vectors, av = av)
   
-  
+  # Now find the region that has values of stat below statthreshold
+ 
   # get lower and upper bound by solving quadratic formula
   # a building block
   A0 <- matrix(c( 0, 1,-1,
@@ -92,7 +93,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
 }
   
 
-# and a test function - see if lower and upper points project to either side of the tangent at the test evals
+# Function that returns true of false if in the region
 # @describeIn conf_ss1fixedtrace Return whether a particular set of eigenvalues `evals` lies in the confidence region returned by [conf_ss1fixedtrace()].
 #' @rdname conf_ss1fixedtrace
 #' @param evals A set of eigenvalues with trace of zero and sum of squares of one.

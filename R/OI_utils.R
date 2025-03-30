@@ -1,5 +1,3 @@
-# File for Single Sample Schwartzman 2008 Methods
-
 #' @title Estimate parameters of orthogonally invariant covariance
 #' @description
 #' Orthogonally-invariant covariance is a restrictive structure, but if it holds then a suite of tools is available \insertCite{schwartzman2008in}{TFORGE}.
@@ -22,11 +20,11 @@
 #' @export
 estimate_OIcov <- function(x, Mhat, tau = NULL){
   x <- as_fsm(x)
-  p <- as.integer((-1 + sqrt(8*ncol(x) + 1))/2)
+  p <- dim_fsm_kfsm(x)
   q <- p * (p+1)/2
   Ybar <- colMeans(x)
   Yerr <- t(t(x) - Ybar)
-  # estimate tau
+  # estimate tau if not supplied
   if (is.null(tau)){
     numerator <- mean(OIinnerprod_fsm(Yerr, Yerr, 1, (p+1)/2)) +
       OIinnerprod_fsm(matrix(Ybar - vech(Mhat), nrow = 1), 

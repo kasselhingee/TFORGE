@@ -1,10 +1,13 @@
-# @title The sample mean, difference to the mean and covariance of elements for a set of matrices.
+# @title The sample mean, difference to the mean and covariance of elements for fsm.
 # @param ms Set of matrices as a list or a 3-array.
+
+# mean
 mmean <- function(ms){
   stopifnot(inherits(ms, "TFORGE_fsm"))
   invvech(colMeans(ms))
 }
 
+# difference to mean
 merr <- function(ms, mean = mmean(ms)){
   stopifnot(inherits(ms, "TFORGE_fsm"))
   mean = vech(mean)
@@ -13,6 +16,7 @@ merr <- function(ms, mean = mmean(ms)){
   return(out)
 }
 
+# covariance
 mcovar <- function(merr){
   stopifnot(inherits(merr, "TFORGE_fsm"))
   out <- stats::cov(merr)
@@ -22,6 +26,7 @@ mcovar <- function(merr){
   return(out)
 }
 
+# sum
 msum <- function(ms){
   if (inherits(ms, "TFORGE_fsm")){return(invvech(colSums(ms)))}
   else{return(purrr::reduce(ms, `+`))}

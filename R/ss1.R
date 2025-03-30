@@ -32,19 +32,20 @@ test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
     df <- (dim_fsm_kfsm(x) - 1) * (length(x) - is.null(evals))
     return(chisq_calib(x, stat_ss1, df = df, evals = evals))
   }
-  
+
+  # statistic and null eigenvalues  
   t0 <- stat_ss1(x, evals = evals)
   d0 <- attr(t0, "null_evals")
   
   # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0)
-  # also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
+  # also compute the bounds on free scalar c - See Eq37_cj_bound.pdf
   nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
   
-  # compute corresponding weights that lead to emp.lik.
-
+  # maximise weights that empirical likelihood
   wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
+
   
-  #check the weights
+  #check the weights, if not good, exit
   if (!wtsokay(wts)){
     out <- list(
       pval = 0,
@@ -86,7 +87,6 @@ stat_ss1 <- function(x, evals = NULL){
   
   # now for the eigenvalue for the null
   if (is.null(evals)){
-    #estimate according to (35)
     mats <- mapply(function(n, Delta, Omega){n * t(Delta) %*% solve_error(Omega) %*% Delta},
                    n = vapply(x, nrow, FUN.VALUE = 1),
                    Delta = Deltas,
@@ -154,7 +154,7 @@ has_ss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
 
 
 # compute means that satisfy the NULL hypothesis (eigenvalues equal to d0) for use in empirical likelihood
-# also compute the bounds on possible cj in equation (37). See Eq37_cj_bound.pdf
+# also compute the bounds on free scalar c - see Eq37_cj_bound.pdf
 # @param ms a single sample of tensors
 # @param d0 the NULL set of eigenvalues
 # @param av The average of `ms`, if omitted then computed from `ms` directly (include to save computation time)
@@ -183,7 +183,7 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
 
 
 
-#' Eigenvalues divided to have squared sum 1 
+#' For a single matrix, scale to have size 1 
 #' Uses the fact that A*A squares the eigenvalues of A, and the trace of a matrix is the sum of the eigenvalues.
 #' m A symmetric matric
 #' @noRd

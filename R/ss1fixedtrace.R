@@ -38,17 +38,18 @@ test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25){
     df <- (dim_fsm_kfsm(x) - 2) * (length(x) - is.null(evals))
     return(chisq_calib(x, stat_ss1fixedtrace, df = df, evals = evals))
   }
-  
+
+  # statistic and eigenvalues of the null hypothesis  
   t0 <- stat_ss1fixedtrace(x, evals = evals)
   d0 <- attr(t0, "null_evals")
   
   # means corresponding to NULL and d0
   nullmeans <- lapply(x, elnullmean, d0 = d0, getcbound = TRUE)
   
-  # el weights
+  # find weights that maximise empirical likelihood
   wts <- mapply(opt_el.test, ms = x, mu = nullmeans, maxit = maxit, SIMPLIFY = FALSE)
   
-  #check the weights
+  #check the weights, return early if not good
   if (!wtsokay(wts)){
     out <- list(
       pval = 0,
@@ -98,7 +99,6 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
   
   # now for the eigenvalue for the null
   if (is.null(evals)){
-    #estimate according to equation after (40)
     mats <- mapply(function(n, aveval, Omega){
       n * t(A0) %*% aveval %*% t(aveval) %*% A0 / drop(t(aveval) %*% t(A0) %*% Omega %*% A0 %*% aveval)
       },
@@ -128,7 +128,7 @@ stat_ss1fixedtrace <- function(x, evals = NULL){
     if (!isTRUE(all.equal(sum(d0), sum(diag(invvech(x[[1]][1, ])))))){stop("Provided evals do not sum to trace of observations.")}
   }
   
-  # now the statistic (40) for each sample:
+  # now the statistic for each sample:
   persamplestat <- mapply(function(d3, Omega, n){
     n * (t(d0) %*% t(A0) %*% d3)^2 / (t(d0) %*% t(A0) %*% Omega %*% A0 %*% d0)
   },

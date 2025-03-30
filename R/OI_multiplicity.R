@@ -24,11 +24,17 @@ test_multiplicity_OI <- function(x, mult, B = "chisq", refbasis = NULL){
 stat_multiplicity_OI <- function(x, mult){
   mn <- colMeans(x)
   es_mn <- eigen_desc(invvech(mn))
+  
+  # hypothetical mean under the null hypothesis
   Mhat <- es_mn$vectors %*% diag(blk(es_mn$values, mult)) %*% t(es_mn$vectors)
+
+  # covariance of matrix
   OIparams <- estimate_OIcov(x, Mhat)
   if (is.infinite(OIparams$tau)){stop("Estimated tau is infinite")}
   if (!is.finite(OIparams$scalesq)){stop("Estimated scalesq is is not finite number")}
   if (!is.finite(OIparams$tau)){stop("Estimated tau is not finite number")}
+
+  # Compute statistic
   stat <- (nrow(x)/OIparams$scalesq) * sum((es_mn$values - blk(es_mn$values, mult))^2)
   attr(stat, "scalesq") <- OIparams$scalesq
   attr(stat, "tau") <- OIparams$tau
@@ -38,7 +44,8 @@ stat_multiplicity_OI <- function(x, mult){
 
 # block into multiplicities a set of ordered eigenvalues, following Definition 4.1 Schwartzman (2008) for blk
 # @param mult A vector giving the multiplicity of eigenvalues in descending order of eigenvalue size.
-# @returns A vector of new eigenvalues
+# @description Could be the same as the `multiplicity_blk()` function elsewhere.
+# @returns A vector of new eigenvalues where each block of the original eigenvalues has been replaced by the mean of the block
 blk <- function(evals, mult){
   #indices of multiplicity - same as stat_multiplicity()
   cmult <- cumsum(mult)

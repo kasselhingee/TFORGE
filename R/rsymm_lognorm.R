@@ -1,5 +1,5 @@
 # use matrix exponential to get observations with non-negative eigenvalues
-# it isn't quite like entries are lognormally distributed
+# simulate first from a multivariate normal with mean of `meanlog` and covariance of `sigmalog`
 rsymm_lognorm <- function(n, meanlog, sigmalog = diag(length(vech(meanlog)))){
   stopifnot(isSymmetric(meanlog))
   logX <- rsymm_norm(n, mean = meanlog, sigma = sigmalog)
