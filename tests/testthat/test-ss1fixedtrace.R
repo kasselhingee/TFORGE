@@ -120,3 +120,26 @@ test_that("chisq: test_ss1fixedtrace() uniform pval on NULL TFORGE_kfsm", {
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.2)
 })
+
+test_that("Amaral rotation preserves constraints", {
+  skip_if_not_installed("sphm")
+  Y <- rsymm_norm(50, diag(c(1/sqrt(2), 1/sqrt(2), -2/sqrt(2))))
+  Y <- project_trace(Y) #this shifts the distribution if the trace from rsymm_norm isn't symmertic about zero
+  Y <- normL2evals_sst(Y) #replace eigenvalues with normalised ones. This changes the distribution, but I think it is symmetric about the mean normalised eigenvalues - just like averages of directions.
+  expect_true(has_fixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
+  expect_true(has_ss1(Y))
+  
+  obsMean <- normL2evals(mmean(Y))
+  ed <- eigen_desc(obsMean)
+  newMean <- ed$vectors %*% diag(c(1/sqrt(2), 0, -1/sqrt(2))) %*% t(ed$vectors)
+  
+  rotmat <- sphm::rotationmat_amaral(vecd(obsMean), vecd(newMean))
+  vecdY <- Y %*% t(vech2vecd_mat(ncol(Y)))
+  newvecdY <- vecdY %*% t(rotmat)
+  newvechY <- as_fsm(newvecdY %*% t(solve(vech2vecd_mat(ncol(Y)))))
+  
+  # new data set has desired sample mean and satisfies constraints
+  expect_equal(normL2evals(mmean(newvechY)), newMean)
+  expect_true(has_fixedtrace(Y, tolerance = 1E10 * sqrt(.Machine$double.eps)))
+  expect_true(has_ss1(Y))
+})
