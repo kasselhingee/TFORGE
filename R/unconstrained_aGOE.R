@@ -11,6 +11,7 @@ invvecd <- function(x){
   m[upper.tri(m)] <- t(m)[upper.tri(m)]
   return(m)
 }
+# vech2vecd_mat() produces a matrix that converts from vech() vectors to vecd vectors
 vech2vecd_mat <- function(len){
   permmat <- matrix(0, len, len)
   isdiag <- isondiag_vech(rep(1, len))
