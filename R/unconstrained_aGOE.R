@@ -1,5 +1,21 @@
 # Utility functions for Schwartzman 2010 test
 # vecd vectorises matrices, but has a different ordering to vech, and scales the off-diagonal elements
+#' @title Flatten a symmetric matrix into a vector preserving Frobenius norm.
+#' @description
+#' The `vecd` operator as used by \insertCite{schwartzman2008in;textual}{TFORGE} flattens a symmetric matrix into a vector of unique element such that the Frobenius norm of the matrix equals the Euclidean norm of the vector. This means that the off-diagonal elements are scaled by \eqn{\sqrt{2}}{`sqrt(2)`}.
+#' In the returned vector the diagonal elements are first then the (scaled) off-diagonal elements; this ordering is different to [`vech()]`.
+#' @details
+#' The `vecd()` function has a single line of code:
+#'
+#'     c(diag(m), sqrt(2) * m[lower.tri(m, diag = FALSE)])
+#' 
+#' The matrix `m` is not checked for symmetry.
+#' @param m A symmetric matrix
+#' @examples
+#' m <- invvech(1:6)
+#' vecd(m)
+#' @references \insertAllCited{}
+#' @export
 vecd <- function(m){
   c(diag(m), sqrt(2) * m[lower.tri(m, diag = FALSE)])
 }

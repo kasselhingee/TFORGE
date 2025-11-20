@@ -54,7 +54,7 @@ estimate_OIcov <- function(x, Mhat, tau = NULL){
 #' 3. the diagonal elements are independent of the off-diagonal elements.
 #' 
 #' For positive definiteness, \eqn{\tau} must be smaller than \eqn{1/p}
-#' @param vectorisor Either 'vech' or 'vecd'. The covariance matrix in Schwartzman et al (2008) represents a random (data) matrix as a vector using [`vecd()`], which puts a \eqn{\sqrt{2}}{`sqrt(2)`} weight on the off diagonals, and has a different ordering to [`vech()`].
+#' @param vectorisor Either 'vech' or 'vecd'. The covariance matrix in \insertCite{schwartzman2008in;textual}{TFORGE} represents a random (data) matrix as a vector using [`vecd()`], which puts a \eqn{\sqrt{2}}{`sqrt(2)`} weight on the off diagonals, and has a different ordering to [`vech()`].
 #' @param p The dimension of the random matrix.
 #' @param s The scale \eqn{\sigma}{s} for the covariance matrix.
 #' @param tau The offset \eqn{\tau}{tau} for the covariance related to the diagonal elements of the random matrix.
