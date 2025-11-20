@@ -63,6 +63,13 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \references{
 \insertAllCited{}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/kasselhingee/TFORGE}
+}
+
+}
 \author{
 \strong{Maintainer}: Kassel Liam Hingee \email{kassel.hingee@anu.edu.au} (\href{https://orcid.org/0000-0001-9894-2407}{ORCID})
 
