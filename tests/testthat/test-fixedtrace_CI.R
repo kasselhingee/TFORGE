@@ -1,4 +1,5 @@
 test_that("regularellipse() point satisfy on equation", {
+  skip_on_cran()
   a <- 3
   b <- 5
   expect_equal(drop(regularellipse(0, a = a, b = b)), c(x = a, y = 0))
@@ -10,6 +11,7 @@ test_that("regularellipse() point satisfy on equation", {
 })
 
 test_that("conf_fixedtrace() warns when ordered boundary is intersected", {
+  skip_on_cran()
   set.seed(345)
   ms <- rsymm_norm(n = 10, mean = diag(c(4,2,1)))
   ms <- normalise_trace(ms)
@@ -18,6 +20,7 @@ test_that("conf_fixedtrace() warns when ordered boundary is intersected", {
 })
 
 test_that("conf_fixedtrace() contains population mean about 95% of the time", {
+  skip_on_cran() #slow
   set.seed(345)
   popmeanincr <- replicate(100, {
      ms <- rsymm_norm(n = 30, mean = diag(c(4,2,1)))
