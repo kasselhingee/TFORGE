@@ -1,5 +1,5 @@
 test_that("rsymm_lognorm normalised has correct eigenvalues", {
-  skip_on_cran() #very slow to test
+  skip_if_fast_check() #very slow to test
   # simulating from a narrow distribution to keep within bounds
   sdlog <- 0.1
   meanlogval <- log(1/3) - sdlog^2/2
@@ -25,7 +25,7 @@ rftiso <- function(n, meanlog = log(1/3) - 0.1^2/2, sdlog = 0.1){
 
 test_that("test on norm has bad size for small n, even with well confined sample eigenvectors and no normalization", {
   #  this test checks that poor convex hull behaviour is not due to non-negative distributions (I suspect it is due to eigenvectors with uniform distribution). Note that the transformation-based bootstrap does not have this problem.
-  skip_on_cran() #takes a few seconds and not essential
+  skip_if_fast_check() #takes a few seconds and not essential
   vals <- lapply(1:100, function(seed){
     set.seed(seed)
     Ysample <- rsymm_norm(15, mean = diag(1/3, 3), sigma = diag(c(0.001, 0.0001, 0.0001, 0.001, 0.0001, 0.001)))

@@ -55,7 +55,7 @@ test_that("singularity error activates in resampling", {
 })
 
 test_that("stat single sample has correct NULL distribution for projected trace", {
-  skip_on_cran() #slow
+  skip_if_fast_check()
   set.seed(6514)
   vals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1) - 2))
@@ -69,7 +69,7 @@ test_that("stat single sample has correct NULL distribution for projected trace"
 })
 
 test_that("stat single sample has WRONG NULL distribution for normalise_trace", {
-  skip_on_cran() #slow
+  skip_if_fast_check()
   set.seed(6514)
   vals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1)/6), sigma = 0.05 * diag(1, 3*2))
@@ -83,7 +83,7 @@ test_that("stat single sample has WRONG NULL distribution for normalise_trace", 
 })
 
 test_that("stat on multi sample has correct NULL distribution", {
-  skip_on_cran() #slow
+  skip_if_fast_check()
   set.seed(65142)
   vals <- replicate(100, {
     Ysamples <- lapply(c(2000, 100, 100, 100), function(n){
@@ -100,7 +100,7 @@ test_that("stat on multi sample has correct NULL distribution", {
 })
 
 test_that("stat on normed multi sample has correct NULL distribution", {
-  skip_on_cran() #slow
+  skip_if_fast_check()
   set.seed(65141)
   vals <- replicate(100, {
     Ysamples <- replicate(5, {

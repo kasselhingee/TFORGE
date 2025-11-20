@@ -86,7 +86,7 @@ test_that("stat has correct null distribution for large samples", {
 })
 
 test_that("test has uniform distribution for refbasis = sample or random", {
-  # takes 20s skip_on_cran()
+  # takes 20s skip_if_fast_check()
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   set.seed(1)#set.seed(1331)
