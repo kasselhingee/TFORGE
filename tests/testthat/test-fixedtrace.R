@@ -55,9 +55,8 @@ test_that("singularity error activates in resampling", {
 })
 
 test_that("stat single sample has correct NULL distribution for projected trace", {
-  skip_if_fast_check()
   set.seed(6514)
-  vals <- replicate(100, {
+  vals <- replicate(ifelse(fast_check_on(), 10, 100), {
     Y <- rsymm_norm(50, diag(c(3,2,1) - 2))
     Y <- project_trace(Y) #this method of getting the correct trace seems to create narrower distributions than the normalising method
     stat_fixedtrace(Y, c(3,2,1) - 2)
@@ -83,9 +82,8 @@ test_that("stat single sample has WRONG NULL distribution for normalise_trace", 
 })
 
 test_that("stat on multi sample has correct NULL distribution", {
-  skip_if_fast_check()
   set.seed(65142)
-  vals <- replicate(100, {
+  vals <- replicate(ifelse(fast_check_on(), 10, 100), {
     Ysamples <- lapply(c(2000, 100, 100, 100), function(n){
       Y <- rsymm_norm(n, diag(c(3,2,1)))
       Y <- project_trace(Y)
@@ -118,7 +116,7 @@ test_that("stat on normed multi sample has correct NULL distribution", {
 
 
 test_that("test of NULL has uniform p values for TFORGE_fsm", {
-  skip_if_fast_check() #bootstrapping is pretty good at getting uniform p-values - check only bootstrapping once directly
+  skip_if_fast_check() #just check kfsm
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1) - 2), sigma = diag(rep(0.1, 6)))
@@ -144,15 +142,14 @@ test_that("chisq: test of NULL has uniform p values for TFORGE_fsm", {
 
 
 test_that("test of NULL has uniform p values for TFORGE_kfsm", {
-  skip_if_fast_check() #bootstrapping is pretty good at getting uniform p-values - check only bootstrapping once directly
   set.seed(1333)
-  pvals <- replicate(100, {
+  pvals <- replicate(ifelse(fast_check_on(), 10, 100), {
     Ysamples <- replicate(5, {
       Y <- rsymm_norm(50, diag(c(3,2,1)))
       Y <- project_trace(Y)
       Y
     }, simplify = FALSE)
-    res <- test_fixedtrace(Ysamples, B = 100, maxit = 100)
+    res <- test_fixedtrace(Ysamples, B = ifelse(fast_check_on(), 20, 100), maxit = 100)
     res$pval
   })
   # qqplot(pvals, y = runif(100))
