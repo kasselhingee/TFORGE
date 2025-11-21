@@ -39,7 +39,7 @@ test_that("test on norm has bad size for small n, even with well confined sample
 
 test_that("test has uniform distribution at large n=30", {
   set.seed(10)
-  vals <- replicate(100, {
+  vals <- replicate(ifelse(fast_check_on(), 10, 100), {
     Ysample <- rftiso(30)
     res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 100)
     res[c("pval", "B")]
@@ -52,6 +52,7 @@ test_that("test has uniform distribution at large n=30", {
 
 
 test_that("test rejects some incorrect hypotheses p = 3", {
+  skip_if_fast_check()
   set.seed(13321)
   Ysample <- rsymm(30, diag(c(2,2,1)-3), sigma = diag(3 * (3+1) /2))
   nonnegevals <- t(apply(Ysample, 1, function(v){

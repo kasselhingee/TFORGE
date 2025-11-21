@@ -118,6 +118,7 @@ test_that("stat on normed multi sample has correct NULL distribution", {
 
 
 test_that("test of NULL has uniform p values for TFORGE_fsm", {
+  skip_if_fast_check() #bootstrapping is pretty good at getting uniform p-values - check only bootstrapping once directly
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(3,2,1) - 2), sigma = diag(rep(0.1, 6)))
@@ -143,6 +144,7 @@ test_that("chisq: test of NULL has uniform p values for TFORGE_fsm", {
 
 
 test_that("test of NULL has uniform p values for TFORGE_kfsm", {
+  skip_if_fast_check() #bootstrapping is pretty good at getting uniform p-values - check only bootstrapping once directly
   set.seed(1333)
   pvals <- replicate(100, {
     Ysamples <- replicate(5, {

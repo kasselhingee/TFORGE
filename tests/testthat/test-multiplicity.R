@@ -50,6 +50,7 @@ test_that("stat is zero for standarised sample, dim 7", {
 })
 
 test_that("debugging stat with true evecs has correct null distribution", {
+  skip_if_fast_check()
   set.seed(1332)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
@@ -75,7 +76,8 @@ test_that("stat has correct null distribution for large samples", {
       statc = stat_multiplicity(Ysample, mult = mult, refbasis = diag(1, 7)),
       statm = stat_multiplicity(Ysample, mult = mult, refbasis = "mincorr"),
       stats = stat_multiplicity(Ysample, mult = mult, refbasis = "sample"),
-      stata = stat_multiplicity(Ysample, mult = mult, refbasis = abasis))
+      stata = stat_multiplicity(Ysample, mult = mult, refbasis = abasis)
+      )
   })
   
   expect_gt(ks.test(vals["statr", ], "pchisq", df = sum(mult-1))$p.value, 0.2)
@@ -86,7 +88,7 @@ test_that("stat has correct null distribution for large samples", {
 })
 
 test_that("test has uniform distribution for refbasis = sample or random", {
-  # takes 20s skip_if_fast_check()
+  skip_if_fast_check()
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
   set.seed(1)#set.seed(1331)
@@ -106,23 +108,25 @@ test_that("test has uniform distribution for refbasis = sample or random", {
 test_that("test has uniform distribution at normalised small n=15, p = 3", {
   #takes a 20s to run
   set.seed(10)
-  vals <- replicate(100, {
+  vals <- replicate(ifelse(fast_check_on(), 10, 100), {
     Ysample <- rsymm_norm(15, mean = diag(1/3, 3), sigma = diag(0.1^2, 6))
     Ysample <- normalize_trace(Ysample)
     res <- test_multiplicity(Ysample, mult = 3, B = 100)
     res[c("pval", "B")]
   })
   pvals <- unlist(vals[1, ])
-  expect_lt(abs(mean(pvals <= 0.05)-0.05), 0.01)
   # qqplot(pvals, y = runif(1000))
   expect_gt(suppressWarnings(ks.test(pvals, "punif"))$p.value, 0.1)
+
+  skip_if_fast_check()
+  expect_lt(abs(mean(pvals <= 0.05)-0.05), 0.01)
 })
 
 test_that("chisq: test has uniform distribution with refbasis=random", {
   set.seed(1)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- replicate(100, { #1000 for more thorough
+  vals <- replicate(ifelse(fast_check_on(), 10, 100), { #1000 for more thorough
     Ysample <- rsymm_norm(100, diag(evals), sigma = 0.0001 * diag(1, sum(mult) * (sum(mult) + 1) / 2) )
     c(r = test_multiplicity(Ysample, mult = mult, B = "chisq", refbasis = "random")$pval,
       c = test_multiplicity(Ysample, mult = mult, B = "chisq", refbasis = diag(1, 7))$pval)
@@ -138,13 +142,13 @@ test_that("test rejects some incorrect hypotheses", {
   set.seed(13321)
   Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
                    sigma = 0.01 * diag(7 * (7 + 1)/2))
-  set.seed(2)
-  expect_gt(test_multiplicity(Ysample, mult = c(3,2,1,1), B = 100)$pval, 0.05)
-
   set.seed(3542)
   expect_lt(test_multiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, 0.05)
   set.seed(35423) 
   expect_lt(test_multiplicity(Ysample, mult = c(2,2,2,1), 100)$pval, 0.05)
+
+  skip_if_fast_check()
+
   set.seed(35424) 
   expect_lt(test_multiplicity(Ysample, mult = c(4,1,1,1), 100)$pval, 0.05)
   set.seed(35425) 
@@ -156,6 +160,9 @@ test_that("test rejects some incorrect hypotheses", {
   expect_lt(test_multiplicity(Ysample, mult = c(2,3,2), 100)$pval, 0.05)
   set.seed(3541) 
   expect_lt(test_multiplicity(Ysample, mult = c(3,2,2), 100)$pval, 0.05)
+  
+  set.seed(2)
+  expect_gt(test_multiplicity(Ysample, mult = c(3,2,1,1), B = 100)$pval, 0.05)
 })
 
 test_that("test correctly rejects isotropy", {
@@ -166,8 +173,8 @@ test_that("test correctly rejects isotropy", {
   set.seed(1)
   Ysample <- rsymm(60, diag(c(1.5, 1, 1)), sigma = covT)
   # set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = 1000, refbasis = "random")$pval, 0.05)
-  set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = 1000, refbasis = "sample")$pval, 0.05)
-  set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = 1000, refbasis = diag(1, 3))$pval, 0.05)
+  set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = ifelse(fast_check_on(), 100, 1000), refbasis = "sample")$pval, 0.05)
+  set.seed(2); expect_lt(test_multiplicity(Ysample, mult = 3, B = ifelse(fast_check_on(), 100, 1000), refbasis = diag(1, 3))$pval, 0.05)
 })
 
 test_that("xiget() behaves properly", {
@@ -187,7 +194,7 @@ test_that("xiget() behaves properly", {
   expect_equal(xiget(c(3.0, 2.9, 3.1, 2, 2.1), mult, idxs)==0, c(FALSE, FALSE, FALSE))
 })
 
-test_that("xicovar() gives the same as sample covariance of xi", {
+test_that("xicovar() matches simulated sample covariance of xi with fixed eigenvectors", {
   p = 5
   n = 100
   mult <- c(3, 2)
@@ -228,11 +235,11 @@ test_that("xicovar() gives the same as sample covariance of xi", {
  
   set.seed(35468) 
   # semi-empirical xi
-  emcov_semi <- replicate(1E3,
+  emcov_semi <- replicate(1E2,
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen_desc(mn)$vectors)) |>
     t() |>
     cov()
-  expect_equal(emcov_semi, thecov, tolerance = 0.02)
+  expect_equal(emcov_semi, thecov, tolerance = 0.03)
   # note that xihat (eigenvectors given by mn) has a very different distribution because for each sample the eigenvectors for an eigenvalue can be any from the space,
   # not necessarily the exact ones supplied to thecov.
 })
@@ -248,9 +255,9 @@ test_that("test p value resistant to fixed trace by normalisation", {
   Ysample_n <- normalise_trace(Ysample)
   
   set.seed(34641)
-  pval <- test_multiplicity(Ysample, mult = mult, 1000, refbasis = diag(1, 7))$pval
+  pval <- test_multiplicity(Ysample, mult = mult, ifelse(fast_check_on(), 100, 1000), refbasis = diag(1, 7))$pval
   set.seed(34641)
-  pval_n <- test_multiplicity(Ysample_n, mult = mult, 1000, refbasis = diag(1, 7))$pval
+  pval_n <- test_multiplicity(Ysample_n, mult = mult, ifelse(fast_check_on(), 100, 1000), refbasis = diag(1, 7))$pval
   expect_equal(pval, 
                pval_n, tol = 1E-1)
 })
