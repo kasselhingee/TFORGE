@@ -59,7 +59,7 @@ test_that("stat_multiplicity_OI() has correct null distribution", {
   set.seed(13312)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- replicate(1000, {
+  vals <- replicate(ifelse(fast_check_on(), 100, 1000), {
     Ysample <- rsymm_norm(1E2, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
     stat_multiplicity_OI(Ysample, mult = mult)
   })
@@ -74,7 +74,7 @@ test_that("test_multiplicity_OI() on null has uniform p values", {
   set.seed(13312)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- replicate(1000, {
+  vals <- replicate(ifelse(fast_check_on(), 100, 1000), {
     Ysample <- rsymm_norm(1E2, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
     test_multiplicity_OI(Ysample, mult = mult)$pval
   })
@@ -88,9 +88,9 @@ test_that("test_multiplicity_OI() bootstrap on null has uniform p values", {
   set.seed(13312)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)
-  vals <- replicate(100, {
+  vals <- replicate(ifelse(fast_check_on(), 10, 100), {
     Ysample <- rsymm_norm(30, diag(evals), sigma = OIcov(length(evals), 1/2, 0, vectorisor = "vech"))
-    test_multiplicity_OI(Ysample, mult = mult, B = 100)$pval
+    test_multiplicity_OI(Ysample, mult = mult, B = ifelse(fast_check_on(), 10, 100))$pval
   })
   
   # qqplot(vals, y = runif(1000))
