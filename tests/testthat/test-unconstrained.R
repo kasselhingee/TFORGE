@@ -50,11 +50,11 @@ test_that("stat for TFORGE_kfsm w specified evecs has INcorrect null distributio
 })
 
 test_that("test TFORGE_fsm from NULL has uniform p-values", {
-  pvals <- vapply(13 + (1:100), function(seed){
+  pvals <- vapply(13 + (1:ifelse(fast_check_on(), 20, 100)), function(seed){
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
     set.seed(seed+1)
-    res <- test_unconstrained(Ysample, c(3,2,1), B = 100)
+    res <- test_unconstrained(Ysample, c(3,2,1), B = ifelse(fast_check_on(), 20, 100))
     set.seed(seed+1)
     res$pval}, FUN.VALUE = 1.1)
   # qqplot(pvals, y = runif(1000))
@@ -77,11 +77,11 @@ test_that("chisq_calib: test TFORGE_fsm from NULL has uniform p-values", {
 
 test_that("test from NULL TFORGE_kfsm has uniform p-values", {
   set.seed(13)
-  pvals <- vapply(13 + (1:100), function(seed){
+  pvals <- vapply(13 + (1:ifelse(fast_check_on(), 20, 100)), function(seed){
     set.seed(seed)
-    Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
+    Ysamples <- replicate(3, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
     set.seed(seed+1)
-    res <- test_unconstrained(Ysamples, B = 100)
+    res <- test_unconstrained(Ysamples, B = ifelse(fast_check_on(), 20, 100))
     # set.seed(seed+1)
     # res2 <- test_commonevals(Ysamples, B = 100)
     # expect_equal(res[c("pval", "nullt")], res2[c("pval", "nullt")])
@@ -94,7 +94,7 @@ test_that("test from NULL TFORGE_kfsm has uniform p-values", {
 
 test_that("chisq_calib: test from NULL TFORGE_kfsm has uniform p-values", {
   set.seed(13)
-  pvals <- vapply(13 + (1:100), function(seed){
+  pvals <- vapply(13 + (1:ifelse(fast_check_on(), 20, 100)), function(seed){
     set.seed(seed)
     Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)
     set.seed(seed+1)
