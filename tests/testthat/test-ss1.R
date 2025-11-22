@@ -87,7 +87,7 @@ test_that("test_ss1() reject for single sample with wrong eval", {
   set.seed(1333)
   Y <- rsymm_norm(50, diag(c(3,2,1)), sigma = diag(0.7, 6))
   Y <- normL2evals_sst(Y)
-  res <- test_ss1(Y, normalise_ss1_vec(c(1,1,1)), ifelse(fast_check_on(), 10, 100), maxit = ifelse(fast_check_on(), 10, 100))
+  res <- test_ss1(Y, normalise_ss1_vec(c(1,1,1)), ifelse(fast_check_on(), 10, 100), maxit = ifelse(fast_check_on(), 20, 100))
   expect_lt(res$pval, 0.05)
 })
 
