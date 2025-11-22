@@ -7,5 +7,7 @@ test_that("dup() memoisation works", {
   dup1 <- dup_direct(10)
   expect_equal(dup(10), dup1)
   time1 <- system.time(dup(50))
-  expect_lt(system.time(dup(50))["user.self"], time1["user.self"])
+  if (time1["user.self"] > 1E-5){ # only visible when dup(50) is slow enough
+    expect_lt(system.time(dup(50))["user.self"], time1["user.self"])
+  }
 })
