@@ -9,4 +9,11 @@
 library(testthat)
 library(TFORGE)
 
+# from part of testthat:::on_cran (ignoring the interactive part)
+# do a fast check unless NOT_CRAN is explicitly true
+# see tests/testthat/helper-skips.R
+if (!isTRUE(as.logical(Sys.getenv("NOT_CRAN", "false")))){
+  Sys.setenv("FAST_CHECK" = "true")
+}
+
 test_check("TFORGE")
