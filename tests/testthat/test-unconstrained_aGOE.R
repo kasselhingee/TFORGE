@@ -25,6 +25,7 @@ test_that("makeblockdiagonal works", {
 })
 
 test_that("Results are consistent with the simulation check at the start of Schwartzman Section 3.1.", {
+  skip_if_fast_check()
   # set up distribution means
   M0 <- diag(c(1,2,4))
  
@@ -56,6 +57,7 @@ test_that("Results are consistent with the simulation check at the start of Schw
 })
 
 test_that("Results are consistent with the simulation check at the start of Schwartzman Section 3.1 with fixed Sigma", {
+  skip_if_fast_check()
   # set up distribution means
   M0 <- diag(c(1,2,4))
 
@@ -87,9 +89,9 @@ test_that("Results are consistent with the simulation check at the start of Schw
   # expect_lt(max(abs(ecdffun(ppoints(100)) - ppoints(100))), 0.05)
 })
 
-test_that("Schwartzman statistic for iid elements is chisq under H0 and pvals uniform", {
+test_that("Schwartzman p-value uniform for iid elements under H0", {
   set.seed(15)
-  vals <- replicate(1000, {
+  vals <- replicate(ifelse(fast_check_on(), 20, 1000), {
     Ysamples <- list(
       rsymm(100, diag(c(3,2,1))), #50 was too small, 100 is needed to get good estimates of a and v for the chisquared distribution
       rsymm(100, diag(c(3,2,1)))
@@ -151,7 +153,7 @@ test_that("pvalue close to uniform for non diagonal mean, unequal sample size", 
     return(unlist(res))
   }
   set.seed(231654)
-  sims <- replicate(1000, simulateTstat(100, 500))
+  sims <- replicate(ifelse(fast_check_on(), 100, 1000), simulateTstat(100, 500))
   # qqplot(sims["pval", ], runif(1000)); abline(0, 1, lty = "dotted")
   expect_gt(ks.test(sims["pval", ], "punif")$p.value, 0.2)
   
@@ -199,13 +201,14 @@ test_that("pvalue close to uniform when some correlation", {
     return(unlist(res))
   }
   set.seed(22)
-  sims <- replicate(1000, simulateTstat(100, 500))
+  sims <- replicate(ifelse(fast_check_on(), 100, 1000), simulateTstat(100, 500))
   # qqplot(sims["pval", ], runif(1000)); abline(0, 1, lty = "dotted")
   expect_gt(ks.test(sims["pval", ], "punif")$p.value, 0.2)
 })
 
 
 test_that("convergence of S_anv() with increasing sample size", {
+  skip_if_fast_check()
   p <- 3
   C2 <- C1 <- matrix(0.6, 6, 6)
   diag(C2) <- diag(C1) <- 1
@@ -251,6 +254,7 @@ test_that("convergence of S_anv() with increasing sample size", {
 
 
 test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar has moments implied by S_anv(), cov = I", {
+  skip_if_fast_check()
   p <- 3
   C2 <- C1 <- solve(vech2vecd_mat(6)) %*% diag(6) %*% t(solve(vech2vecd_mat(6)))
   n1 <- 10 
@@ -303,6 +307,7 @@ test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar has momen
 })
 
 test_that("(Welch-Satterthwaite approximation) Schwartzman's Tstatstar has moments implied by S_anv() general cov", {
+  skip_if_fast_check()
   p <- 3
   set.seed(10)
   C1 <- drop(rWishart(1, 6, diag(6)))
@@ -444,15 +449,15 @@ test_that("pvalue close to uniform with bootstrap calibration", {
     p, p, byrow = TRUE)
   mn2 <- mn_U2 %*% diag(c(3,2,1)) %*% t(mn_U2)
   
-  set.seed(231654)
-  pvals <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = 100, scalestat = FALSE)$pval)
+  set.seed(231653)
+  pvals <- replicate(ifelse(fast_check_on(), 20, 100), test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = ifelse(fast_check_on(), 20, 100), scalestat = FALSE)$pval)
   #qqplot(pvals, runif(1000)); abline(0, 1, lty = "dotted")
   res <- suppressWarnings({ks.test(pvals, "punif")})
   expect_gt(res$p.value, 0.05)
   
   # same with scalestat
-  set.seed(231654)
-  pvals2 <- replicate(100, test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = 100, scalestat = TRUE)$pval)
+  set.seed(231653)
+  pvals2 <- replicate(ifelse(fast_check_on(), 20, 100), test_unconstrained_aGOE(as_flat(list(rsymm(30, mn1, C1), rsymm(30, mn1, C1))), B = ifelse(fast_check_on(), 20, 100), scalestat = TRUE)$pval)
   #qqplot(pvals2, runif(1000)); abline(0, 1, lty = "dotted")
   res2 <- suppressWarnings({ks.test(pvals2, "punif")})
   expect_gt(res2$p.value, 0.05)
@@ -461,6 +466,7 @@ test_that("pvalue close to uniform with bootstrap calibration", {
 
 
 test_that("bootstrap calibration nullevals dont matter to power", {
+  skip_if_fast_check()
   p <- 3
   C2 <- C1 <- diag(p*(p+1)/2)
   
