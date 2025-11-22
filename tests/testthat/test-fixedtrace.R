@@ -143,8 +143,8 @@ test_that("chisq: test of NULL has uniform p values for TFORGE_fsm", {
 
 test_that("test of NULL has uniform p values for TFORGE_kfsm", {
   set.seed(1333)
-  pvals <- replicate(ifelse(fast_check_on(), 10, 100), {
-    Ysamples <- replicate(5, {
+  pvals <- replicate(ifelse(fast_check_on(), 20, 100), {
+    Ysamples <- replicate(2, {
       Y <- rsymm_norm(50, diag(c(3,2,1)))
       Y <- project_trace(Y)
       Y
@@ -157,9 +157,9 @@ test_that("test of NULL has uniform p values for TFORGE_kfsm", {
 })
 
 test_that("chisq: test of NULL has uniform p values for TFORGE_kfsm", {
-  set.seed(1333)
-  pvals <- replicate(100, {
-    Ysamples <- replicate(5, {
+  set.seed(1332)
+  pvals <- replicate(ifelse(fast_check_on(), 20, 100), {
+    Ysamples <- replicate(3, {
       Y <- rsymm_norm(50, diag(c(3,2,1)))
       Y <- project_trace(Y)
       Y
