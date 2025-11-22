@@ -1,4 +1,5 @@
 test_that("rsymm_t has correct mean", {
+  skip_if_fast_check()
   set.seed(3654)
   sigma <- diag(c(3,2,1,1,1,1))
   Ys <- rsymm_t(1E4, mean = matrix(1, nrow = 3, ncol = 3), df = 10, sigma = sigma)
