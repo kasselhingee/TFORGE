@@ -3,7 +3,7 @@
 #' Given a sample from a population of symmetric matrices with Gaussian-distributed elements and orthogonally-invariant covariance, corollary 4.3 by \insertCite{schwartzman2008in;textual}{TFORGE} provides a method to test the eigenvalue multiplicity of the mean matrix.
 #' Orthogonally-invariant covariance is a strong assumption and may not be valid; consider using [`test_multiplicity()`] if you are unsure.
 #' @inheritParams test_multiplicity
-#' @param refbasis Ignored (for compatability with [`test_multiplicity()`]).
+#' @param refbasis Ignored (for compatibility with [`test_multiplicity()`]).
 #' @details 
 #' The orthogonally invariant covariance matrix is estimated by [`estimate_OIcov()`]. The maximum-likelihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
 #' @export

@@ -31,7 +31,7 @@ A list:
 \item \code{t} Value of the statistic \insertCite{@Eq. 11, @schwartzman2010gr}{TFORGE}.
 \item \code{a} Plug-in estimate of the \eqn{a} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 \item \code{v} Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
-\item \code{var_Lambda_evals} The variance of the eigenvalues of Schwartzman's \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation.
+\item \code{var_Lambda_evals} The variance of the eigenvalues of Schwartzman et al \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation.
 }
 }
 \description{

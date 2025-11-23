@@ -14,7 +14,7 @@ rsymm(n, mean, sigma = diag(length(vech(mean))))
 
 \item{mean}{A symmetric matrix specifying the mean of the distribution.}
 
-\item{sigma}{A covariance matrix for the vectorized lower triangular elements (arranged by \code{\link[=vech]{vech()}}) of the symmetric matrix.
+\item{sigma}{A covariance matrix for the vectorised lower triangular elements (arranged by \code{\link[=vech]{vech()}}) of the symmetric matrix.
 It is passed to \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}} without any transformation.}
 }
 \value{
@@ -24,7 +24,7 @@ A \code{TFORGE_fsm} object. See \code{\link[=as_fsm]{as_fsm()}}.
 Simulate symmetric matrices with elements from a multivariate Normal distribution.
 }
 \details{
-The mean matrix is vectorized using the \code{\link[=vech]{vech()}} function
+The mean matrix is vectorised using the \code{\link[=vech]{vech()}} function
 and then used as the mean vector in the \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}} function. The covariance matrix \code{sigma} is passed unchanged to \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}}.
 Symmetric matrices are obtained by applying \code{\link[=invvech]{invvech()}} to each simulated vector.
 }

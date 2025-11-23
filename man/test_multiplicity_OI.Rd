@@ -13,7 +13,7 @@ test_multiplicity_OI(x, mult, B = "chisq", refbasis = NULL)
 
 \item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 
-\item{refbasis}{Ignored (for compatability with \code{\link[=test_multiplicity]{test_multiplicity()}}).}
+\item{refbasis}{Ignored (for compatibility with \code{\link[=test_multiplicity]{test_multiplicity()}}).}
 }
 \description{
 Given a sample from a population of symmetric matrices with Gaussian-distributed elements and orthogonally-invariant covariance, corollary 4.3 by \insertCite{schwartzman2008in;textual}{TFORGE} provides a method to test the eigenvalue multiplicity of the mean matrix.

@@ -22,7 +22,7 @@ For any two columns \eqn{a} and \eqn{b} of \code{evecs}, computes the covariance
 \deqn{
 \textrm{Cov}(a^\top Y a, b^\top Y b) = ( a \otimes a)^\top \mathbb{D} C_0 \mathbb{D}^\top (b \otimes b),
 }
-where \eqn{a} and \eqn{b} are the columns of \code{evecs} and \eqn{C_0}=\code{mcov} is the covariance of vech\eqn{(Y)}. \eqn{\mathbb{D}} and \eqn{\otimes} is the duplication matrix and kronecker product respectively.
+where \eqn{a} and \eqn{b} are the columns of \code{evecs} and \eqn{C_0}=\code{mcov} is the covariance of vech\eqn{(Y)}. \eqn{\mathbb{D}} and \eqn{\otimes} is the duplication matrix and Kronecker product respectively.
 
 The returned matrix has rows and columns that are in the same order as the columns of \code{evecs}.
 

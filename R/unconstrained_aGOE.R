@@ -137,7 +137,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' + `t` Value of the statistic \insertCite{@Eq. 11, @schwartzman2010gr}{TFORGE}.
 #' + `a` Plug-in estimate of the \eqn{a} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
-#' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman's \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 
+#' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman et al \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 
 #' @export
 test_unconstrained_aGOE <- function(x, x2 = NULL, B = "chisq", nullevals = "av", scalestat = TRUE){
   x <- as_flat(x)

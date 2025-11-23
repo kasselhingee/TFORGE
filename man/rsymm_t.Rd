@@ -23,7 +23,7 @@ Simulate symmetric matrices with elements from a multivariate t distribution.
 }
 \details{
 The function uses Representation A in \insertCite{lin1972ch}{TFORGE} to simulate multivariate-t vectors.
-The mean matrix is vectorized using the \code{\link[=vech]{vech()}} function
+The mean matrix is vectorised using the \code{\link[=vech]{vech()}} function
 and then used as the mean vector in the \code{\link[mvtnorm:Mvt]{mvtnorm::rmvt()}} function.
 The scale parameter matrix \code{sigma} is passed unchanged to \code{\link[mvtnorm:Mvt]{mvtnorm::rmvt()}}.
 The covariance of the resulting vectors is \code{sigma * df / (df - 2)}.

@@ -9,7 +9,7 @@
 #' 
 #' @details 
 #' The function uses Representation A in \insertCite{lin1972ch}{TFORGE} to simulate multivariate-t vectors.
-#' The mean matrix is vectorized using the [`vech()`] function 
+#' The mean matrix is vectorised using the [`vech()`] function 
 #' and then used as the mean vector in the [`mvtnorm::rmvt()`] function.
 #' The scale parameter matrix `sigma` is passed unchanged to [`mvtnorm::rmvt()`].
 #' The covariance of the resulting vectors is `sigma * df / (df - 2)`.

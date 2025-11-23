@@ -14,7 +14,7 @@
 #' The single sample tests conducted by the above functions test the null hypothesis of a user-provided set of eigenvalues for the extrinsic population mean against the alternative hypothesis that the extrinsic population mean has different eigenvalues.
 #' The \eqn{k}-sample tests conducted by the above functions test the null hypothesis that the extrinsic population means have the same eigenvalues.
 #'
-#' Additionally [`test_unconstrained_aGOE()`] can perform \eqn{2}-sample tests with calibration by a Gaussian Orthogonal Ensemble (GOE) approximation \insertCite{schwartzman2010gr}{TFORGE}. A bootstrapped calibration for this test is also available where the GOE approximation is used to stabalise the scale of the statistic.
+#' Additionally [`test_unconstrained_aGOE()`] can perform \eqn{2}-sample tests with calibration by a Gaussian Orthogonal Ensemble (GOE) approximation \insertCite{schwartzman2010gr}{TFORGE}. A bootstrapped calibration for this test is also available where the GOE approximation is used to stabilise the scale of the statistic.
 #'
 #' There are two functions [`conf_fixedtrace()`] and [`conf_ss1fixedtrace()`] for estimating confidence regions.
 #'
@@ -22,7 +22,7 @@
 #' Eigenvalues are assumed to be in descending order.
 #' 
 #' Use [`test_multiplicity()`] to test the eigenvalue-multiplicity of the population mean of a single sample (for unconstrained or fixed trace matrices).
-#' A test of the same hypothesis that requires that matrix elements follow a mulivariate Gaussian distribution with orthogonally-invariant covariance is also available through [`test_multiplicity_OI()`] \insertCite{schwartzman2008in}{TFORGE}.
+#' A test of the same hypothesis that requires that matrix elements follow a multivariate Gaussian distribution with orthogonally-invariant covariance is also available through [`test_multiplicity_OI()`] \insertCite{schwartzman2008in}{TFORGE}.
 #' Eigenvalues are assumed to be in descending order for these multiplicity tests.
 #' 
 #' In this package, matrices within the same sample are considered independently and identically distributed.

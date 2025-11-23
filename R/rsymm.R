@@ -4,11 +4,11 @@
 #' @param n Number of matrices to generate
 #' @param mean A symmetric matrix specifying the mean of the distribution.
 #' @param sigma 
-#' A covariance matrix for the vectorized lower triangular elements (arranged by [`vech()`]) of the symmetric matrix. 
+#' A covariance matrix for the vectorised lower triangular elements (arranged by [`vech()`]) of the symmetric matrix. 
 #' It is passed to [`mvtnorm::rmvnorm()`] without any transformation. 
 #' @return A `TFORGE_fsm` object. See [`as_fsm()`].
 #' @details 
-#' The mean matrix is vectorized using the [`vech()`] function 
+#' The mean matrix is vectorised using the [`vech()`] function 
 #' and then used as the mean vector in the [`mvtnorm::rmvnorm()`] function. The covariance matrix `sigma` is passed unchanged to [`mvtnorm::rmvnorm()`].
 #' Symmetric matrices are obtained by applying [`invvech()`] to each simulated vector.
 #' @examples 
