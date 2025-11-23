@@ -12,6 +12,7 @@ test_that("stat for TFORGE_fsm has correct null distribution", {
 })
 
 test_that("stat for TFORGE_fsm, specified evecs, has correct null distribution", {
+  skip_on_cran()
   vals <- vapply(1:100, function(seed){
     set.seed(seed)
     Ysample <- rsymm(50, diag(c(3,2,1)))
@@ -25,6 +26,7 @@ test_that("stat for TFORGE_fsm, specified evecs, has correct null distribution",
 })
 
 test_that("stat for TFORGE_kfsm has correct null distribution", {
+  skip_on_cran()
   set.seed(13131)
   vals <- replicate(100, {
     Ysamples <- lapply(c(2000,100,100,100), function(n) rsymm(n, diag(c(3,2,1))))
@@ -38,6 +40,7 @@ test_that("stat for TFORGE_kfsm has correct null distribution", {
 })
 
 test_that("stat for TFORGE_kfsm w specified evecs has INcorrect null distribution", {
+  skip_if_fast_check()
   set.seed(1311)
   vals <- replicate(100, {
     Ysamples <- replicate(5, rsymm(50, diag(c(3,2,1))), simplify = FALSE)

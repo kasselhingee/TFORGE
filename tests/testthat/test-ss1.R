@@ -54,6 +54,7 @@ test_that("chisq: test_ss1() uniform pval on NULL TFORGE_fsm", {
 })
 
 test_that("test_ss1() uniform pval on NULL TFORGE_kfsm", {
+  skip_on_cran() #partially tested with chisq test below and bootstrap of TFORGE_fsm above
   set.seed(1333)
   pvals <- replicate(ifelse(fast_check_on(), 20, 100), {
     Ysamples <- replicate(2, {

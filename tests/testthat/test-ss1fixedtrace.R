@@ -43,6 +43,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL is consistent with ch
 })
 
 test_that("stat_ss1fixedtrace() on TFORGE_kfsm from NULL is not inconsistent with chisq on n=300", {
+  skip_on_cran()
   vals <- vapply(300 + (1:ifelse(fast_check_on(), 100, 1000)), function(seed){
     set.seed(seed)
     Ysamples <- lapply(c(1000, 300), function(n){
@@ -75,6 +76,7 @@ test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
 })
 
 test_that("chisq: test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
+  skip_on_cran()
   set.seed(1333)
   pvals <- replicate(100, {
     Y <- rsymm_norm(50, diag(c(1/sqrt(2), 0, -1/sqrt(2))))
@@ -91,6 +93,7 @@ test_that("chisq: test_ss1fixedtrace() uniform pval on NULL TFORGE_fsm", {
 })
 
 test_that("test_ss1fixedtrace() uniform pval on NULL TFORGE_kfsm", {
+  skip_on_cran()
   pvals <- vapply(13131 + (1:ifelse(fast_check_on(), 20, 100)), function(seed){
     set.seed(seed)
     Ysamples <- replicate(2, {

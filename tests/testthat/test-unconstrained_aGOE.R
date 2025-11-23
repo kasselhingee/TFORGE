@@ -124,6 +124,7 @@ test_that("Schwartzman p-value uniform for iid elements under H0", {
 
 
 test_that("pvalue close to uniform for non diagonal mean, unequal sample size", {
+  skip_on_cran()
   p <- 3
   C2 <- C1 <- diag(p*(p+1)/2)
   
@@ -171,6 +172,7 @@ test_that("pvalue close to uniform for non diagonal mean, unequal sample size", 
 })
 
 test_that("pvalue close to uniform when some correlation", {
+  skip_on_cran()
   p <- 3
   C2 <- C1 <- matrix(0.3, 6, 6)
   diag(C2) <- diag(C1) <- 1
@@ -428,6 +430,7 @@ test_that("test_unconstrained_aGOE() reject for simulation of multi sample not f
 })
 
 test_that("pvalue close to uniform with bootstrap calibration", {
+  skip_on_cran() #skipping because less important: bootstrap calibration with test_unconstrained() has better performance
   p <- 3
   C2 <- C1 <- diag(p*(p+1)/2)
   

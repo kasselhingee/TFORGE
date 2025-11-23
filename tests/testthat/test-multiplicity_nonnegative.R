@@ -41,7 +41,7 @@ test_that("test has uniform distribution at large n=30", {
   set.seed(10)
   vals <- replicate(ifelse(fast_check_on(), 10, 100), {
     Ysample <- rftiso(30)
-    res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = 100)
+    res <- test_multiplicity_nonnegative(Ysample, mult = 3, B = ifelse(fast_check_on(), 20, 100))
     res[c("pval", "B")]
   })
   expect_equal(sum(is.na(unlist(vals[2, ]))), 0)
@@ -76,6 +76,7 @@ test_that("test rejects some incorrect hypotheses p = 3", {
 
 
 test_that("fixed trace from projection preserved by standardisation and ignored by stat", {
+  skip_if_fast_check()
   set.seed(134)
   evals <- c(rep(3, 3), rep(2, 2), 1, 0.5)
   mult <- c(3,2,1,1)

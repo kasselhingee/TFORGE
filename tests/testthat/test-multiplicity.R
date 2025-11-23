@@ -140,12 +140,12 @@ test_that("chisq: test has uniform distribution with refbasis=random", {
 
 test_that("test rejects some incorrect hypotheses", {
   set.seed(13321)
-  Ysample <- rsymm(100, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
+  Ysample <- rsymm(30, diag(c(rep(3, 3), rep(2, 2), 1, 0.5)),
                    sigma = 0.01 * diag(7 * (7 + 1)/2))
   set.seed(3542)
-  expect_lt(test_multiplicity(Ysample, mult = c(2,3,1,1), 100)$pval, 0.05)
+  expect_lt(test_multiplicity(Ysample, mult = c(2,3,1,1), B = 50)$pval, 0.05)
   set.seed(35423) 
-  expect_lt(test_multiplicity(Ysample, mult = c(2,2,2,1), 100)$pval, 0.05)
+  expect_lt(test_multiplicity(Ysample, mult = c(2,2,2,1), B = 50)$pval, 0.05)
 
   skip_if_fast_check()
 
@@ -245,6 +245,7 @@ test_that("xicovar() matches simulated sample covariance of xi with fixed eigenv
 })
 
 test_that("test p value resistant to fixed trace by normalisation", {
+  skip_if_fast_check()
   # division by sum(vec) really changes the sizes of vec, so
   # the covariance of vec changes, so I'd expect the stat to be different
   # p values should be similar

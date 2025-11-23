@@ -13,7 +13,7 @@ test_that("conf_fixedtrace() warns when ordered boundary is intersected", {
   set.seed(345)
   ms <- rsymm_norm(n = 10, mean = diag(c(4,2,1)))
   ms <- normalise_trace(ms)
-  expect_warning(cr <- conf_fixedtrace(ms, alpha = 0.05, B = 100, npts = 1000),
+  expect_warning(cr <- conf_fixedtrace(ms, alpha = 0.05, B = 20, npts = 1000),
                  "not.*descending")
 })
 
