@@ -29,7 +29,7 @@ Additionally \code{\link[=test_unconstrained_aGOE]{test_unconstrained_aGOE()}} c
 
 There are two functions \code{\link[=conf_fixedtrace]{conf_fixedtrace()}} and \code{\link[=conf_ss1fixedtrace]{conf_ss1fixedtrace()}} for estimating confidence regions.
 
-The above tests all require that the eigenvalues of the population mean are distinct (with decreasing performance when eigenvalues are very close to each other).
+The above tests all require that the eigenvalues of the population mean are distinct (with degraded performance when eigenvalues are very close to each other).
 Eigenvalues are assumed to be in descending order.
 
 Use \code{\link[=test_multiplicity]{test_multiplicity()}} to test the eigenvalue-multiplicity of the population mean of a single sample (for unconstrained or fixed trace matrices).
@@ -38,7 +38,7 @@ Eigenvalues are assumed to be in descending order for these multiplicity tests.
 
 In this package, matrices within the same sample are considered independently and identically distributed.
 Matrices are stored in a flattened form as row-vectors according to \code{\link[=vech]{vech()}} - see \code{\link{fsm}} for details.
-Samples may be provided as lists of matrices or in their flattened from so long as the column order matches that of \code{\link[=vech]{vech()}}.
+Samples may be provided as lists of matrices or in their flattened form so long as the column order matches that of \code{\link[=vech]{vech()}}.
 }
 \section{Acknowledgements}{
 Colleagues Andrew T. A. Wood and Janice Scealy played crucial roles in developing the statistical concepts and theory.

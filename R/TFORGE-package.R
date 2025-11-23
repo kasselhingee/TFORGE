@@ -18,7 +18,7 @@
 #'
 #' There are two functions [`conf_fixedtrace()`] and [`conf_ss1fixedtrace()`] for estimating confidence regions.
 #'
-#' The above tests all require that the eigenvalues of the population mean are distinct (with decreasing performance when eigenvalues are very close to each other).
+#' The above tests all require that the eigenvalues of the population mean are distinct (with degraded performance when eigenvalues are very close to each other).
 #' Eigenvalues are assumed to be in descending order.
 #' 
 #' Use [`test_multiplicity()`] to test the eigenvalue-multiplicity of the population mean of a single sample (for unconstrained or fixed trace matrices).
@@ -27,7 +27,7 @@
 #' 
 #' In this package, matrices within the same sample are considered independently and identically distributed.
 #' Matrices are stored in a flattened form as row-vectors according to [`vech()`] - see [`fsm`] for details.
-#' Samples may be provided as lists of matrices or in their flattened from so long as the column order matches that of [`vech()`].
+#' Samples may be provided as lists of matrices or in their flattened form so long as the column order matches that of [`vech()`].
 
 #' # Acknowledgements
 #' Colleagues Andrew T. A. Wood and Janice Scealy played crucial roles in developing the statistical concepts and theory.
