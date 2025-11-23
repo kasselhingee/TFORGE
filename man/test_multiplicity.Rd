@@ -41,8 +41,8 @@ A \code{TFORGE} object including the p-value of the test (slot \code{pval}) and 
 Tests the multiplicity of the eigenvalues a population's mean.
 The test statistic is computed by \code{stat_multiplicity()}.
 The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
-For unconstrained symmetric matrices use \code{test_multiplicity()}.
-For matrices constrained to have fixed trace use \code{test_multiplicity_nonnegative()}.
+For unconstrained symmetric matrices or symmetric matrices with fixed trace use \code{test_multiplicity()}.
+For matrices constrained to have non-negative eigenvalues use \code{test_multiplicity_nonnegative()}.
 }
 \details{
 For \code{test_multiplicity()}, bootstrap resampling is conducted from the null hypothesis by resampling from the original sample converted to satisfy the null hypothesis by \code{standardise_multiplicity()}.

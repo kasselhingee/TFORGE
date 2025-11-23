@@ -2,7 +2,7 @@
 % Please edit documentation in R/chisq_calibration.R
 \name{chisq_calib}
 \alias{chisq_calib}
-\title{Internal: Chi Squared Calibration for Testing}
+\title{Chi Squared Calibration for Testing}
 \usage{
 chisq_calib(x, stat, df, ...)
 }

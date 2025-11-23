@@ -2,8 +2,8 @@
 # vecd vectorises matrices, but has a different ordering to vech, and scales the off-diagonal elements
 #' @title Flatten a symmetric matrix into a vector preserving Frobenius norm.
 #' @description
-#' The `vecd` operator as used by \insertCite{schwartzman2008in;textual}{TFORGE} flattens a symmetric matrix into a vector of unique element such that the Frobenius norm of the matrix equals the Euclidean norm of the vector. This means that the off-diagonal elements are scaled by \eqn{\sqrt{2}}{`sqrt(2)`}.
-#' In the returned vector the diagonal elements are first then the (scaled) off-diagonal elements; this ordering is different to [`vech()]`.
+#' The `vecd` operator as used by \insertCite{schwartzman2008in;textual}{TFORGE} flattens a symmetric matrix into a vector of unique elements such that the Frobenius norm of the matrix equals the Euclidean norm of the vector. This means that the off-diagonal elements are scaled by \eqn{\sqrt{2}}{`sqrt(2)`}.
+#' In the returned vector the diagonal elements are first then the (scaled) off-diagonal elements; this ordering is different to [`vech()`].
 #' @details
 #' The `vecd()` function has a single line of code:
 #'
@@ -122,7 +122,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' The distribution of this statistic for more general populations is approximated using a tangent space and the Welch-Satterthwaite approximation.
 #' @details 
 #' The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
-#' For chi-squared calibration, the p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
+#' For chi-squared calibration, the \eqn{p} value of the test is computed using the scaled chi-squared distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}. This distribution approximates the distribution of the test statistic and the scale \eqn{a} and degrees of freedom \eqn{v} are estimated from the data.
 #' @param x A single sample of matrices (passed to [`as_fsm()`]) or
 #' a list of two samples of matrices (passed to [`as_kfsm()`]).
 #' @param x2 If `x` is a single sample then `x2` must be the second sample. Otherwise `x2` should be `NULL`.

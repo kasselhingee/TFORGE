@@ -42,7 +42,7 @@ The distribution of this statistic for more general populations is approximated 
 }
 \details{
 The test statistic is equation 11 of \insertCite{schwartzman2010gr}{TFORGE}.
-For chi-squared calibration, the p value of the test is computed using the approximate distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
+For chi-squared calibration, the \eqn{p} value of the test is computed using the scaled chi-squared distribution reached at the end of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}. This distribution approximates the distribution of the test statistic and the scale \eqn{a} and degrees of freedom \eqn{v} are estimated from the data.
 }
 \references{
 \insertAllCited{}

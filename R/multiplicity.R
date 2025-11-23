@@ -3,8 +3,8 @@
 #' Tests the multiplicity of the eigenvalues a population's mean.
 #' The test statistic is computed by `stat_multiplicity()`.
 #' The null hypothesis is that the population mean has the specified the multiplicity of eigenvalues.
-#' For unconstrained symmetric matrices use `test_multiplicity()`. 
-#' For matrices constrained to have fixed trace use `test_multiplicity_nonnegative()`.
+#' For unconstrained symmetric matrices or symmetric matrices with fixed trace use `test_multiplicity()`. 
+#' For matrices constrained to have non-negative eigenvalues use `test_multiplicity_nonnegative()`.
 #' @details
 #' For `test_multiplicity()`, bootstrap resampling is conducted from the null hypothesis by resampling from the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`. 
 #' For `test_multiplicity_nonnegative()`, weighted bootstrapping is used (see 'Weighted Bootstrapping' below).
@@ -39,7 +39,7 @@
 test_multiplicity <- function(x, mult, B = 1000, refbasis = "sample"){
   x <- as_flat(x)
   if (B == "chisq"){
-    if (refbasis[[1]] == "sample"){warning("chisq calibration does not work for the statistic using eigenvalues of the sample mean")}
+    if (refbasis[[1]] == "sample"){warning("chisq calibration does not work for the statistic when using the eigenvectors of the sample mean (refbasis = 'sample')")}
     return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
   }
   ms_std <- standardise_multiplicity(x, mult)
