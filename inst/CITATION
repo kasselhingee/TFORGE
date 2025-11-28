@@ -1,0 +1,10 @@
+bibentry(bibtype = "Article",
+         title = "Nonparametric bootstrap inference for the eigenvalues of geophysical tensors",
+         author = c(person(family = "Hingee", given = "Kassel L."),
+                    person(family = "Scealy", given = "Janice L."),
+                    person(family = "Wood", given = "Andrew T.A.")
+                    ),
+         year = "2026",
+         journal = "Journal of American Statistical Association",
+         note = "Accepted for publication")
+
