@@ -138,6 +138,6 @@ test_that("test repeats under set.seed()", {
 test_that("stat is zero for standarised sample", {
   set.seed(13131)
   Ysample <- rsymm(50, diag(c(3,2,1)))
-  Ystdsample <- standardise_specifiedevals(Ysample, c(3,2,1))
+  Ystdsample <- translate_evalsofav(Ysample, c(3,2,1))
   expect_equal(as.numeric(stat_unconstrained(Ystdsample, c(3,2,1))), 0)
 })

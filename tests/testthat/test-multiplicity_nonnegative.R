@@ -89,8 +89,8 @@ test_that("fixed trace from projection preserved by standardisation and ignored 
   expect_equal((helmert(sum(mult)) %*% evals)[-1],
     (helmert(sum(mult)) %*% evals_n)[-1])
   
-  std <- standardise_multiplicity(Ysample, mult)
-  std_n <- standardise_multiplicity(Ysample_n, mult)
+  std <- translate2multiplicity(Ysample, mult)
+  std_n <- translate2multiplicity(Ysample_n, mult)
   expect_true(all.equal(as_fsm(apply(std, 1, function(m){projtrace_matrix(inv_vech(m))}, simplify = FALSE)), 
                         std_n, check.attributes = FALSE))
   

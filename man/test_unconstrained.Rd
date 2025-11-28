@@ -3,14 +3,14 @@
 \name{test_unconstrained}
 \alias{test_unconstrained}
 \alias{stat_unconstrained}
-\alias{standardise_specifiedevals}
+\alias{translate_evalsofav}
 \title{Pivotal bootstrap test of mean eigenvalues}
 \usage{
 test_unconstrained(x, evals = NULL, evecs = NULL, B = 1000)
 
 stat_unconstrained(x, evals = NULL, evecs = NULL)
 
-standardise_specifiedevals(x, evals)
+translate_evalsofav(x, evals)
 }
 \arguments{
 \item{x}{A single sample of symmetric matrices or multiple samples of symmetric matrices. See \code{\link[=as_flat]{as_flat()}}.}
@@ -33,7 +33,7 @@ Eigenvalues must be distinct.
 Test hypotheses described below.
 For a single sample, the eigenvectors of the population mean in the null and alternative hypotheses may be prespecified by \code{evecs}.
 
-Bootstrap resampling is conducted from a population that satisfies the null hypothesis by transforming each sample in \code{x} with \code{standardise_specifiedevals()}.
+Bootstrap resampling is conducted from a population that satisfies the null hypothesis by translating each sample in \code{x} with \code{translate_evalsofav()} to so that the sample average has the null eigenvalues.
 The test statistic is calculated by \code{stat_unconstrained()}.
 }
 \section{Hypotheses}{

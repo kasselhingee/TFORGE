@@ -6,7 +6,7 @@
 #' Test hypotheses described below.
 #' For a single sample, the eigenvectors of the population mean in the null and alternative hypotheses may be prespecified by `evecs`.
 #' 
-#' Bootstrap resampling is conducted from a population that satisfies the null hypothesis by transforming each sample in `x` with `standardise_specifiedevals()`.
+#' Bootstrap resampling is conducted from a population that satisfies the null hypothesis by translating each sample in `x` with `translate_evalsofav()` to so that the sample average has the null eigenvalues.
 #' The test statistic is calculated by `stat_unconstrained()`. 
 #' # Hypotheses
 #' For a single sample the null hypothesis is that the population (extrinsic) mean has eigenvalues of `evals`; the alternative hypothesis is that the eigenvalues are not equal to `evals`.
@@ -48,7 +48,7 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B = 1000){
   } else {
     estevals <- evals
   }
-  x_std <- lapply(x, standardise_specifiedevals, estevals)
+  x_std <- lapply(x, translate_evalsofav, estevals)
   
   res <- boot_calib(x, x_std, 
                         stat = stat_unconstrained,
@@ -123,7 +123,7 @@ est_commonevals <- function(mss, Vs, evals){
 
 #' @rdname test_unconstrained
 #' @export
-standardise_specifiedevals <- function(x, evals){
+translate_evalsofav <- function(x, evals){
   x <- as_fsm(x)
   evals <- sort(evals, decreasing = TRUE)
   av <- mmean(x)

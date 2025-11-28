@@ -6,7 +6,7 @@
 #' For unconstrained symmetric matrices or symmetric matrices with fixed trace use `test_multiplicity()`. 
 #' For matrices constrained to have non-negative eigenvalues use `test_multiplicity_nonnegative()`.
 #' @details
-#' For `test_multiplicity()`, bootstrap resampling is conducted from the null hypothesis by resampling from the original sample converted to satisfy the null hypothesis by `standardise_multiplicity()`. 
+#' For `test_multiplicity()`, bootstrap resampling is conducted from the null hypothesis by first translating the original sample to satisfy the null hypothesis with `translate2multiplicity()`. 
 #' For `test_multiplicity_nonnegative()`, weighted bootstrapping is used (see 'Weighted Bootstrapping' below).
 #'
 #' On `refbasis`:
@@ -41,7 +41,7 @@ test_multiplicity <- function(x, mult, B = 1000, refbasis = "sample"){
     if (refbasis[[1]] == "sample"){warning("chisq calibration does not work for the statistic when using the eigenvectors of the sample mean (refbasis = 'sample')")}
     return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
   }
-  ms_std <- standardise_multiplicity(x, mult)
+  ms_std <- translate2multiplicity(x, mult)
   res <- boot_calib(x, ms_std, 
     stat = stat_multiplicity,
     B = B,
@@ -227,7 +227,7 @@ multiplicity_nullmean <- function(av, mult){
 
 #' @rdname test_multiplicity
 #' @export
-standardise_multiplicity <- function(x, mult){
+translate2multiplicity <- function(x, mult){
   x <- as_fsm(x)
   av <- mmean(x)
   nullmean <- multiplicity_nullmean(av, mult)

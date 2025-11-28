@@ -4,7 +4,7 @@
 \alias{test_multiplicity}
 \alias{test_multiplicity_nonnegative}
 \alias{stat_multiplicity}
-\alias{standardise_multiplicity}
+\alias{translate2multiplicity}
 \title{Test eigenvalue multiplicity}
 \usage{
 test_multiplicity(x, mult, B = 1000, refbasis = "sample")
@@ -19,7 +19,7 @@ test_multiplicity_nonnegative(
 
 stat_multiplicity(x, mult, evecs = NULL, refbasis = "sample")
 
-standardise_multiplicity(x, mult)
+translate2multiplicity(x, mult)
 }
 \arguments{
 \item{x}{A sample of matrices suitable for \code{\link[=as_fsm]{as_fsm()}}.}
@@ -45,7 +45,7 @@ For unconstrained symmetric matrices or symmetric matrices with fixed trace use 
 For matrices constrained to have non-negative eigenvalues use \code{test_multiplicity_nonnegative()}.
 }
 \details{
-For \code{test_multiplicity()}, bootstrap resampling is conducted from the null hypothesis by resampling from the original sample converted to satisfy the null hypothesis by \code{standardise_multiplicity()}.
+For \code{test_multiplicity()}, bootstrap resampling is conducted from the null hypothesis by first translating the original sample to satisfy the null hypothesis with \code{translate2multiplicity()}.
 For \code{test_multiplicity_nonnegative()}, weighted bootstrapping is used (see 'Weighted Bootstrapping' below).
 
 On \code{refbasis}:

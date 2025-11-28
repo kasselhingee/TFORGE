@@ -3,7 +3,7 @@ test_that("stat is zero for standarised sample", {
   Ysample <- rsymm(50, mean = diag(c(3,2,1)))
   av <- mmean(Ysample)
   es <- eigen_desc(av)
-  Ystdsample <- standardise_multiplicity(Ysample, mult = c(2, 1))
+  Ystdsample <- translate2multiplicity(Ysample, mult = c(2, 1))
 
   #check new average has correct properties
   newav <- mmean(Ystdsample)
@@ -31,7 +31,7 @@ test_that("stat is zero for standarised sample, dim 7", {
   expect_equal(t(es$vectors) %*% nullmean %*% es$vectors, 
                diag(multiplicity_blk(es$values, mult = mult)))
   
-  Ystdsample <- standardise_multiplicity(Ysample, mult = mult)
+  Ystdsample <- translate2multiplicity(Ysample, mult = mult)
   
   #check new average has correct properties
   newav <- mmean(Ystdsample)

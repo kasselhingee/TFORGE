@@ -189,8 +189,8 @@ test_unconstrained_aGOE <- function(x, x2 = NULL, B = "chisq", nullevals = "av",
                       `1` = L1,
                       `2` = L2,
                       av = (L1 + L2)/2)
-  x_std <- as_flat(list(standardise_specifiedevals(x1, nullevals), 
-                        standardise_specifiedevals(x2, nullevals)))
+  x_std <- as_flat(list(translate_evalsofav(x1, nullevals), 
+                        translate_evalsofav(x2, nullevals)))
   res <- boot_calib(as_flat(list(x1, x2)), x_std, 
                         stat = stat_unconstrained_aGOE,
                         B = B,
