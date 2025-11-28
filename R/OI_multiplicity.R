@@ -6,6 +6,7 @@
 #' @param refbasis Ignored (for compatibility with [`test_multiplicity()`]).
 #' @details 
 #' The orthogonally invariant covariance matrix is estimated by [`estimate_OIcov()`]. The maximum-likelihood estimate of the population mean under the null hypothesis is computed according to \insertCite{@Theorem 4.2, @schwartzman2008in}{TFORGE}. 
+#' @inherit test_multiplicity return
 #' @export
 test_multiplicity_OI <- function(x, mult, B = "chisq", refbasis = NULL){
   if (B == "chisq"){

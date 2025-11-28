@@ -14,6 +14,7 @@
 #' @examples
 #' m <- invvech(1:6)
 #' vecd(m)
+#' @return A vector.
 #' @references \insertAllCited{}
 #' @export
 vecd <- function(m){
@@ -131,10 +132,8 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @inheritParams test_unconstrained
 #' @references
 #' \insertAllCited{}
-#' @return
-#' A list:
-#' + `pval` The p-value.
-#' + `t` Value of the statistic \insertCite{@Eq. 11, @schwartzman2010gr}{TFORGE}.
+#' @return A `TFORGE` object (see [`bootresampling()`] or [`chisq_calib()`]) including p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). 
+#' The returned object contains further slots specific to this test:
 #' + `a` Plug-in estimate of the \eqn{a} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `var_Lambda_evals` The variance of the eigenvalues of Schwartzman et al \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation. 

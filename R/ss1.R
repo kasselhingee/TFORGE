@@ -15,6 +15,7 @@
 #' @inheritParams test_fixedtrace
 #' @inheritSection test_unconstrained Hypotheses
 #' @inheritSection test_fixedtrace Weighted Bootstrapping
+#' @inherit test_unconstrained return
 #' @references \insertAllCited{}
 #' @export
 test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
@@ -210,6 +211,7 @@ normL2evals <- function(m){
 #' @description
 #' Scales symmetric tensors so that the square of the eigenvalues sum to one.
 #' @inheritParams test_multiplicity
+#' @return A `TFORGE_fsm` object.
 #' @export
 normalise_ss1 <- function(x){
   x <- as_fsm(x)

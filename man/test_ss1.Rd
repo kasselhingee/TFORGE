@@ -18,6 +18,9 @@ stat_ss1(x, evals = NULL)
 
 \item{maxit}{The maximum number of Newton steps allowed in empirical likelihood optimisation \insertCite{owen:2013}{TFORGE}.}
 }
+\value{
+A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}} or \code{\link[=chisq_calib]{chisq_calib()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.
+}
 \description{
 For a single sample of symmetric matrices where sum of squared eigenvalues  = 1, test eigenvalues of the population mean.
 For multiple samples of symmetric matrices where sum of squared eigenvalues  = 1, test for equality of the eigenvalues of the population means.

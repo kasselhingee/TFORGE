@@ -9,6 +9,9 @@ normalise_ss1(x)
 \arguments{
 \item{x}{A sample of matrices suitable for \code{\link[=as_fsm]{as_fsm()}}.}
 }
+\value{
+A \code{TFORGE_fsm} object.
+}
 \description{
 Scales symmetric tensors so that the square of the eigenvalues sum to one.
 }

@@ -12,6 +12,7 @@
 #' m <- invvech(1:6)
 #' dimfromvech(1:6)
 #' vech(m)
+#' @return A vector.
 #' @references \insertAllCited{}
 #' @export
 vech <- function(m, name = FALSE){

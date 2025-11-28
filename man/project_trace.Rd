@@ -9,6 +9,9 @@ project_trace(x)
 \arguments{
 \item{x}{A sample of matrices suitable for \code{\link[=as_fsm]{as_fsm()}}.}
 }
+\value{
+A set of flattened symmetric matrices (i.e. \code{\link[=as_fsm]{TFORGE_fsm}} class)
+}
 \description{
 Projects the diagonal elements of symmetric matrices onto the plane through the origin and orthogonal to the vector \eqn{(1,1,1,....,1)^\top}.
 The trace of the resulting symmetric matrices is zero.

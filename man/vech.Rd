@@ -19,6 +19,9 @@ dimfromvech(x)
 
 \item{x}{A flattened symmetric matrix (as a vector).}
 }
+\value{
+A vector.
+}
 \description{
 The \code{vech} operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE} flattens symmetric matrices into vectors. Columns are extracted from left to right with entries above the diagonal ignored.
 The function \code{invvech()} is the inverse of \code{vech()}.

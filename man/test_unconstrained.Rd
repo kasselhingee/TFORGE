@@ -22,7 +22,7 @@ standardise_specifiedevals(x, evals)
 \item{B}{Number of bootstrap samples. If \code{B = 'chisq'} then a chi-squared calibration is used instead.}
 }
 \value{
-A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.
+A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}} or \code{\link[=chisq_calib]{chisq_calib()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.
 }
 \description{
 For a single sample of symmetric matrices, test eigenvalues of the population mean.

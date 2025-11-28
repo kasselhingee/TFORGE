@@ -20,6 +20,7 @@
 #' @inheritParams test_fixedtrace
 #' @inheritSection test_unconstrained Hypotheses
 #' @inheritSection test_fixedtrace Weighted Bootstrapping
+#' @inherit test_unconstrained return
 #' @references \insertAllCited{}
 #' @export
 test_ss1fixedtrace <- function(x, evals = NULL, B = 1000, maxit = 25){

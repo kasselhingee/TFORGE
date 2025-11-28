@@ -33,8 +33,7 @@
 #' @examples
 #' x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))
 #' test_multiplicity(x, mult = c(1, 2, 1))
-#' @return
-#' A `TFORGE` object including the p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). See [`bootresampling()`].
+#' @return A `TFORGE` object (see [`bootresampling()`] or [`chisq_calib()`]) including p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). 
 #' @export
 test_multiplicity <- function(x, mult, B = 1000, refbasis = "sample"){
   x <- as_flat(x)

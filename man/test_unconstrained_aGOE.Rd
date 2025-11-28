@@ -25,10 +25,9 @@ a list of two samples of matrices (passed to \code{\link[=as_kfsm]{as_kfsm()}}).
 \item{scalestat}{If \code{TRUE} then the statistic is divided by the estimated \eqn{a}. This modified statistic has approximately the same scale regardless of the data, although the thickness of the distribution tails (related to \eqn{v}) will vary. Simulations and bootstrapping behaviour more generally suggests that \code{scalestat=TRUE} leads to better test size and power when using bootstrap calibration.}
 }
 \value{
-A list:
+A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}} or \code{\link[=chisq_calib]{chisq_calib()}}) including p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}).
+The returned object contains further slots specific to this test:
 \itemize{
-\item \code{pval} The p-value.
-\item \code{t} Value of the statistic \insertCite{@Eq. 11, @schwartzman2010gr}{TFORGE}.
 \item \code{a} Plug-in estimate of the \eqn{a} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 \item \code{v} Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 \item \code{var_Lambda_evals} The variance of the eigenvalues of Schwartzman et al \eqn{\Lambda}{Lambda} matrix, which may relate to the quality of the Welch-Satterthwaite approximation.

@@ -166,6 +166,7 @@ stat_fixedtrace <- function(x, evals = NULL){
 #' Projects the diagonal elements of symmetric matrices onto the plane through the origin and orthogonal to the vector \eqn{(1,1,1,....,1)^\top}.
 #' The trace of the resulting symmetric matrices is zero.
 #' @inheritParams test_multiplicity
+#' @return A set of flattened symmetric matrices (i.e. [`TFORGE_fsm`][as_fsm()] class)
 #' @export
 project_trace <- function(x){
   diagels <- isondiag_vech(x[1, ])
@@ -189,6 +190,7 @@ projtrace_matrix <- function(m){ #project to have trace 0
 #' @inheritParams test_multiplicity
 #' @details
 #' The method will create `Inf` values for tensors that have a trace of zero.
+#' @return If `x` is a set of flattened symmetric matrices (i.e. [`TFORGE_fsm`][as_fsm()] class) then returns a `TFORGE_fsm` object. Otherwise returns a single matrix.
 #' @export
 normalise_trace <- function(x){
   if (inherits(x, "TFORGE_fsm")){

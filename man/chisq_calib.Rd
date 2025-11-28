@@ -15,6 +15,16 @@ chisq_calib(x, stat, df, ...)
 
 \item{...}{Passed to \code{stat}}
 }
+\value{
+A list of
+\itemize{
+\item \code{pval} the \code{p}-value from the test
+\item \code{t0} the statistic for the observations \code{x}
+\item \code{df} The degrees of freedom of the chi-squared distribution
+}
+
+The returned object has class \code{TFORGE} (same as \code{\link[=bootresampling]{bootresampling()}}) for easy use of \code{print()}.
+}
 \description{
 Similar to \code{\link[=bootresampling]{bootresampling()}}, but uses chi-squared calibration instead of bootstrapping.
 }

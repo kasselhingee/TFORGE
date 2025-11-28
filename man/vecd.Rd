@@ -9,6 +9,9 @@ vecd(m)
 \arguments{
 \item{m}{A symmetric matrix}
 }
+\value{
+A vector.
+}
 \description{
 The \code{vecd} operator as used by \insertCite{schwartzman2008in;textual}{TFORGE} flattens a symmetric matrix into a vector of unique elements such that the Frobenius norm of the matrix equals the Euclidean norm of the vector. This means that the off-diagonal elements are scaled by \eqn{\sqrt{2}}{`sqrt(2)`}.
 In the returned vector the diagonal elements are first then the (scaled) off-diagonal elements; this ordering is different to \code{\link[=vech]{vech()}}.
