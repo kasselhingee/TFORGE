@@ -96,7 +96,7 @@ test_fixedtrace <- function(x, evals = NULL, B, maxit = 25){
   }
 
   # do bootstrap calibration
-  res <- bootresampling(x, wts, 
+  res <- boot_calib(x, wts, 
                         stat = stat_fixedtrace,
                         B = B,
                         evals = evals)

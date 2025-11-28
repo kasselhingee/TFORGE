@@ -15,7 +15,7 @@
 #' @param evals When `x` is a single sample, the null hypothesis is that the (extrinsic) mean of the population has eigenvalues equal to `evals`. For multiple samples `evals` must be omitted.
 #' @param evecs For a single sample, specify eigenvectors to test under the assumption that the population mean's eigenvectors are the columns of `evecs`. The order of these eigenvectors matters and should be such that eigenvalues are in descending order.
 #' @param B Number of bootstrap samples. If `B = 'chisq'` then a chi-squared calibration is used instead.
-#' @return A `TFORGE` object (see [`bootresampling()`] or [`chisq_calib()`]) with the eigenvalues of the null hypothesis in the `null_evals` attribute for `t0`.
+#' @return A `TFORGE` object (see [`boot_calib()`] or [`chisq_calib()`]) with the eigenvalues of the null hypothesis in the `null_evals` attribute for `t0`.
 #' @examples
 #' test_unconstrained(rsymm_norm(15, diag(c(3,2,1))), evals = c(3, 2, 1), B = 100)
 #' test_unconstrained(list(rsymm_norm(15, diag(c(3,2,1))),
@@ -44,13 +44,13 @@ test_unconstrained <- function(x, evals = NULL, evecs = NULL, B = 1000){
   
   if (is.null(evals)){#estimate common evals using stat_unconstrained()
     t0info <- stat_unconstrained(x, evecs = evecs)
-    estevals <- attr(t0info, "null_evals") #estevals name here because don't pass estimated evals to bootresampling
+    estevals <- attr(t0info, "null_evals") #estevals name here because don't pass estimated evals to boot_calib
   } else {
     estevals <- evals
   }
   x_std <- lapply(x, standardise_specifiedevals, estevals)
   
-  res <- bootresampling(x, x_std, 
+  res <- boot_calib(x, x_std, 
                         stat = stat_unconstrained,
                         B = B,
                         evals = evals,

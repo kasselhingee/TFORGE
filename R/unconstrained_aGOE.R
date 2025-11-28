@@ -132,7 +132,7 @@ S_anv <- function(n1, n2, M1, M2, C1, C2){
 #' @inheritParams test_unconstrained
 #' @references
 #' \insertAllCited{}
-#' @return A `TFORGE` object (see [`bootresampling()`] or [`chisq_calib()`]) including p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). 
+#' @return A `TFORGE` object (see [`boot_calib()`] or [`chisq_calib()`]) including p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). 
 #' The returned object contains further slots specific to this test:
 #' + `a` Plug-in estimate of the \eqn{a} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
 #' + `v` Plug-in estimate of the \eqn{v} in the final equation of \insertCite{@Section 2.4, @schwartzman2010gr}{TFORGE}.
@@ -191,7 +191,7 @@ test_unconstrained_aGOE <- function(x, x2 = NULL, B = "chisq", nullevals = "av",
                       av = (L1 + L2)/2)
   x_std <- as_flat(list(standardise_specifiedevals(x1, nullevals), 
                         standardise_specifiedevals(x2, nullevals)))
-  res <- bootresampling(as_flat(list(x1, x2)), x_std, 
+  res <- boot_calib(as_flat(list(x1, x2)), x_std, 
                         stat = stat_unconstrained_aGOE,
                         B = B,
                         scale = scalestat)

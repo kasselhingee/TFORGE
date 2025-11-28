@@ -1,15 +1,15 @@
 #' Chi Squared Calibration for Testing
 #' @description
-#' Similar to [`bootresampling()`], but uses chi-squared calibration instead of bootstrapping.
+#' Similar to [`boot_calib()`], but uses chi-squared calibration instead of bootstrapping.
 #' @param df Degrees of freedom of the chi-squared distribution
-#' @inheritParams bootresampling
+#' @inheritParams boot_calib
 #' @return 
 #' A list of
 #'  + `pval` the `p`-value from the test
 #'  + `t0` the statistic for the observations `x`
 #'  + `df` The degrees of freedom of the chi-squared distribution
 #' 
-#' The returned object has class `TFORGE` (same as [`bootresampling()`]) for easy use of `print()`.
+#' The returned object has class `TFORGE` (same as [`boot_calib()`]) for easy use of `print()`.
 #' @export
 chisq_calib <- function(x, stat, df, ...){
   x <- as_flat(x)

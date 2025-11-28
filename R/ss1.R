@@ -59,7 +59,7 @@ test_ss1 <- function(x, evals = NULL, B = 1000, maxit = 25){
     return(out)
   }
   
-  res <- bootresampling(x, wts, 
+  res <- boot_calib(x, wts, 
                         stat = stat_ss1,
                         B = B,
                         evals = evals)

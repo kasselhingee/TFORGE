@@ -15,7 +15,7 @@ test_multiplicity_OI <- function(x, mult, B = "chisq", refbasis = NULL){
   }
   
   x_std <- standardise_multiplicity(x, mult)
-  res <- bootresampling(x, x_std, 
+  res <- boot_calib(x, x_std, 
                         stat = stat_multiplicity_OI,
                         B = B,
                         mult = mult)

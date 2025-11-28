@@ -22,7 +22,7 @@ conf_ss1fixedtrace <- function(x, alpha = 0.05, B = 1000, check = TRUE){
   naveval <- es$values/sqrt(sum(es$values^2))
   
   # resample and get statistic each time
-  res <- bootresampling(x, x, stat = stat_ss1fixedtrace, B = B, evals = naveval)
+  res <- boot_calib(x, x, stat = stat_ss1fixedtrace, B = B, evals = naveval)
   # get 1-alpha quantile of the resampled statistics
   statthreshold <- stats::quantile(res$nullt, probs = 1-alpha, names = FALSE, type = 1)
   

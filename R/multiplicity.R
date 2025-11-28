@@ -33,7 +33,7 @@
 #' @examples
 #' x <- rsymm_norm(15, mean = diag(c(2, 1, 1, 0)))
 #' test_multiplicity(x, mult = c(1, 2, 1))
-#' @return A `TFORGE` object (see [`bootresampling()`] or [`chisq_calib()`]) including p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). 
+#' @return A `TFORGE` object (see [`boot_calib()`] or [`chisq_calib()`]) including p-value of the test (slot `pval`) and the statistic for `x` (slot `t0`). 
 #' @export
 test_multiplicity <- function(x, mult, B = 1000, refbasis = "sample"){
   x <- as_flat(x)
@@ -42,7 +42,7 @@ test_multiplicity <- function(x, mult, B = 1000, refbasis = "sample"){
     return(chisq_calib(x, stat_multiplicity, df = sum(mult) - length(mult), mult = mult, refbasis = refbasis))
   }
   ms_std <- standardise_multiplicity(x, mult)
-  res <- bootresampling(x, ms_std, 
+  res <- boot_calib(x, ms_std, 
     stat = stat_multiplicity,
     B = B,
     mult = mult,
@@ -77,7 +77,7 @@ test_multiplicity_nonnegative <- function(x, mult, B = 1000, maxit = 25, refbasi
     return(out)
   }
   
-  res <- bootresampling(x, wts, 
+  res <- boot_calib(x, wts, 
                         stat = stat_multiplicity,
                         B = B,
                         mult = mult,

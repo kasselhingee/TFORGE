@@ -1,4 +1,4 @@
-# These error conditions are dealt with by catch_do.call() in bootresampling()
+# These error conditions are dealt with by catch_do.call() in boot_calib()
 
 # wrapper around solve that returns a matrix of NA if couldn't solve
 solve_error <- function(A){

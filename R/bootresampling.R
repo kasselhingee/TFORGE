@@ -1,4 +1,4 @@
-#' @title Internal: Bootstrap calibration for single-sample and k-sample tests
+#' @title Bootstrap calibration for single-sample and k-sample tests
 #' @description
 #' Performs a bootstrap hypothesis test using the supplied statistic.
 #' The `stdx` parameter is used to define an empirical distribution that satisfies the null hypothesis. 
@@ -18,13 +18,13 @@
 #'  + `pval` the `p`-value from the test
 #'  + `t0` the statistic for the observations `x`
 #'  + `nullt` The statistic evaluated on the resamples
-#'  + `stdx` The `stdx` passed into `bootresampling()`
+#'  + `stdx` The `stdx` passed into `boot_calib()`
 #'  + `B` The number of resamples requested
 #'  + `nullt_messages` Any error messages for the corresponding resample
 #'
 #' The returned object has a bespoke class `TFORGE` for easy use of `print()`.
 #' @export
-bootresampling <- function(x, stdx, stat, B,  ...){
+boot_calib <- function(x, stdx, stat, B,  ...){
   stopifnot(is_single_whole_number(B))
   x <- as_flat(x)
   t0 <- stat(x, ...)
@@ -105,7 +105,7 @@ print.TFORGE <- function(x, ...){
   NextMethod("print")
 }
 
-# For catching specific errors in above bootresampling, and any new ones
+# For catching specific errors in above boot_calib, and any new ones
 catch_do.call <- function(stat, args){
   tryCatch(do.call(stat, args),
            est_evals_not_descending = function(e){
