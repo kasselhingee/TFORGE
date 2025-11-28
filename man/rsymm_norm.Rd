@@ -18,7 +18,7 @@ rsymm(n, mean, sigma = diag(length(vech(mean))))
 It is passed to \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}} without any transformation.}
 }
 \value{
-A \code{TFORGE_fsm} object. See \code{\link[=as_fsm]{as_fsm()}}.
+A set of flattened symmetric matrices as a \code{TFORGE_fsm} object. See \code{\link[=as_fsm]{as_fsm()}}.
 }
 \description{
 Simulate symmetric matrices with elements from a multivariate Normal distribution.
@@ -26,7 +26,7 @@ Simulate symmetric matrices with elements from a multivariate Normal distributio
 \details{
 The mean matrix is vectorised using the \code{\link[=vech]{vech()}} function
 and then used as the mean vector in the \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}} function. The covariance matrix \code{sigma} is passed unchanged to \code{\link[mvtnorm:Mvnorm]{mvtnorm::rmvnorm()}}.
-Symmetric matrices are obtained by applying \code{\link[=inv_vech]{inv_vech()}} to each simulated vector.
+Symmetric matrices can be obtained by applying \code{\link[=inv_vech]{inv_vech()}} to each simulated vector.
 }
 \examples{
 rsymm_norm(100, diag(c(3,2,1)))

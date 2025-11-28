@@ -12,7 +12,7 @@
 #' m <- inv_vech(1:6)
 #' dim_vech(1:6)
 #' vech(m)
-#' @return A vector.
+#' @return `vech()` returns a vector. `inv_vech()` returns a matrix. `dim_vech()` returns an integer.
 #' @references \insertAllCited{}
 #' @export
 vech <- function(m, name = FALSE){

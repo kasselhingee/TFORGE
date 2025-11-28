@@ -6,11 +6,11 @@
 #' @param sigma 
 #' A covariance matrix for the vectorised lower triangular elements (arranged by [`vech()`]) of the symmetric matrix. 
 #' It is passed to [`mvtnorm::rmvnorm()`] without any transformation. 
-#' @return A `TFORGE_fsm` object. See [`as_fsm()`].
+#' @return A set of flattened symmetric matrices as a `TFORGE_fsm` object. See [`as_fsm()`].
 #' @details 
 #' The mean matrix is vectorised using the [`vech()`] function 
 #' and then used as the mean vector in the [`mvtnorm::rmvnorm()`] function. The covariance matrix `sigma` is passed unchanged to [`mvtnorm::rmvnorm()`].
-#' Symmetric matrices are obtained by applying [`inv_vech()`] to each simulated vector.
+#' Symmetric matrices can be obtained by applying [`inv_vech()`] to each simulated vector.
 #' @examples 
 #' rsymm_norm(100, diag(c(3,2,1)))
 #' @export
