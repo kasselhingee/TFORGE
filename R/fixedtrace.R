@@ -169,6 +169,7 @@ stat_fixedtrace <- function(x, evals = NULL){
 #' @return A set of flattened symmetric matrices (i.e. [`TFORGE_fsm`][as_fsm()] class)
 #' @export
 project_trace <- function(x){
+  x <- as_fsm(x)
   diagels <- isondiag_vech(x[1, ])
   H <- helmert(sum(diagels))
   projmat <- t(H) %*% diag(c(0,rep(1, sum(diagels)-1))) %*% H
@@ -190,16 +191,12 @@ projtrace_matrix <- function(m){ #project to have trace 0
 #' @inheritParams test_multiplicity
 #' @details
 #' The method will create `Inf` values for tensors that have a trace of zero.
-#' @return If `x` is a set of flattened symmetric matrices (i.e. [`TFORGE_fsm`][as_fsm()] class) then returns a `TFORGE_fsm` object. Otherwise returns a single matrix.
+#' @return A set of flattened symmetric matrices (i.e. [`TFORGE_fsm`][as_fsm()] class).
 #' @export
 normalise_trace <- function(x){
-  if (inherits(x, "TFORGE_fsm")){
-    diagels <- isondiag_vech(x[1, ])
-    newx <- x / rowSums(x[, diagels])
-  } else {
-    tr <- sum(diag(x))
-    newx <- x/tr
-  }
+  x <- as_fsm(x)
+  diagels <- isondiag_vech(x[1, ])
+  newx <- x / rowSums(x[, diagels])
   return(newx)
 }
 #' @rdname normalise_trace
