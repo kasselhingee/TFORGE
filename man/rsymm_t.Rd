@@ -27,7 +27,7 @@ The mean matrix is vectorised using the \code{\link[=vech]{vech()}} function
 and then used as the mean vector in the \code{\link[mvtnorm:Mvt]{mvtnorm::rmvt()}} function.
 The scale parameter matrix \code{sigma} is passed unchanged to \code{\link[mvtnorm:Mvt]{mvtnorm::rmvt()}}.
 The covariance of the resulting vectors is \code{sigma * df / (df - 2)}.
-Symmetric matrices are obtained by applying \code{\link[=invvech]{invvech()}} to each simulated vector.
+Symmetric matrices are obtained by applying \code{\link[=inv_vech]{inv_vech()}} to each simulated vector.
 }
 \examples{
 rsymm_t(100, mean = matrix(1, nrow = 3, ncol = 3), df = 10, sigma = diag(c(3,2,1,1,1,1)))

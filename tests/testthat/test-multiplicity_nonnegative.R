@@ -56,7 +56,7 @@ test_that("test rejects some incorrect hypotheses p = 3", {
   set.seed(13321)
   Ysample <- rsymm(30, diag(c(2,2,1)-3), sigma = diag(3 * (3+1) /2))
   nonnegevals <- t(apply(Ysample, 1, function(v){
-    es <- eigen_desc(invvech(v))
+    es <- eigen_desc(inv_vech(v))
     vech(es$vectors %*% diag(exp(es$values)) %*% t(es$vectors))
   }))
   nonnegevals <- as_fsm(nonnegevals)
@@ -91,7 +91,7 @@ test_that("fixed trace from projection preserved by standardisation and ignored 
   
   std <- standardise_multiplicity(Ysample, mult)
   std_n <- standardise_multiplicity(Ysample_n, mult)
-  expect_true(all.equal(as_fsm(apply(std, 1, function(m){projtrace_matrix(invvech(m))}, simplify = FALSE)), 
+  expect_true(all.equal(as_fsm(apply(std, 1, function(m){projtrace_matrix(inv_vech(m))}, simplify = FALSE)), 
                         std_n, check.attributes = FALSE))
   
   set.seed(123)

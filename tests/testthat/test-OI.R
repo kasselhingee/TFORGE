@@ -19,8 +19,8 @@ test_that("OIinnerprod fast matches slow method", {
   s = 2
   tau = 1/4
   p = 3
-  A <- invvech(rsymm_norm(1, mean = diag(3))[1, ])
-  B <- invvech(rsymm_norm(1, mean = diag(3))[1, ])
+  A <- inv_vech(rsymm_norm(1, mean = diag(3))[1, ])
+  B <- inv_vech(rsymm_norm(1, mean = diag(3))[1, ])
   
   covmat <- OIcov(3, s, tau, vectorisor = "vecd")
   slowinnprod <- drop(vecd(A) %*% solve(covmat) %*% vecd(B))
@@ -41,7 +41,7 @@ test_that("estimate_OIcov get close really to correct tau and scale", {
   covmat <- OIcov(p, s, tau)
   set.seed(344)
   ms <- rsymm_norm(1E5, mean = diag(c(4,2,1)), sigma = covmat)
-  Mhat <- invvech(colMeans(ms))
+  Mhat <- inv_vech(colMeans(ms))
   OIparams <- estimate_OIcov(ms, Mhat)
   expect_equal(OIparams$tau, tau, tolerance = 1E-3, ignore_attr = TRUE)
   expect_equal(OIparams$scalesq, s^2, tolerance = 1E-2)

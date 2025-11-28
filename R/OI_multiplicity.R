@@ -24,7 +24,7 @@ test_multiplicity_OI <- function(x, mult, B = "chisq", refbasis = NULL){
 
 stat_multiplicity_OI <- function(x, mult){
   mn <- colMeans(x)
-  es_mn <- eigen_desc(invvech(mn))
+  es_mn <- eigen_desc(inv_vech(mn))
   
   # hypothetical mean under the null hypothesis
   Mhat <- es_mn$vectors %*% diag(blk(es_mn$values, mult)) %*% t(es_mn$vectors)

@@ -12,7 +12,7 @@
 #' The matrix `m` is not checked for symmetry.
 #' @param m A symmetric matrix
 #' @examples
-#' m <- invvech(1:6)
+#' m <- inv_vech(1:6)
 #' vecd(m)
 #' @return A vector.
 #' @references \insertAllCited{}

@@ -11,7 +11,7 @@ test_that("stat_ss1fixedtrace() on single sample from NULL with fixed evecs is n
   }
   vals <- replicate(1000, {
     # choose a fixed set of eigenvectors
-    evecs <- eigen_desc(invvech(rsymm_norm(1, mean = diag(1, 3))[1, ]))$vectors
+    evecs <- eigen_desc(inv_vech(rsymm_norm(1, mean = diag(1, 3))[1, ]))$vectors
     evals <- revals(50, m = c(1/sqrt(2), 0, -1/sqrt(2)))
     Y <- apply(evals, 1, function(v){
       out <- evecs %*% diag(v) %*% t(evecs)

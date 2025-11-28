@@ -1,6 +1,6 @@
 test_that("makeSymmetric gives symmetric matrix for high dimension", {
   set.seed(34)
-  m <- invvech(rsymm(1, diag(1:7))[1, ])
+  m <- inv_vech(rsymm(1, diag(1:7))[1, ])
   magain <- makeSymmetric(m)
   expect_equal(m, magain)
   

@@ -4,7 +4,7 @@
 # mean
 mmean <- function(ms){
   stopifnot(inherits(ms, "TFORGE_fsm"))
-  invvech(colMeans(ms))
+  inv_vech(colMeans(ms))
 }
 
 # difference to mean
@@ -20,7 +20,7 @@ merr <- function(ms, mean = mmean(ms)){
 mcovar <- function(merr){
   stopifnot(inherits(merr, "TFORGE_fsm"))
   out <- stats::cov(merr)
-  indx <- which(lower.tri(invvech(merr[1, ]), diag = TRUE), arr.ind = TRUE)
+  indx <- which(lower.tri(inv_vech(merr[1, ]), diag = TRUE), arr.ind = TRUE)
   nam <- paste0("e", indx[, "row"], indx[, "col"])
   colnames(out) <- rownames(out) <- nam
   return(out)
@@ -28,6 +28,6 @@ mcovar <- function(merr){
 
 # sum
 msum <- function(ms){
-  if (inherits(ms, "TFORGE_fsm")){return(invvech(colSums(ms)))}
+  if (inherits(ms, "TFORGE_fsm")){return(inv_vech(colSums(ms)))}
   else{return(purrr::reduce(ms, `+`))}
 }

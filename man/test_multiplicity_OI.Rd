@@ -16,7 +16,7 @@ test_multiplicity_OI(x, mult, B = "chisq", refbasis = NULL)
 \item{refbasis}{Ignored (for compatibility with \code{\link[=test_multiplicity]{test_multiplicity()}}).}
 }
 \value{
-A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}} or \code{\link[=chisq_calib]{chisq_calib()}}) including p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}).
+A \code{TFORGE} object (see \code{\link[=boot_calib]{boot_calib()}} or \code{\link[=chisq_calib]{chisq_calib()}}) including p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}).
 }
 \description{
 Given a sample from a population of symmetric matrices with Gaussian-distributed elements and orthogonally-invariant covariance, corollary 4.3 by \insertCite{schwartzman2008in;textual}{TFORGE} provides a method to test the eigenvalue multiplicity of the mean matrix.

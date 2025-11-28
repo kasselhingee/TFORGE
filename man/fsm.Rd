@@ -25,7 +25,7 @@ An object with class \code{TFORGE_kfsm} or \code{TFORGE_fsm}.
 \description{
 The \code{TFORGE_fsm} class, short for \emph{Flat Symmetric Matrices}, is for storing a collection of symmetric matrices with each matrix stored as a row vector according to \code{\link[=vech]{vech()}}.
 The \code{TFORGE_fsm} class is itself a thin wrapper of the array class.
-So, for example, \code{x[1, ]} will return the vectorised-form of the first matrix in the collection, and \code{invvech(x[1,])} will be the first matrix in non-flat form.
+So, for example, \code{x[1, ]} will return the vectorised-form of the first matrix in the collection, and \code{inv_vech(x[1,])} will be the first matrix in non-flat form.
 The \code{TFORGE_kfsm} class is for a collection of multiple \code{TFORGE_fsm}.
 The function \code{as_flat()} automatically converts data to either \code{TFORGE_kfsm} or \code{TFORGE_fsm}.
 }

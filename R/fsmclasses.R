@@ -4,7 +4,7 @@
 #' @description
 #' The `TFORGE_fsm` class, short for *Flat Symmetric Matrices*, is for storing a collection of symmetric matrices with each matrix stored as a row vector according to [`vech()`].
 #' The `TFORGE_fsm` class is itself a thin wrapper of the array class.
-#' So, for example, `x[1, ]` will return the vectorised-form of the first matrix in the collection, and `invvech(x[1,])` will be the first matrix in non-flat form.
+#' So, for example, `x[1, ]` will return the vectorised-form of the first matrix in the collection, and `inv_vech(x[1,])` will be the first matrix in non-flat form.
 #' The `TFORGE_kfsm` class is for a collection of multiple `TFORGE_fsm`.
 #' The function `as_flat()` automatically converts data to either `TFORGE_kfsm` or `TFORGE_fsm`.
 
@@ -62,7 +62,7 @@ as_fsm <- function(x, ...){
   if (inherits(x, "TFORGE_fsm")){return(x)}
   if (inherits(x, "array")){
     # check that columns numbers make sense
-    tryCatch(dimfromvech(x[1, ]),
+    tryCatch(dim_vech(x[1, ]),
              error = function(e){
       if (grepl("round", e$message)){stop("Number of columns of x don't correspond to a possible result of vech()")}
       })
@@ -103,7 +103,7 @@ summary.TFORGE_kfsm <- function(object, ...){
 }
 
 dim_fsm_kfsm <- function(object){
-  if (inherits(object, "TFORGE_fsm")){return(dimfromvech(object[1, , drop = TRUE]))}
-  if (inherits(object, "TFORGE_kfsm")){return(dimfromvech(object[[1]][1, , drop = TRUE]))}
+  if (inherits(object, "TFORGE_fsm")){return(dim_vech(object[1, , drop = TRUE]))}
+  if (inherits(object, "TFORGE_kfsm")){return(dim_vech(object[[1]][1, , drop = TRUE]))}
   else {stop("object needs to have class TFORGE_fsm or TFORGE_kfsm")}
 }

@@ -35,7 +35,7 @@ standardise_multiplicity(x, mult)
 \item{evecs}{For debugging only. Supply eigenvectors of population mean.}
 }
 \value{
-A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}} or \code{\link[=chisq_calib]{chisq_calib()}}) including p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}).
+A \code{TFORGE} object (see \code{\link[=boot_calib]{boot_calib()}} or \code{\link[=chisq_calib]{chisq_calib()}}) including p-value of the test (slot \code{pval}) and the statistic for \code{x} (slot \code{t0}).
 }
 \description{
 Tests the multiplicity of the eigenvalues a population's mean.

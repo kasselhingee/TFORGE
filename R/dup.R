@@ -8,7 +8,7 @@
 
 dup_direct <- function(n){
   x <- 1:(n*(n+1)/2)
-  m <- invvech(x)
+  m <- inv_vech(x)
   y <- vec(m)
   rowmap <- match(y, x)
   out <- matrix(0, nrow = length(y), ncol = length(x))

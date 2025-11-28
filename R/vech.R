@@ -1,16 +1,16 @@
 #' @title Flatten a symmetric matrix into a vector.
 #' @description
 #' The `vech` operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE} flattens symmetric matrices into vectors. Columns are extracted from left to right with entries above the diagonal ignored.
-#' The function `invvech()` is the inverse of `vech()`.
-#' The dimension of the matrix can be obtained from its flattened form by `dimfromvech()`.
+#' The function `inv_vech()` is the inverse of `vech()`.
+#' The dimension of the matrix can be obtained from its flattened form by `dim_vech()`.
 #' @details
 #' The extraction is conveniently performed by `m[lower.tri(m), diag = TRUE]`.
 #' The matrix `m` is not checked for symmetry.
 #' @param m A symmetric matrix
 #' @param name If TRUE vector elements are named `eij` where `i` is the row and `j` is the column.
 #' @examples
-#' m <- invvech(1:6)
-#' dimfromvech(1:6)
+#' m <- inv_vech(1:6)
+#' dim_vech(1:6)
 #' vech(m)
 #' @return A vector.
 #' @references \insertAllCited{}
@@ -28,8 +28,8 @@ vech <- function(m, name = FALSE){
 #' @rdname vech
 #' @param x A flattened symmetric matrix (as a vector).
 #' @export
-invvech <- function(x){
-  n <- dimfromvech(x)
+inv_vech <- function(x){
+  n <- dim_vech(x)
   m <- matrix(NA, nrow = n, ncol = n)
   m[lower.tri(m, diag = TRUE)] <- x
   m[upper.tri(m)] <- t(m)[upper.tri(m)]
@@ -38,7 +38,7 @@ invvech <- function(x){
 
 #' @rdname vech
 #' @export
-dimfromvech <- function(x){
+dim_vech <- function(x){
   # n is s.t. l = 0.5 n (n+1) --> n = 0.5(-1 + sqrt(4l+1))
   n <- (-1 + sqrt(8*length(x) + 1))/2
   stopifnot(round(n) == n)
@@ -49,7 +49,7 @@ dimfromvech <- function(x){
 # if vec is a single number, treat it as the length of vec
 isondiag_vech <- function(vec){
   if (length(vec) == 1){vec <- rep(1, vec)}
-  mat <- invvech(vec)
+  mat <- inv_vech(vec)
   mat[] <- FALSE;
   diag(mat) <- TRUE
   diagels <- vech(mat) > 0.5

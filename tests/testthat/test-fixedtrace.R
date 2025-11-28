@@ -205,7 +205,7 @@ test_that("has_fixedtrace() gives TRUE or FALSE values", {
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
     Y <- apply(Y, 1, 
-               function(vec) {m <- invvech(vec); const * m/sum(diag(m))},
+               function(vec) {m <- inv_vech(vec); const * m/sum(diag(m))},
                simplify = FALSE)
     Y
     }, simplify = FALSE)

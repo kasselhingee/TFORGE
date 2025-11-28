@@ -16,7 +16,7 @@ test_that("as_flat() on list of list of matrices", {
   Ysamples <- replicate(5, {
     Y <- rsymm_norm(50, diag(c(3,2,1)))
     Y <- apply(Y, 1, 
-               function(vec) {m <- invvech(vec)},
+               function(vec) {m <- inv_vech(vec)},
                simplify = FALSE)
     Y
     }, simplify = FALSE)
@@ -26,13 +26,13 @@ test_that("as_flat() on list of list of matrices", {
   Ysamples <- list({
     Y <- rsymm_norm(50, diag(c(3,2,1)))
     Y <- apply(Y, 1, 
-               function(vec) {m <- invvech(vec)},
+               function(vec) {m <- inv_vech(vec)},
                simplify = FALSE)
     Y
     }, {
     Y <- rsymm_norm(50, diag(c(3, 3,2,1)))
     Y <- apply(Y, 1, 
-               function(vec) {m <- invvech(vec)},
+               function(vec) {m <- inv_vech(vec)},
                simplify = FALSE)
     Y})
   

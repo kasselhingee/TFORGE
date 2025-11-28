@@ -2,12 +2,12 @@ test_that("vecd() works", {
   expect_equal(vecd(matrix(1:9, byrow = FALSE, nrow = 3)),
                c(1, 5, 9, sqrt(2) * c(2,3,6)))
   
-  m <- invvech(rsymm(1, diag(3))[1, ])
+  m <- inv_vech(rsymm(1, diag(3))[1, ])
   expect_equal(invvecd(vecd(m)), m)
 })
 test_that("vech2vecd works", {
   set.seed(354)
-  m <- invvech(rsymm(1, diag(3))[1, ])
+  m <- inv_vech(rsymm(1, diag(3))[1, ])
   expect_equal(invvecd(vech2vecd(vech(m))), m)
 })
 

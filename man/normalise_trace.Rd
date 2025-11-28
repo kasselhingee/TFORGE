@@ -13,7 +13,7 @@ normalize_trace(x)
 \item{x}{A sample of matrices suitable for \code{\link[=as_fsm]{as_fsm()}}.}
 }
 \value{
-If \code{x} is a set of flattened symmetric matrices (i.e. \code{\link[=as_fsm]{TFORGE_fsm}} class) then returns a \code{TFORGE_fsm} object. Otherwise returns a single matrix.
+A set of flattened symmetric matrices (i.e. \code{\link[=as_fsm]{TFORGE_fsm}} class).
 }
 \description{
 Scales symmetric matrices by their trace, so that resulting matrices have a trace of one.

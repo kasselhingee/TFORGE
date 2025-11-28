@@ -19,7 +19,7 @@ stat_ss1fixedtrace(x, evals = NULL)
 \item{maxit}{The maximum number of Newton steps allowed in empirical likelihood optimisation \insertCite{owen:2013}{TFORGE}.}
 }
 \value{
-A \code{TFORGE} object (see \code{\link[=bootresampling]{bootresampling()}} or \code{\link[=chisq_calib]{chisq_calib()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.
+A \code{TFORGE} object (see \code{\link[=boot_calib]{boot_calib()}} or \code{\link[=chisq_calib]{chisq_calib()}}) with the eigenvalues of the null hypothesis in the \code{null_evals} attribute for \code{t0}.
 }
 \description{
 For a single sample, test eigenvalues of the population mean.

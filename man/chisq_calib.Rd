@@ -23,8 +23,8 @@ A list of
 \item \code{df} The degrees of freedom of the chi-squared distribution
 }
 
-The returned object has class \code{TFORGE} (same as \code{\link[=bootresampling]{bootresampling()}}) for easy use of \code{print()}.
+The returned object has class \code{TFORGE} (same as \code{\link[=boot_calib]{boot_calib()}}) for easy use of \code{print()}.
 }
 \description{
-Similar to \code{\link[=bootresampling]{bootresampling()}}, but uses chi-squared calibration instead of bootstrapping.
+Similar to \code{\link[=boot_calib]{boot_calib()}}, but uses chi-squared calibration instead of bootstrapping.
 }

@@ -2,15 +2,15 @@
 % Please edit documentation in R/vech.R
 \name{vech}
 \alias{vech}
-\alias{invvech}
-\alias{dimfromvech}
+\alias{inv_vech}
+\alias{dim_vech}
 \title{Flatten a symmetric matrix into a vector.}
 \usage{
 vech(m, name = FALSE)
 
-invvech(x)
+inv_vech(x)
 
-dimfromvech(x)
+dim_vech(x)
 }
 \arguments{
 \item{m}{A symmetric matrix}
@@ -24,16 +24,16 @@ A vector.
 }
 \description{
 The \code{vech} operator as defined by \insertCite{@Section 3.8 @magnus2019ma}{TFORGE} flattens symmetric matrices into vectors. Columns are extracted from left to right with entries above the diagonal ignored.
-The function \code{invvech()} is the inverse of \code{vech()}.
-The dimension of the matrix can be obtained from its flattened form by \code{dimfromvech()}.
+The function \code{inv_vech()} is the inverse of \code{vech()}.
+The dimension of the matrix can be obtained from its flattened form by \code{dim_vech()}.
 }
 \details{
 The extraction is conveniently performed by \code{m[lower.tri(m), diag = TRUE]}.
 The matrix \code{m} is not checked for symmetry.
 }
 \examples{
-m <- invvech(1:6)
-dimfromvech(1:6)
+m <- inv_vech(1:6)
+dim_vech(1:6)
 vech(m)
 }
 \references{

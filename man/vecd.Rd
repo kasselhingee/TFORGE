@@ -25,7 +25,7 @@ The \code{vecd()} function has a single line of code:
 The matrix \code{m} is not checked for symmetry.
 }
 \examples{
-m <- invvech(1:6)
+m <- inv_vech(1:6)
 vecd(m)
 }
 \references{

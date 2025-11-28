@@ -147,7 +147,7 @@ has_ss1 <- function(x, tolerance = sqrt(.Machine$double.eps)){
   x <- as_flat(x)
   if (inherits(x, "TFORGE_kfsm")){x <- do.call(rbind, x)}
   ss <- apply(x, 1, function(v){
-    m <- invvech(v)
+    m <- inv_vech(v)
     sum(diag(m%*%m))
   })
   isTRUE(all.equal(ss, rep(1, length(ss)), tolerance = tolerance))
@@ -179,7 +179,7 @@ elnullmean <- function(ms, d0, av = NULL, evecs = NULL, getcbound = FALSE){
   if (getcbound){
     # bounds for cj, which is the range of possible sqrt(sum of squared trace) of the resample means
     # A simpler method could be to just fix the bounds to [0,1].
-    diags <- apply(ms, 1, function(vec){m <- invvech(vec); diag(t(evecs) %*% m %*% evecs)}, simplify = FALSE)
+    diags <- apply(ms, 1, function(vec){m <- inv_vech(vec); diag(t(evecs) %*% m %*% evecs)}, simplify = FALSE)
     diags <- do.call(cbind, diags)
     ranges <- t(apply(diags, 1, range))
     colnames(ranges) <- c("min", "max")
@@ -222,7 +222,7 @@ normalise_ss1 <- function(x){
     tr2 <- I1^2 - 2*I2
     return(as_fsm(x/sqrt(tr2)))
   }
-  as_fsm(apply(x, 1, function(v){normL2evals(invvech(v))}, simplify = FALSE))
+  as_fsm(apply(x, 1, function(v){normL2evals(inv_vech(v))}, simplify = FALSE))
 }
 
 # ms is an TFORGE_fsm
