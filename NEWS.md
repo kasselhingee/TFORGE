@@ -1,3 +1,6 @@
+## Version 0.1.15
+A fix to a unit test.
+
 ## Version 0.1.14
 Further polishing thanks to review from Benjamin Altmann:
 
