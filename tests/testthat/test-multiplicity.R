@@ -239,9 +239,24 @@ test_that("xicovar() matches simulated sample covariance of xi with fixed eigenv
    simxi(n, mn = mn, sigma = C0, mult, idxs, eigen_desc(mn)$vectors)) |>
     t() |>
     cov()
-  expect_equal(emcov_semi, thecov, tolerance = 0.03)
+  expect_equal(emcov_semi, thecov, tolerance = 0.06)
   # note that xihat (eigenvectors given by mn) has a very different distribution because for each sample the eigenvectors for an eigenvalue can be any from the space,
   # not necessarily the exact ones supplied to thecov.
+
+  # Now that sure it is working, use simulations to work out what threshold to put on the above
+  # pbapply::pbreplicate(1000, {emcov_semi <- replicate(1E2,
+  #  simxi(n, mn = mn, sigma = C0, mult, idxs, eigen_desc(mn)$vectors)) |>
+  #   t() |>
+  #   cov()
+  # abs(as.vector(emcov_semi - thecov))},
+  # simplify = TRUE) |>
+  #   apply(1, quantile, 0.99) |>
+  #   matrix(nrow = 3, ncol = 3)
+  # Results below suggest a threshold of 0.06 will be pretty reliable
+  #           [,1]       [,2]       [,3]
+  #[1,] 0.04895833 0.03320427 0.03873455
+  #[2,] 0.03320427 0.03671793 0.02974712
+  #[3,] 0.03873455 0.02974712 0.05073475
 })
 
 test_that("test p value resistant to fixed trace by normalisation", {
