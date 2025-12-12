@@ -30,7 +30,7 @@ The \code{datatable} entry has 542 rows and 25 variables:
 }
 }
 \source{
-\url{https://doi.org/10.5281/zenodo.3666760}
+\doi{10.5281/zenodo.3666760}
 }
 \usage{
 Gonjo
@@ -41,7 +41,7 @@ This is the anisotropy of magnetic susceptibility (AMS) data from a 3km think se
 \details{
 The AMS matrices were calculated using the in-situ directions by Dr. Janice Scealy.
 
-The data from \url{https://doi.org/10.5281/zenodo.3666760} has a \href{https://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International} license.
+The data from \doi{10.5281/zenodo.3666760} has a \href{https://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International} license.
 }
 \references{
 \insertAllCited{}

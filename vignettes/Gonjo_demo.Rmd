@@ -20,10 +20,10 @@ library(TFORGE)
 
 The Gonjo basin anisotropy of magnetic susceptibility (AMS) data first released by Li et al. (2020) is available with the `TFORGE` package. See `?Gonjo` for details.
 For analysis Li et al. (2020) split the data at depths of 765m and 2154m, leading to three intervals.
-Here we will do the same and apply some of the hypothesis tests available in `TFORGE`.
-Since the matrices are AMS tensors, the traces are fixed to `1` and the eigenvalues are non-negative.
+Since the matrices are AMS tensors, the traces are fixed to `1` and the eigenvalues are non-negative, so we can use `test_multiplicity_nonnegative()` and `test_fixedtrace()` to test some hypotheses relevant to AMS data.
+Because the eigenvalues of the matrices tend to be well away from zero (smallest eigenvalue of all matrices = 0.267), it would likely be okay to use `test_multiplicity()` too.
 
-Each interval has over 100 specimens, for fast computation, here we will demonstrate on the first 30 specimens of each interval; with the full samples, the tests are easily able to detect differences from the null hypotheses.
+Each interval has over 100 specimens. For fast computation in this demonstration we will use only the first 30 specimens of each interval.
 
 ## Preparation
 Split the AMS matrices in `Gonjo` into three groups, keeping the first 30 of each.
@@ -54,6 +54,15 @@ test_multiplicity_nonnegative(samples[["2"]], mult = 3, B = 1000)
 Interval 3 prolate:
 ```{r}
 test_multiplicity_nonnegative(samples[["3"]], mult = c(1, 2), B = 1000)
+```
+
+Because the eigenvalues of the data are so far away from zero (smallest eigenvalue of all matrices = 0.267) the transformation-based bootstrapping used by `test_multiplicity()` would likely work well too and give the same result.
+Below we apply `test_multiplicity()`, and the results lead to the same conclusions as `test_multiplicity_nonnegative()`.
+
+```{r}
+test_multiplicity(samples[["1"]], mult = c(2, 1), B = 1000)
+test_multiplicity(samples[["2"]], mult = 3, B = 1000)
+test_multiplicity(samples[["3"]], mult = c(1, 2), B = 1000)
 ```
 
 ### 3-Sample Test

@@ -2,7 +2,7 @@
 #' @description 
 #' This is the anisotropy of magnetic susceptibility (AMS) data from a 3km think section of redbeds in the Gonjo Basin in eastern Tibet that was analysed by \insertCite{li2020an;textual}{TFORGE}.
 #' @references \insertAllCited{}
-#' @source <https://doi.org/10.5281/zenodo.3666760>
+#' @source \doi{10.5281/zenodo.3666760}
 #' @format 
 #' A list with entry `datatable` containing one row per specimen and entry `matrices` containing the AMS tensor (i.e. symmetric matrix) for each specimen.
 #' The `datatable` entry has 542 rows and 25 variables:
@@ -29,6 +29,6 @@
 #' @details 
 #' The AMS matrices were calculated using the in-situ directions by Dr. Janice Scealy.
 #' 
-#' The data from <https://doi.org/10.5281/zenodo.3666760> has a [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) license.
+#' The data from \doi{10.5281/zenodo.3666760} has a [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) license.
 "Gonjo"
 
