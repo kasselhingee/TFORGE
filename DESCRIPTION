@@ -13,7 +13,9 @@ Imports:
   purrr,
   Rdpack
 Suggests:
-  testthat
+    knitr,
+    rmarkdown,
+    testthat
 RdMacros: Rdpack
 License: GPL (>= 3)
 Encoding: UTF-8
@@ -22,3 +24,4 @@ RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
 LazyData: true
+VignetteBuilder: knitr

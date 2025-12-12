@@ -1,0 +1,90 @@
+---
+title: "Gonjo Demonstration"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Gonjo Demonstration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(TFORGE)
+```
+
+The Gonjo basin anisotropy of magnetic susceptibility (AMS) data first released by Li et al. (2020) is available with the `TFORGE` package. See `?Gonjo` for details.
+For analysis Li et al. (2020) split the data at depths of 765m and 2154m, leading to three intervals.
+Here we will do the same and apply some of the hypothesis tests available in `TFORGE`.
+Since the matrices are AMS tensors, the traces are fixed to `1` and the eigenvalues are non-negative.
+
+Each interval has over 100 specimens, for fast computation, here we will demonstrate on the first 30 specimens of each interval; with the full samples, the tests are easily able to detect differences from the null hypotheses.
+
+## Preparation
+Split the AMS matrices in `Gonjo` into three groups, keeping the first 30 of each.
+```{r}
+interval_1 <- Gonjo$matrices[Gonjo$datatable$`really depth` <= 765]
+interval_2 <- Gonjo$matrices[Gonjo$datatable$`really depth` <= 2154]
+interval_3 <- Gonjo$matrices[Gonjo$datatable$`really depth` > 2154]
+samples <- list(`1` = interval_1[1:30], `2` = interval_2[1:30], `3` = interval_3[1:30])
+```
+
+
+## Multiplicity Tests
+Following descriptions from Li et al. (2020), here we will test whether population mean of intervals 1, 2, and 3 are oblate, isotropic, or prolate respectively. These are hypotheses about the multiplicity of eigenvalues of the population means.
+
+For interval 1 and 2 the samples are so far from oblate and isotropic, respectively, that weighted bootstrapping (using `emplik()`) could not be used, and the result is automatically a p-value of 0, corresponding to rejecting the null hypothesis.
+At a significance level of 0.05, the prolate hypothesis for interval 3 should also be rejected.
+
+Interval 1 oblate:
+```{r}
+test_multiplicity_nonnegative(samples[["1"]], mult = c(2, 1), B = 1000)
+```
+
+Interval 2 isotropic:
+```{r}
+test_multiplicity_nonnegative(samples[["2"]], mult = 3, B = 1000)
+```
+
+Interval 3 prolate:
+```{r}
+test_multiplicity_nonnegative(samples[["3"]], mult = c(1, 2), B = 1000)
+```
+
+### 3-Sample Test
+Here we can check whether the eigenvalues of the population means are equal. Again the intervals are so different that the convex hulls of these samples do not overlap at the estimated common mean, so equality of eigenvalues is automatically rejected.
+
+```{r}
+test_fixedtrace(samples, B = 1000)
+```
+
+### Confidence Regions
+We can also estimate confidence regions for the eigenvalues of the population means.
+
+
+```{r}
+s1_CR <- conf_fixedtrace(samples[["1"]],
+  alpha = 0.05,
+  B = 1000, npts = 1000, check = FALSE
+)
+s2_CR <- conf_fixedtrace(samples[["2"]],
+  alpha = 0.05,
+  B = 1000, npts = 1000, check = FALSE
+)
+s3_CR <- conf_fixedtrace(samples[["3"]],
+  alpha = 0.05,
+  B = 1000, npts = 1000, check = FALSE
+)
+```
+
+These confidence regions are ellipses on a 2D plane. Plotting these confidence regions can be a bit involved - please see the reproducibility documentation of Hingee et al. (2026) for an example using `ggplot2`.
+
+# References
+Li, S., van Hinsbergen, D. J. J., Shen, Z., Najman, Y., Deng, C., & Zhu, R. (2020). Anisotropy of Magnetic Susceptibility (AMS) Analysis of the Gonjo Basin as an Independent Constraint to Date Tibetan Shortening Pulses. *Geophysical Research Letters*, 47(8), e2020GL087531. https://doi.org/10.1029/2020GL087531
+
+Hingee K, Scealy J, Wood A (2026). “Nonparametric bootstrap inference for the eigenvalues of geophysical tensors.” *Journal of American Statistical Association*. Accepted for publication.

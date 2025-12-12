@@ -5,8 +5,8 @@
 \alias{Gonjo}
 \title{AMS data of the Gonjo Basin}
 \format{
-A list with entry \code{datatable} containing one row per specimen and entry \code{matrices} containing the AMS tensor (i.e.~symmetric matrix) for each specimen.
-The \code{datatable} entry has 542 rows and 25 variables (many of these variables are documented in Table 1.1 of \insertCite{tarling1993ma;textual}{TFORGE}):
+A list with entry \code{datatable} containing one row per specimen and entry \code{matrices} containing the AMS tensor (i.e. symmetric matrix) for each specimen.
+The \code{datatable} entry has 542 rows and 25 variables:
 \itemize{
 \item \code{Name}: character — Specimen name
 \item \verb{really depth}: double — Depth of specimen (in meters)
@@ -39,7 +39,9 @@ Gonjo
 This is the anisotropy of magnetic susceptibility (AMS) data from a 3km think section of redbeds in the Gonjo Basin in eastern Tibet that was analysed by \insertCite{li2020an;textual}{TFORGE}.
 }
 \details{
-DETAILS
+The AMS matrices were calculated using the in-situ directions by Dr. Janice Scealy.
+
+The data from \url{https://doi.org/10.5281/zenodo.3666760} has a \href{https://creativecommons.org/licenses/by/4.0/}{Creative Commons Attribution 4.0 International} license.
 }
 \references{
 \insertAllCited{}

@@ -28,5 +28,7 @@
 #' - `K3decT` and `K3incT`: doubles — Tilt-corrected of third eigenvector
 #' @details 
 #' The AMS matrices were calculated using the in-situ directions by Dr. Janice Scealy.
+#' 
+#' The data from <https://doi.org/10.5281/zenodo.3666760> has a [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) license.
 "Gonjo"
 
