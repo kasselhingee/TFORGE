@@ -36,7 +36,7 @@ The \code{datatable} entry has 542 rows and 25 variables:
 Gonjo
 }
 \description{
-This is the anisotropy of magnetic susceptibility (AMS) data from a 3km think section of redbeds in the Gonjo Basin in eastern Tibet that was analysed by \insertCite{li2020an;textual}{TFORGE}.
+This is the anisotropy of magnetic susceptibility (AMS) data from a 3km thick section of redbeds in the Gonjo Basin in eastern Tibet that was analysed by \insertCite{li2020an;textual}{TFORGE}.
 }
 \details{
 The AMS matrices were calculated using the in-situ directions by Dr. Janice Scealy.

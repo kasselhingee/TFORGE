@@ -1,6 +1,6 @@
 #' @title AMS data of the Gonjo Basin
 #' @description 
-#' This is the anisotropy of magnetic susceptibility (AMS) data from a 3km think section of redbeds in the Gonjo Basin in eastern Tibet that was analysed by \insertCite{li2020an;textual}{TFORGE}.
+#' This is the anisotropy of magnetic susceptibility (AMS) data from a 3km thick section of redbeds in the Gonjo Basin in eastern Tibet that was analysed by \insertCite{li2020an;textual}{TFORGE}.
 #' @references \insertAllCited{}
 #' @source \doi{10.5281/zenodo.3666760}
 #' @format 
