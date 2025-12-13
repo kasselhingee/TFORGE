@@ -18,15 +18,18 @@ knitr::opts_chunk$set(
 library(TFORGE)
 ```
 
-The Gonjo basin anisotropy of magnetic susceptibility (AMS) data first released by Li et al. (2020) is available with the `TFORGE` package. See `?Gonjo` for details.
+The Gonjo basin anisotropy of magnetic susceptibility (AMS) data from Li et al. (2020) is available with the `TFORGE` package.
+This data contains the AMS tensor of 542 specimens along with the depth of each specimen.
+See `?Gonjo` for details.
 For analysis Li et al. (2020) split the data at depths of 765m and 2154m, leading to three intervals.
-Since the matrices are AMS tensors, the traces are fixed to `1` and the eigenvalues are non-negative, so we can use `test_multiplicity_nonnegative()` and `test_fixedtrace()` to test some hypotheses relevant to AMS data.
+
+Each AMS tensor is a 3 by 3 symmetric matrix with a trace of `1` and non-negative eigenvalues, so we can use `test_multiplicity_nonnegative()` and `test_fixedtrace()` to test some hypotheses relevant to AMS data.
 Because the eigenvalues of the matrices tend to be well away from zero (smallest eigenvalue of all matrices = 0.267), it would likely be okay to use `test_multiplicity()` too.
 
-Each interval has over 100 specimens. For fast computation in this demonstration we will use only the first 30 specimens of each interval.
+Each interval has over 100 specimens. For fast computation in this demonstration we will use only the first 30 specimens of each interval, and only 100 bootstrap resamples.
 
 ## Preparation
-Split the AMS matrices in `Gonjo` into three groups, keeping the first 30 of each.
+Split the AMS matrices in `Gonjo` into three groups, keeping the first 30 of each for computation speed in this demonstration.
 ```{r}
 interval_1 <- Gonjo$matrices[Gonjo$datatable$`really depth` <= 765]
 interval_2 <- Gonjo$matrices[Gonjo$datatable$`really depth` <= 2154]
@@ -58,11 +61,12 @@ test_multiplicity_nonnegative(samples[["3"]], mult = c(1, 2), B = 1000)
 
 Because the eigenvalues of the data are so far away from zero (smallest eigenvalue of all matrices = 0.267) the transformation-based bootstrapping used by `test_multiplicity()` would likely work well too and give the same result.
 Below we apply `test_multiplicity()`, and the results lead to the same conclusions as `test_multiplicity_nonnegative()`.
+For computational speed in this demonstration we will use only 100 resamples;  __we recommend using at least 1000 resamples in practise__.
 
 ```{r}
-test_multiplicity(samples[["1"]], mult = c(2, 1), B = 1000)
-test_multiplicity(samples[["2"]], mult = 3, B = 1000)
-test_multiplicity(samples[["3"]], mult = c(1, 2), B = 1000)
+test_multiplicity(samples[["1"]], mult = c(2, 1), B = 100)
+test_multiplicity(samples[["2"]], mult = 3, B = 100)
+test_multiplicity(samples[["3"]], mult = c(1, 2), B = 100)
 ```
 
 ### 3-Sample Test
@@ -74,20 +78,21 @@ test_fixedtrace(samples, B = 1000)
 
 ### Confidence Regions
 We can also estimate confidence regions for the eigenvalues of the population means.
+For computational speed in this demonstration we will use only 100 resamples;  __we recommend using at least 1000 resamples in practise__.
 
 
 ```{r}
 s1_CR <- conf_fixedtrace(samples[["1"]],
   alpha = 0.05,
-  B = 1000, npts = 1000, check = FALSE
+  B = 100, npts = 1000, check = FALSE
 )
 s2_CR <- conf_fixedtrace(samples[["2"]],
   alpha = 0.05,
-  B = 1000, npts = 1000, check = FALSE
+  B = 100, npts = 1000, check = FALSE
 )
 s3_CR <- conf_fixedtrace(samples[["3"]],
   alpha = 0.05,
-  B = 1000, npts = 1000, check = FALSE
+  B = 100, npts = 1000, check = FALSE
 )
 ```
 
