@@ -38,15 +38,15 @@ There are two functions `conf_fixedtrace()` and `conf_ss1fixedtrace()` for estim
 The above tests all require that the eigenvalues of the population mean are distinct (with degraded performance when eigenvalues are very close to each other).
 Eigenvalues are assumed to be in descending order.
 
-Use `test_multiplicity()` to test the eigenvalue-multiplicity of the population mean of a single sample (for unconstrained or fixed trace matrices).
+Use `test_multiplicity()` to test the eigenvalue-multiplicity of the population mean of a single sample.
 A test of the same hypothesis that requires that matrix elements follow a multivariate Gaussian distribution with orthogonally-invariant covariance is also available through `test_multiplicity_OI()` (Schwartzman et al., 2008, Inference for eigenvalues and eigenvectors of Gaussian symmetric matrices, *The Annals of Statistics*).
-Eigenvalues are assumed to be in descending order for these multiplicity tests.
-
+`test_multiplicity()` can also be applied to matrices with a constrained trace, but use `test_multiplicity_nonnegative()` for matrices constrained to have non-negative eigenvalues.
 
 
 ## Usage
 To use the functions starting with `test_`, you must have symmetric matrix data formatted to be suitable for `as_fsm()` or `as_kfsm()` (please see the help for these functions for more detail).
-For full examples of use, please see the reproducibility document associated with (Hingee, Scealy and Wood, 2026, Nonparametric bootstrap inference for the eigenvalues of geophysical tensors, accepted by the *Journal of American Statistical Association*).
+The package includes a vignette demonstrating an application to anisotropy of magnetic susceptibility data.
+For example applications of all the hypothesis tests in this package, please see the reproducibility document associated with (Hingee, Scealy and Wood, 2026, Nonparametric bootstrap inference for the eigenvalues of geophysical tensors, accepted by the *Journal of American Statistical Association*).
 Below is a toy example using symmetric matrices simulated from a multivariate Normal (aka Gaussian) distribution.
 
 ```

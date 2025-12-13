@@ -32,13 +32,16 @@ There are two functions \code{\link[=conf_fixedtrace]{conf_fixedtrace()}} and \c
 The above tests all require that the eigenvalues of the population mean are distinct (with degraded performance when eigenvalues are very close to each other).
 Eigenvalues are assumed to be in descending order.
 
-Use \code{\link[=test_multiplicity]{test_multiplicity()}} to test the eigenvalue-multiplicity of the population mean of a single sample (for unconstrained or fixed trace matrices).
+Use \code{\link[=test_multiplicity]{test_multiplicity()}} to test the eigenvalue-multiplicity of the population mean of a single sample.
 A test of the same hypothesis that requires that matrix elements follow a multivariate Gaussian distribution with orthogonally-invariant covariance is also available through \code{\link[=test_multiplicity_OI]{test_multiplicity_OI()}} \insertCite{schwartzman2008in}{TFORGE}.
-Eigenvalues are assumed to be in descending order for these multiplicity tests.
+\code{\link[=test_multiplicity]{test_multiplicity()}} can also be applied to matrices with a constrained trace, but use \code{\link[=test_multiplicity_nonnegative]{test_multiplicity_nonnegative()}} for matrices constrained to have non-negative eigenvalues.
 
 In this package, matrices within the same sample are considered independently and identically distributed.
 Matrices are stored in a flattened form as row-vectors according to \code{\link[=vech]{vech()}} - see \code{\link{fsm}} for details.
 Samples may be provided as lists of matrices or in their flattened form so long as the column order matches that of \code{\link[=vech]{vech()}}.
+
+This package includes a vignette demonstrating an application to anisotropy of magnetic susceptibility data.
+For example applications of all the hypothesis tests in this package, please see the reproducibility document associated with \insertCite{hingee2026no}{TFORGE}.
 }
 \section{Acknowledgements}{
 Colleagues Andrew T. A. Wood and Janice Scealy played crucial roles in developing the statistical concepts and theory.
