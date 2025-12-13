@@ -1,6 +1,6 @@
 Package: TFORGE
 Title: Tests for Geophysical Eigenvalues
-Version: 0.1.15
+Version: 0.1.16
 Authors@R: 
     c(person(given = "Kassel Liam", family = "Hingee", email = "kassel.hingee@anu.edu.au", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9894-2407")),
     person("Art B.", "Owen", role = c("cph"), comment = "./R/scel.R only"),

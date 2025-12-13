@@ -1,3 +1,6 @@
+## Version 0.1.16
+Gonjo basin data and vignette added
+
 ## Version 0.1.15
 A fix to a unit test.
 
