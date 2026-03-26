@@ -1,3 +1,6 @@
+## Version 0.1.17
+Update to DESCRIPTION to provide DOI of paper that has now been published.
+
 ## Version 0.1.16
 Gonjo basin data and vignette added
 
