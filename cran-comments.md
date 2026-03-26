@@ -1,4 +1,4 @@
 Update to DESCRIPTION to provide DOI of paper that has now been published.
-Also update of maintainer email.
+I've stopped working at ANU, so email address is updated.
 
 
