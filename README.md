@@ -1,6 +1,6 @@
 Author: Kassel Hingee
 
-This directory contains an R package, `TFORGE`, that implements the hypothesis tests for eigenvalues in Hingee, Scealy and Wood (2026, Nonparametric bootstrap inference for the eigenvalues of geophysical tensors, accepted by the *Journal of American Statistical Association*).
+This directory contains an R package, `TFORGE`, that implements the hypothesis tests for eigenvalues in Hingee, Scealy and Wood (2026, Nonparametric bootstrap inference for the eigenvalues of geophysical tensors, [doi:10.1080/01621459.2025.2606381](https://doi.org/10.1080/01621459.2025.2606381) ).
 A version of this package is available from CRAN at `https://cran.r-project.org/package=TFORGE`.
 
 ## Installation
@@ -46,7 +46,7 @@ A test of the same hypothesis that requires that matrix elements follow a multiv
 ## Usage
 To use the functions starting with `test_`, you must have symmetric matrix data formatted to be suitable for `as_fsm()` or `as_kfsm()` (please see the help for these functions for more detail).
 The package includes a vignette demonstrating an application to anisotropy of magnetic susceptibility data.
-For example applications of all the hypothesis tests in this package, please see the reproducibility document associated with (Hingee, Scealy and Wood, 2026, Nonparametric bootstrap inference for the eigenvalues of geophysical tensors, accepted by the *Journal of American Statistical Association*).
+For example applications of all the hypothesis tests in this package, please see the reproducibility document associated with (Hingee, Scealy and Wood, 2026, Nonparametric bootstrap inference for the eigenvalues of geophysical tensors, [doi:10.1080/01621459.2025.2606381](https://doi.org/10.1080/01621459.2025.2606381) ).
 Below is a toy example using symmetric matrices simulated from a multivariate Normal (aka Gaussian) distribution.
 
 ```
